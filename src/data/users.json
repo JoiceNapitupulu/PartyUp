@@ -1,0 +1,102 @@
+[
+  {
+    "user_id": "USR-001",
+    "name": "Joice",
+    "avatar": "/avatars/avatar1.png",
+    "semester": 4,
+    "university": "Universitas Indonesia",
+    "major": "Information Systems",
+    "role": "Hipster",
+    "skills": ["Figma", "UI/UX", "Next.js", "Java", "PostgreSQL"],
+    "bio": "Pixel design enthusiast and frontend dabbler. Passionate about building seamless user flows for student communities.",
+    "portfolio": [
+      {
+        "project_name": "Whoosh",
+        "description": "Tugas praktikum syarat kelulusan mata pelajaran informatika saat SMA.",
+        "role": "UI/UX Designer"
+      },
+      {
+        "project_name": "Sora",
+        "description": "UI/UX project for a boat rental application.",
+        "role": "Designer"
+      }
+    ]
+  },
+  {
+    "user_id": "USR-002",
+    "name": "Alex",
+    "avatar": "/avatars/avatar2.png",
+    "semester": 6,
+    "university": "Institut Teknologi Bandung",
+    "major": "Informatics",
+    "role": "Hacker",
+    "skills": ["React", "Next.js", "Node.js", "Go", "Docker", "PostgreSQL"],
+    "bio": "Full-stack developer focused on performance and scalable system architectures. I break things so I can build them stronger.",
+    "portfolio": [
+      {
+        "project_name": "EcoSphere",
+        "description": "Campus carbon footprint tracker utilizing high-frequency telemetry API.",
+        "role": "Lead Developer"
+      },
+      {
+        "project_name": "GoCache",
+        "description": "Lightweight distributed in-memory cache system built in Golang.",
+        "role": "Backend Engineer"
+      }
+    ]
+  },
+  {
+    "user_id": "USR-003",
+    "name": "Sarah",
+    "avatar": "/avatars/avatar3.png",
+    "semester": 4,
+    "university": "Universitas Gadjah Mada",
+    "major": "Business Management",
+    "role": "Hustler",
+    "skills": ["Product Management", "Business Model Canvas", "Pitching", "Marketing", "Figma"],
+    "bio": "Detail-oriented product strategist. I bridge the gap between technical requirements, design language, and market viability.",
+    "portfolio": [
+      {
+        "project_name": "EduQuest",
+        "description": "Pitch deck and business canvas strategy for gamified student flashcards.",
+        "role": "Product Manager"
+      }
+    ]
+  },
+  {
+    "user_id": "USR-004",
+    "name": "Kevin",
+    "avatar": "/avatars/avatar4.png",
+    "semester": 6,
+    "university": "Binus University",
+    "major": "Computer Science",
+    "role": "Hacker",
+    "skills": ["Flutter", "Dart", "Firebase", "Python", "PyTorch"],
+    "bio": "Mobile app developer and machine learning beginner. Love turning complex designs into responsive pixel-perfect native apps.",
+    "portfolio": [
+      {
+        "project_name": "MediLink",
+        "description": "Remote healthcare app with real-time consultation matching logic.",
+        "role": "Mobile Developer"
+      }
+    ]
+  },
+  {
+    "user_id": "USR-005",
+    "name": "Rian",
+    "avatar": "/avatars/avatar5.png",
+    "semester": 2,
+    "university": "Universitas Airlangga",
+    "major": "Information Systems",
+    "role": "Hipster",
+    "skills": ["Figma", "Graphic Design", "Illustrator", "Tailwind CSS"],
+    "bio": "Freshman IS student focusing on design layouts and micro-interactions. Loving retro styles and game UI.",
+    "portfolio": [
+      {
+        "project_name": "InisiatorKampus",
+        "description": "Aggregator of campus-wide student organizations with customizable styling blocks.",
+        "role": "UI/UX Designer"
+      }
+    ]
+  }
+]
