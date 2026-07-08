@@ -3,8 +3,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import PixelButton from "@/components/PixelButton";
 import usersData from "@/data/users.json";
 
@@ -21,7 +19,6 @@ export default function Login() {
       return;
     }
 
-    // Look for matching user in mock users data
     const matchedUser = usersData.find(
       (u) => u.name.toLowerCase() === username.trim().toLowerCase()
     );
@@ -30,7 +27,6 @@ export default function Login() {
       if (matchedUser) {
         localStorage.setItem("currentUser", JSON.stringify(matchedUser));
       } else {
-        // Create a temporary custom user
         const tempUser = {
           user_id: `USR-${Math.floor(100 + Math.random() * 900)}`,
           name: username.trim(),
@@ -74,10 +70,16 @@ export default function Login() {
   };
 
   return (
-    <>
-      <Header />
+    <div className="min-h-screen w-full bg-gradient-to-br from-retro-bg to-slate-200 flex flex-col items-center justify-center p-6 relative">
+      {/* Tombol Escape Kembali ke Home */}
+      <Link
+        href="/"
+        className="absolute top-6 left-6 font-pixel text-[9px] text-retro-black hover:text-navy-blue flex items-center gap-2 transition-colors border-2 border-retro-black px-3 py-1.5 bg-white pixel-shadow-sm active:translate-y-[1px]"
+      >
+        [← ESCAPE TO TOWN]
+      </Link>
 
-      <main className="flex-1 max-w-md w-full mx-auto px-6 py-16 flex flex-col gap-8 justify-center">
+      <div className="max-w-md w-full flex flex-col gap-6 mt-12 sm:mt-0">
         {/* Login Box */}
         <div className="bg-white pixel-border pixel-shadow p-6 md:p-8 flex flex-col gap-6">
           <div className="text-center border-b-2 border-retro-light-gray pb-4">
@@ -145,14 +147,14 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => handleQuickLogin("Joice")}
-                className="font-pixel text-[8px] px-2 py-1 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer"
+                className="font-pixel text-[8px] px-2.5 py-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px]"
               >
                 JOICE (HIPSTER)
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickLogin("Alex")}
-                className="font-pixel text-[8px] px-2 py-1 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer"
+                className="font-pixel text-[8px] px-2.5 py-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px]"
               >
                 ALEX (HACKER)
               </button>
@@ -169,9 +171,7 @@ export default function Login() {
             </Link>
           </p>
         </div>
-      </main>
-
-      <Footer />
-    </>
+      </div>
+    </div>
   );
 }
