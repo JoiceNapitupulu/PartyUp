@@ -57,7 +57,7 @@ export default function Showcase() {
     <>
       <Header />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-6 md:px-12 py-10 flex flex-col gap-8">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-6 md:px-12 pt-28 md:pt-36 pb-12 flex flex-col gap-8">
         {/* Header Block */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-4 border-retro-black pb-6">
           <div>
