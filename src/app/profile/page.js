@@ -12,6 +12,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("overview"); // overview, projects, board, skills
   const [user, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState(usersData);
+  const [isEditMode, setIsEditMode] = useState(false); // Simulasi interaksi edit path
 
   useEffect(() => {
     // Load currentUser from localStorage or default to USR-001 (Joice)
@@ -20,7 +21,7 @@ export default function Profile() {
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          // Sync with possibly updated users list
+          // Sync dengan data terbaru
           const synced = usersData.find((u) => u.user_id === parsed.user_id) || parsed;
           setUser(synced);
           return;
@@ -37,7 +38,7 @@ export default function Profile() {
     return () => window.removeEventListener("auth-change", loadUser);
   }, []);
 
-  // Dropdown handler to swap current user profile
+  // Dropdown handler untuk menukar profile secara instan
   const handleProfileSwitch = (userId) => {
     const selected = usersData.find((u) => u.user_id === userId);
     if (selected) {
@@ -55,14 +56,15 @@ export default function Profile() {
     );
   }
 
-  // Filter projects authored by this user
+  // Filter project yang diposting oleh user ini
   const userProjects = projectsData.filter((p) => p.author === user.user_id);
 
-  // Stats mapped for roles
+  // Statistik kelas RPG yang dipetakan (Ditambahkan ADMIN untuk stats dewa)
   const roleStats = {
     Hacker: { CODE: 95, DESIGN: 30, BUSINESS: 10, CHARISMA: 50 },
     Hipster: { CODE: 40, DESIGN: 95, BUSINESS: 40, CHARISMA: 75 },
     Hustler: { CODE: 10, DESIGN: 40, BUSINESS: 95, CHARISMA: 90 },
+    Admin: { CODE: 99, DESIGN: 99, BUSINESS: 99, CHARISMA: 99 }, // Ditambahkan secara konsisten
   };
 
   const activeStats = roleStats[user.role] || { CODE: 50, DESIGN: 50, BUSINESS: 50, CHARISMA: 50 };
@@ -79,7 +81,7 @@ export default function Profile() {
       <Header />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-24 md:pt-28 pb-12 flex flex-col gap-8">
-        
+
         {/* Top Control Header: Dropdown & Title */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b-4 border-retro-black pb-6">
           <div>
@@ -115,15 +117,15 @@ export default function Profile() {
 
         {/* Profile Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* Left Column: Detail Profile Card */}
           <div className="lg:col-span-4 bg-white pixel-border pixel-shadow p-6 flex flex-col gap-6 items-center text-center">
-            
-            {/* Avatar block */}
+
+            {/* Avatar block dengan proteksi crash */}
             <div className="w-24 h-24 bg-retro-gray border-4 border-retro-black flex items-center justify-center font-pixel text-4xl text-navy-blue font-bold shadow-inner relative">
-              {user.name[0]}
+              {user.name ? user.name[0].toUpperCase() : "?"}
               <div className="absolute -bottom-2 right-2 bg-pixel-green text-retro-black font-pixel text-[8px] px-1.5 py-0.5 pixel-border-sm">
-                LV.{user.skills.length + (user.semester || 1)}
+                LV.{(user.skills?.length || 0) + (user.semester || 1)}
               </div>
             </div>
 
@@ -131,7 +133,7 @@ export default function Profile() {
             <div className="flex flex-col gap-1 w-full">
               <h2 className="font-pixel text-base text-retro-black">{user.name}</h2>
               <span className="font-pixel text-[9px] px-2 py-0.5 bg-navy-blue text-white pixel-border-sm mx-auto w-fit">
-                CLASS: {user.role.toUpperCase()}
+                CLASS: {user.role?.toUpperCase()}
               </span>
               <p className="font-sans text-xs text-retro-dark-gray mt-2 font-semibold">
                 {user.university}
@@ -145,22 +147,33 @@ export default function Profile() {
             <div className="w-full border-t-2 border-retro-light-gray pt-4 text-left">
               <span className="font-pixel text-[8px] text-navy-blue block mb-2">GUILD ALIAS BIO</span>
               <p className="font-sans text-xs text-retro-dark-gray leading-relaxed italic">
-                "{user.bio}"
+                "{user.bio || "No bio written yet."}"
               </p>
             </div>
 
-            {/* Quick Actions */}
+            {/* Quick Actions (Simulasi Interaktif Tanpa Native Alert) */}
             <div className="w-full border-t-2 border-retro-light-gray pt-4 flex flex-col gap-2">
               <span className="font-pixel text-[8px] text-navy-blue block text-left mb-1">GUILD ACTIONS</span>
-              <PixelButton variant="green" className="w-full py-1.5 text-[9px] border-2" onClick={() => alert("Ready to set up your team! Create a project in the Quest Board tab.")}>
-                EDIT CREATIVE PATH
-              </PixelButton>
+
+              {isEditMode ? (
+                <div className="p-2 border-2 border-dashed border-green-500 bg-green-50 text-left font-sans text-[10px] text-green-700 leading-tight">
+                  [SYSTEM] Creative path active. Post a team quest on the board to level up!
+                </div>
+              ) : (
+                <PixelButton
+                  variant="green"
+                  className="w-full py-1.5 text-[9px] border-2"
+                  onClick={() => setIsEditMode(true)}
+                >
+                  ACTIVATE CREATIVE PATH
+                </PixelButton>
+              )}
             </div>
           </div>
 
           {/* Right Column: Dynamic Sub-Navigation Tabs & Views */}
           <div className="lg:col-span-8 flex flex-col gap-6">
-            
+
             {/* Sub-Navigation Tabs */}
             <div className="flex border-b-4 border-retro-black bg-retro-light-gray pixel-border p-1 gap-2 flex-wrap">
               {tabs.map((tab) => {
@@ -169,11 +182,10 @@ export default function Profile() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`font-pixel text-[9px] px-3.5 py-2 border-2 cursor-pointer transition-all select-none ${
-                      isActive
+                    className={`font-pixel text-[9px] px-3.5 py-2 border-2 cursor-pointer transition-all select-none ${isActive
                         ? "bg-retro-black text-white border-retro-black translate-x-[1px] translate-y-[1px]"
                         : "bg-transparent text-retro-black border-transparent hover:border-retro-black hover:bg-white"
-                    }`}
+                      }`}
                   >
                     {tab.name}
                   </button>
@@ -183,8 +195,8 @@ export default function Profile() {
 
             {/* Tab Panels */}
             <div className="bg-white pixel-border pixel-shadow p-6 min-h-[350px]">
-              
-              {/* Tab 1: Overview (Base statistics bars) */}
+
+              {/* Tab 1: Overview */}
               {activeTab === "overview" && (
                 <div className="flex flex-col gap-6">
                   <h3 className="font-pixel text-xs text-navy-blue border-b-2 border-retro-light-gray pb-2 mb-2">
@@ -226,7 +238,7 @@ export default function Profile() {
                 </div>
               )}
 
-              {/* Tab 2: Projects (Portfolio completed list) */}
+              {/* Tab 2: Projects dengan Proteksi Array */}
               {activeTab === "projects" && (
                 <div className="flex flex-col gap-4">
                   <h3 className="font-pixel text-xs text-navy-blue border-b-2 border-retro-light-gray pb-2 mb-2">
@@ -260,7 +272,7 @@ export default function Profile() {
                 </div>
               )}
 
-              {/* Tab 3: Project Board (Dispatched active quests) */}
+              {/* Tab 3: Project Board */}
               {activeTab === "board" && (
                 <div className="flex flex-col gap-4">
                   <h3 className="font-pixel text-xs text-navy-blue border-b-2 border-retro-light-gray pb-2 mb-2">
@@ -288,7 +300,7 @@ export default function Profile() {
                 </div>
               )}
 
-              {/* Tab 4: Skills (Skill matrix checklist) */}
+              {/* Tab 4: Skills dengan Proteksi Array */}
               {activeTab === "skills" && (
                 <div className="flex flex-col gap-4">
                   <h3 className="font-pixel text-xs text-navy-blue border-b-2 border-retro-light-gray pb-2 mb-2">
@@ -296,14 +308,14 @@ export default function Profile() {
                   </h3>
 
                   <div className="flex flex-wrap gap-3">
-                    {user.skills.map((skill, index) => (
+                    {(user.skills || []).map((skill, index) => (
                       <div
                         key={index}
                         className="bg-retro-light-gray pixel-border p-3 flex flex-col gap-2 min-w-[120px] items-center justify-center text-center"
                       >
                         {/* Shield icon placeholder */}
                         <div className="w-8 h-8 rounded-full bg-navy-blue text-white flex items-center justify-center font-bold font-pixel text-[10px]">
-                          {skill[0]}
+                          {skill ? skill[0].toUpperCase() : "S"}
                         </div>
                         <span className="font-pixel text-[8px] text-retro-black">{skill}</span>
                         <span className="font-pixel text-[7px] text-pixel-green-dark">MASTERED</span>

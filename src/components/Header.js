@@ -54,11 +54,16 @@ export default function Header() {
     router.push("/");
   };
 
-  const navItems = [
+  const baseNavItems = [
     { name: "QUEST BOARD", path: "/board" },
     { name: "SHOWCASE", path: "/showcase" },
     { name: "TIMELINE", path: "/following" },
   ];
+
+  // Sisipkan menu kontrol admin secara otomatis jika peran pengguna adalah "Admin"
+  const navItems = user && user.role?.toLowerCase() === "admin"
+    ? [{ name: "ADMIN CONTROL", path: "/admin" }, ...baseNavItems]
+    : baseNavItems;
 
   return (
     <header
@@ -142,8 +147,8 @@ export default function Header() {
                     {user.name}
                   </p>
                   <p className="font-pixel text-[8px] leading-tight text-pixel-green mt-0.5">
-                    LV.{user.skills ? user.skills.length + (user.semester || 1) : 4}{" "}
-                    {user.role?.toUpperCase()}
+                    LV.{(user.skills?.length || 0) + (user.semester || 1)} {/* agar tidak crash jika user.skills undefined */}
+                    {user.role?.toUpperCase()} 
                   </p>
                 </div>
               </Link>

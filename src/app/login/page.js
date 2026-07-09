@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import PixelButton from "@/components/PixelButton";
-import usersData from "@/data/users.json";
+import usersData from "@/data/users.json"; // Mengimpor data dummy Anda
 
 export default function Login() {
   const router = useRouter();
@@ -19,6 +19,7 @@ export default function Login() {
       return;
     }
 
+    // Mencari kecocokan user dari file database dummy
     const matchedUser = usersData.find(
       (u) => u.name.toLowerCase() === username.trim().toLowerCase()
     );
@@ -27,6 +28,7 @@ export default function Login() {
       if (matchedUser) {
         localStorage.setItem("currentUser", JSON.stringify(matchedUser));
       } else {
+        // Buat karakter kustom baru jika tidak terdaftar di database dummy
         const tempUser = {
           user_id: `USR-${Math.floor(100 + Math.random() * 900)}`,
           name: username.trim(),
@@ -40,8 +42,10 @@ export default function Login() {
         };
         localStorage.setItem("currentUser", JSON.stringify(tempUser));
       }
+
+      // Memicu perubahan header secara instan & pindah halaman
       window.dispatchEvent(new Event("auth-change"));
-      window.location.href = "/profile";
+      router.push("/profile");
     } catch (e) {
       console.error("Local storage error:", e);
       setError("LOCAL STORAGE BLOCKED BY BROWSER!");
@@ -56,7 +60,7 @@ export default function Login() {
       try {
         localStorage.setItem("currentUser", JSON.stringify(matchedUser));
         window.dispatchEvent(new Event("auth-change"));
-        window.location.href = "/profile";
+        router.push("/profile");
       } catch (e) {
         console.error(e);
       }
@@ -103,7 +107,7 @@ export default function Login() {
               <label className="font-pixel text-[8px] text-retro-black">ADVENTURER NAME / USERNAME</label>
               <input
                 type="text"
-                placeholder="e.g. Joice or Alex"
+                placeholder="e.g. Joice, Alex or Sarah"
                 value={username}
                 onKeyDown={handleKeyDown}
                 onChange={(e) => {
@@ -141,22 +145,43 @@ export default function Login() {
           {/* Quick Preload Profiles */}
           <div className="border-t-2 border-retro-light-gray pt-4 flex flex-col gap-2">
             <p className="font-pixel text-[8px] text-retro-dark-gray text-center">
-              QUICK START (LOAD MOCK DB CHARACTERS)
+              QUICK START (LOAD MOCK DB ADVENTURERS)
             </p>
-            <div className="flex gap-2 justify-center">
+            <div className="grid grid-cols-3 gap-2 justify-center">
               <button
                 type="button"
                 onClick={() => handleQuickLogin("Joice")}
-                className="font-pixel text-[8px] px-2.5 py-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px]"
+                className="font-pixel text-[7px] p-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px]"
               >
                 JOICE (HIPSTER)
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickLogin("Alex")}
-                className="font-pixel text-[8px] px-2.5 py-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px]"
+                className="font-pixel text-[7px] p-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px]"
               >
                 ALEX (HACKER)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("Sarah")}
+                className="font-pixel text-[7px] p-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px]"
+              >
+                SARAH (HUSTLER)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("Kevin")}
+                className="font-pixel text-[7px] p-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px] col-span-1"
+              >
+                KEVIN (HACKER)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("Rian")}
+                className="font-pixel text-[7px] p-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px] col-span-2"
+              >
+                RIAN (HIPSTER)
               </button>
             </div>
           </div>

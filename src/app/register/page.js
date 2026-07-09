@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import PixelButton from "@/components/PixelButton";
 
 export default function Register() {
   const router = useRouter();
@@ -26,24 +25,25 @@ export default function Register() {
         ? skills.split(",").map((s) => s.trim())
         : ["Next.js", "Figma"];
 
+      // Menyusun objek user baru sesuai struktur database dummy Anda
       const newUser = {
         user_id: `USR-${Math.floor(100 + Math.random() * 900)}`,
         name: name.trim(),
         semester: 3,
         university,
         major,
-        role: selectedRole,
+        role: selectedRole, // Menyimpan pilihan kelas RPG
         skills: skillsArray,
         bio: bio || `Ready for adventure. Seeking party members for next level coding.`,
         portfolio: [],
       };
 
       localStorage.setItem("currentUser", JSON.stringify(newUser));
-      window.dispatchEvent(new Event("auth-change"));
-      window.location.href = "/profile";
+      window.dispatchEvent(new Event("auth-change")); // Update header secara instan
+      router.push("/profile");
     } catch (err) {
       console.error("Registration failed:", err);
-      window.location.href = "/profile";
+      router.push("/profile");
     }
   };
 
@@ -180,17 +180,16 @@ export default function Register() {
                       role="button"
                       tabIndex={0}
                       onClick={() => {
-                        setSelectedRole(role.name);
+                        setSelectedRole(role.name); // Diperbaiki sederhana & responsif ganti state
                       }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
                           setSelectedRole(role.name);
                         }
                       }}
                       className={`text-left p-3 border-4 cursor-pointer select-none transition-all flex flex-col gap-1 ${isSelected
-                          ? "border-retro-black bg-retro-light-gray translate-x-[2px] translate-y-[2px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                          : "border-transparent bg-white hover:border-retro-light-gray hover:bg-neutral-50"
+                        ? "border-retro-black bg-retro-light-gray translate-x-[2px] translate-y-[2px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                        : "border-transparent bg-white hover:border-retro-light-gray hover:bg-neutral-50"
                         }`}
                     >
                       <div className="flex justify-between items-center">
@@ -228,7 +227,6 @@ export default function Register() {
                         <span>{stat.toUpperCase()}</span>
                         <span>{val}/100</span>
                       </div>
-                      {/* Pixel Progress Bar */}
                       <div className="h-3.5 bg-[#111] border border-retro-dark-gray p-0.5">
                         <div
                           className="h-full bg-pixel-green border border-black transition-all duration-300"

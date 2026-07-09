@@ -3,7 +3,12 @@
     "project_id": "PRJ-001",
     "title": "ScholarSave - Financial Planner",
     "category": "GEMASTIK 2026",
-    "looking_for": ["Next.js", "PostgreSQL", "Hacker"],
+    "looking_for": [
+      "Next.js",
+      "PostgreSQL",
+      "Hacker",
+      "Hustler"
+    ],
     "status": "Open",
     "author": "USR-001",
     "description": "A comprehensive digital budgeting and scholarship tracking tool designed specifically for Indonesian university students.",
@@ -13,7 +18,13 @@
     "project_id": "PRJ-002",
     "title": "EcoSphere - Campus Carbon Tracker",
     "category": "INVENTION 2026",
-    "looking_for": ["Figma", "UI/UX", "Business Canvas", "Hipster", "Hustler"],
+    "looking_for": [
+      "Figma",
+      "UI/UX",
+      "Business Canvas",
+      "Hipster",
+      "Hustler"
+    ],
     "status": "Open",
     "author": "USR-002",
     "description": "A gamified campus application tracking personal carbon footprint and enabling rewards matching for sustainable activities.",
@@ -23,7 +34,12 @@
     "project_id": "PRJ-003",
     "title": "EduQuest - Pixel Study Cards",
     "category": "College Project",
-    "looking_for": ["Flutter", "Firebase", "Hacker"],
+    "looking_for": [
+      "Flutter",
+      "Firebase",
+      "Hacker",
+      "Hipster"
+    ],
     "status": "Open",
     "author": "USR-003",
     "description": "An 8-bit themed gamified flashcard app helping engineering students memorize system design patterns and network layers.",
@@ -32,8 +48,13 @@
   {
     "project_id": "PRJ-004",
     "title": "InisiatorKampus - Event Hub",
-    "category": "HackFest 2026",
-    "looking_for": ["Go", "React", "Hacker"],
+    "category": "GEMASTIK 2026",
+    "looking_for": [
+      "Go",
+      "React",
+      "Hacker",
+      "Hipster"
+    ],
     "status": "Open",
     "author": "USR-005",
     "description": "A localized campus web hub allowing organization leaders to co-manage student-led activities, coordinate venues, and list events.",
@@ -42,8 +63,13 @@
   {
     "project_id": "PRJ-005",
     "title": "MediLink - Remote Health Consultant",
-    "category": "HealthTech Hackathon",
-    "looking_for": ["Python", "PyTorch", "Hacker"],
+    "category": "INVENTION 2026",
+    "looking_for": [
+      "Python",
+      "PyTorch",
+      "Hacker",
+      "Hustler"
+    ],
     "status": "Filled",
     "author": "USR-004",
     "description": "AI-driven diagnostics matching rural clinic data with virtual health consultants in real-time.",

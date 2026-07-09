@@ -7,7 +7,13 @@
     "university": "Universitas Indonesia",
     "major": "Information Systems",
     "role": "Hipster",
-    "skills": ["Figma", "UI/UX", "Next.js", "Java", "PostgreSQL"],
+    "skills": [
+      "Figma",
+      "UI/UX",
+      "Next.js",
+      "Java",
+      "PostgreSQL"
+    ],
     "bio": "Pixel design enthusiast and frontend dabbler. Passionate about building seamless user flows for student communities.",
     "portfolio": [
       {
@@ -30,7 +36,14 @@
     "university": "Institut Teknologi Bandung",
     "major": "Informatics",
     "role": "Hacker",
-    "skills": ["React", "Next.js", "Node.js", "Go", "Docker", "PostgreSQL"],
+    "skills": [
+      "React",
+      "Next.js",
+      "Node.js",
+      "Go",
+      "Docker",
+      "PostgreSQL"
+    ],
     "bio": "Full-stack developer focused on performance and scalable system architectures. I break things so I can build them stronger.",
     "portfolio": [
       {
@@ -53,7 +66,13 @@
     "university": "Universitas Gadjah Mada",
     "major": "Business Management",
     "role": "Hustler",
-    "skills": ["Product Management", "Business Model Canvas", "Pitching", "Marketing", "Figma"],
+    "skills": [
+      "Product Management",
+      "Business Model Canvas",
+      "Pitching",
+      "Marketing",
+      "Figma"
+    ],
     "bio": "Detail-oriented product strategist. I bridge the gap between technical requirements, design language, and market viability.",
     "portfolio": [
       {
@@ -71,7 +90,13 @@
     "university": "Binus University",
     "major": "Computer Science",
     "role": "Hacker",
-    "skills": ["Flutter", "Dart", "Firebase", "Python", "PyTorch"],
+    "skills": [
+      "Flutter",
+      "Dart",
+      "Firebase",
+      "Python",
+      "PyTorch"
+    ],
     "bio": "Mobile app developer and machine learning beginner. Love turning complex designs into responsive pixel-perfect native apps.",
     "portfolio": [
       {
@@ -89,13 +114,40 @@
     "university": "Universitas Airlangga",
     "major": "Information Systems",
     "role": "Hipster",
-    "skills": ["Figma", "Graphic Design", "Illustrator", "Tailwind CSS"],
+    "skills": [
+      "Figma",
+      "Graphic Design",
+      "Illustrator",
+      "Tailwind CSS"
+    ],
     "bio": "Freshman IS student focusing on design layouts and micro-interactions. Loving retro styles and game UI.",
     "portfolio": [
       {
         "project_name": "InisiatorKampus",
         "description": "Aggregator of campus-wide student organizations with customizable styling blocks.",
         "role": "UI/UX Designer"
+      }
+    ]
+  },
+  {
+    "user_id": "USR-000",
+    "name": "Admin",
+    "avatar": "/avatars/avatar6.png",
+    "semester": 8,
+    "university": "PARTYUP! HQ",
+    "major": "System Security",
+    "role": "Admin",
+    "skills": [
+      "System Control",
+      "Quest Moderation",
+      "Database Tuning"
+    ],
+    "bio": "System Overseer of the PartyUp! Guild. Maintaining balance and ensuring smooth quest matchmaking across the realm.",
+    "portfolio": [
+      {
+        "project_name": "Grand Console",
+        "description": "The master system dashboard designed to oversee student registrations and global activity metrics.",
+        "role": "Administrator"
       }
     ]
   }
