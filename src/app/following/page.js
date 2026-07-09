@@ -81,7 +81,7 @@ export default function Following() {
     <>
       <Header />
 
-      <main className="flex-1 max-w-3xl w-full mx-auto px-6 pt-28 md:pt-36 pb-12 flex flex-col gap-8">
+      <main className="flex-1 max-w-3xl w-full mx-auto px-4 md:px-6 pt-24 md:pt-28 pb-12 flex flex-col gap-8">
         {/* Header Title */}
         <div className="border-b-4 border-retro-black pb-6">
           <h1 className="font-pixel text-xl text-retro-black mb-2">

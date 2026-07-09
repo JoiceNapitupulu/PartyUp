@@ -75,7 +75,7 @@ export default function Register() {
         [← ESCAPE TO TOWN]
       </Link>
 
-      <main className="flex-1 max-w-4xl w-full mx-auto px-6 md:px-12 pt-28 md:pt-36 pb-12 flex flex-col gap-8">
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 md:px-6 pt-24 md:pt-28 pb-12 flex flex-col gap-8">
         <div className="text-center border-b-4 border-retro-black pb-4">
           <h1 className="font-pixel text-lg text-retro-black mb-1">
             [CHARACTER CREATION SCREEN]
@@ -179,8 +179,7 @@ export default function Register() {
                       key={role.name}
                       role="button"
                       tabIndex={0}
-                      onClick={(e) => {
-                        e.preventDefault();
+                      onClick={() => {
                         setSelectedRole(role.name);
                       }}
                       onKeyDown={(e) => {

@@ -15,7 +15,7 @@ export default function Home() {
     <>
       <Header />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-6 md:px-12 pt-28 md:pt-36 pb-12 flex flex-col gap-16">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-24 md:pt-28 pb-12 flex flex-col gap-16">
         
         {/* HERO SECTION: Retro Terminal Workspace */}
         <section className="bg-retro-light-gray pixel-border pixel-shadow p-6 md:p-10 flex flex-col lg:flex-row items-center gap-10">

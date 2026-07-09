@@ -78,7 +78,7 @@ export default function Profile() {
     <>
       <Header />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-6 md:px-12 pt-28 md:pt-36 pb-12 flex flex-col gap-8">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-24 md:pt-28 pb-12 flex flex-col gap-8">
         
         {/* Top Control Header: Dropdown & Title */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b-4 border-retro-black pb-6">
