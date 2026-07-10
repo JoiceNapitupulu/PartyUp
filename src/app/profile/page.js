@@ -13,23 +13,38 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState(usersData);
   const [isEditMode, setIsEditMode] = useState(false); // Simulasi interaksi edit path
+  const [projects, setProjects] = useState(projectsData);
 
   useEffect(() => {
-    // Load currentUser from localStorage or default to USR-001 (Joice)
     const loadUser = () => {
+      // 1. Membaca database user ter-update dari Admin (localStorage)
+      const storedUsersList = localStorage.getItem("usersList");
+      const activeUsersList = storedUsersList ? JSON.parse(storedUsersList) : usersData;
+      setAllUsers(activeUsersList);
+
       const stored = localStorage.getItem("currentUser");
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          // Sync dengan data terbaru
-          const synced = usersData.find((u) => u.user_id === parsed.user_id) || parsed;
+          // Sinkronisasi karakter aktif dengan daftar ter-update dari Admin
+          const synced = activeUsersList.find((u) => u.user_id === parsed.user_id) || parsed;
+
+          // PROTEKSI AKUN: Jika akun Anda di-ban oleh Admin, paksa log out instan!
+          if (synced.isBanned) {
+            localStorage.removeItem("currentUser");
+            window.dispatchEvent(new Event("auth-change"));
+            alert("[SECURITY] YOUR CHARACTER ACCOUNT HAS BEEN BANNED BY THE GRANDMASTER!");
+            window.location.href = "/login";
+            return;
+          }
+
           setUser(synced);
           return;
         } catch (e) {
           console.error(e);
         }
       }
-      setUser(usersData[0]);
+      setUser(activeUsersList[0]);
     };
 
     loadUser();
@@ -38,15 +53,30 @@ export default function Profile() {
     return () => window.removeEventListener("auth-change", loadUser);
   }, []);
 
-  // Dropdown handler untuk menukar profile secara instan
+  // Dropdown handler untuk menukar profile secara instan (terproteksi)
   const handleProfileSwitch = (userId) => {
-    const selected = usersData.find((u) => u.user_id === userId);
+    const selected = allUsers.find((u) => u.user_id === userId);
     if (selected) {
+      if (selected.isBanned) {
+        alert("[RESTRICTED] This character account is currently BANNED!");
+        return;
+      }
       localStorage.setItem("currentUser", JSON.stringify(selected));
       setUser(selected);
       window.dispatchEvent(new Event("auth-change"));
     }
   };
+
+  useEffect(() => {
+    // Membaca daftar proyek ter-update dari database lokal
+    const localProjects = localStorage.getItem("projectsList");
+    if (localProjects) {
+      setProjects(JSON.parse(localProjects));
+    } else {
+      setProjects(projectsData);
+      localStorage.setItem("projectsList", JSON.stringify(projectsData));
+    }
+  }, [user]); // memicu ulang jika user berganti
 
   if (!user) {
     return (
@@ -57,7 +87,7 @@ export default function Profile() {
   }
 
   // Filter project yang diposting oleh user ini
-  const userProjects = projectsData.filter((p) => p.author === user.user_id);
+  const userProjects = projects.filter((p) => p.author === user.user_id);
 
   // Statistik kelas RPG yang dipetakan (Ditambahkan ADMIN untuk stats dewa)
   const roleStats = {
@@ -183,8 +213,8 @@ export default function Profile() {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`font-pixel text-[9px] px-3.5 py-2 border-2 cursor-pointer transition-all select-none ${isActive
-                        ? "bg-retro-black text-white border-retro-black translate-x-[1px] translate-y-[1px]"
-                        : "bg-transparent text-retro-black border-transparent hover:border-retro-black hover:bg-white"
+                      ? "bg-retro-black text-white border-retro-black translate-x-[1px] translate-y-[1px]"
+                      : "bg-transparent text-retro-black border-transparent hover:border-retro-black hover:bg-white"
                       }`}
                   >
                     {tab.name}

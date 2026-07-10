@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PixelButton from "@/components/PixelButton";
@@ -8,10 +8,12 @@ import ProjectCard from "@/components/ProjectCard";
 import projectsData from "@/data/projects.json";
 
 export default function Board() {
+  // 2. Perapian: Mengelompokkan seluruh deklarasi state di bagian paling atas
   const [projects, setProjects] = useState(projectsData);
   const [search, setSearch] = useState("");
   const [selectedClass, setSelectedClass] = useState("ALL");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
+  const [user, setUser] = useState(null); // State user aktif
 
   // Create Quest Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,6 +22,24 @@ export default function Board() {
   const [newDescription, setNewDescription] = useState("");
   const [newSkills, setNewSkills] = useState("");
   const [newClass, setNewClass] = useState("Hacker");
+
+  // Jalankan efek sinkronisasi data lokal saat halaman dibuka
+  useEffect(() => {
+    // 1. Membaca database misi ter-update dari Admin (localStorage)
+    const localProjects = localStorage.getItem("projectsList");
+    if (localProjects) {
+      setProjects(JSON.parse(localProjects));
+    } else {
+      setProjects(projectsData);
+      localStorage.setItem("projectsList", JSON.stringify(projectsData));
+    }
+
+    // 2. Membaca siapa user yang sedang aktif login untuk pengirim misi (author)
+    const storedUser = localStorage.getItem("currentUser");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   // Filter logic
   const filteredProjects = projects.filter((project) => {
@@ -47,19 +67,21 @@ export default function Board() {
     const skillsArray = newSkills
       ? newSkills.split(",").map((s) => s.trim())
       : [];
-    
+
     const newQuest = {
       project_id: `PRJ-00${projects.length + 1}`,
       title: newTitle,
       category: newCategory,
       looking_for: [...skillsArray, newClass],
       status: "Open",
-      author: "USR-001", // Post as current default user
+      author: user ? user.user_id : "USR-001", // Menggunakan ID user yang sedang login aktif secara dinamis!
       description: newDescription,
       created_at: new Date().toISOString(),
     };
 
-    setProjects([newQuest, ...projects]);
+    const updatedProjects = [newQuest, ...projects];
+    setProjects(updatedProjects);
+    localStorage.setItem("projectsList", JSON.stringify(updatedProjects)); // Sinkronisasikan ke database lokal
     setIsModalOpen(false);
 
     // Reset Form

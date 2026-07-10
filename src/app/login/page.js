@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import PixelButton from "@/components/PixelButton";
-import usersData from "@/data/users.json"; // Mengimpor data dummy Anda
+import usersData from "@/data/users.json";
 
 export default function Login() {
   const router = useRouter();
@@ -43,11 +43,18 @@ export default function Login() {
         localStorage.setItem("currentUser", JSON.stringify(tempUser));
       }
 
-      // Memicu perubahan header secara instan & pindah halaman
+      // Memicu perubahan header secara instan
       window.dispatchEvent(new Event("auth-change"));
-      router.push("/profile");
-    } catch (e) {
-      console.error("Local storage error:", e);
+
+      // Pengalihan halaman dinamis berdasarkan role admin/user biasa
+      const targetUser = matchedUser || {};
+      if (targetUser.role?.toLowerCase() === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/profile");
+      }
+    } catch (err) {
+      console.error("Local storage error:", err);
       setError("LOCAL STORAGE BLOCKED BY BROWSER!");
     }
   };
@@ -60,7 +67,13 @@ export default function Login() {
       try {
         localStorage.setItem("currentUser", JSON.stringify(matchedUser));
         window.dispatchEvent(new Event("auth-change"));
-        router.push("/profile");
+
+        // Pengalihan halaman dinamis berdasarkan role
+        if (matchedUser.role?.toLowerCase() === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/profile");
+        }
       } catch (e) {
         console.error(e);
       }
@@ -172,16 +185,23 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => handleQuickLogin("Kevin")}
-                className="font-pixel text-[7px] p-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px] col-span-1"
+                className="font-pixel text-[7px] p-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px]"
               >
                 KEVIN (HACKER)
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickLogin("Rian")}
-                className="font-pixel text-[7px] p-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px] col-span-2"
+                className="font-pixel text-[7px] p-1.5 bg-retro-light-gray border-2 border-retro-black hover:bg-retro-gray select-none cursor-pointer active:translate-y-[1px]"
               >
                 RIAN (HIPSTER)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("Admin")}
+                className="font-pixel text-[7px] p-1.5 bg-red-100 text-red-700 border-2 border-red-700 hover:bg-red-200 select-none cursor-pointer active:translate-y-[1px]"
+              >
+                ADMIN (CONTROL)
               </button>
             </div>
           </div>
@@ -191,6 +211,7 @@ export default function Login() {
         <div className="text-center">
           <p className="font-sans text-xs text-retro-dark-gray">
             New adventurer?{" "}
+            {/* Perbaikan Kritis: Karakter > diubah menjadi &gt; agar tidak error compile */}
             <Link href="/register" className="font-pixel text-[9px] text-navy-blue hover:underline pl-1">
               CREATE CHARACTER &gt;
             </Link>

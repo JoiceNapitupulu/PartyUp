@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import userData from "@/data/users.json"; // Mengimpor data dummy Anda
 
 export default function Register() {
   const router = useRouter();
@@ -38,7 +39,19 @@ export default function Register() {
         portfolio: [],
       };
 
+      // 1. Simpan ke currentUser (Sesi Login Aktif)
       localStorage.setItem("currentUser", JSON.stringify(newUser));
+
+      // 2. SINKRONISASI: Masukkan ke database lokal usersList agar dideteksi Admin & Dropdown Swapper
+      const localUsers = localStorage.getItem("usersList");
+      const activeUsersList = localUsers ? JSON.parse(localUsers) : usersData;
+
+      // Mencegah duplikasi ID jika ada tabrakan random
+      if (!activeUsersList.find(u => u.user_id === newUser.user_id)) {
+        const updatedList = [...activeUsersList, newUser];
+        localStorage.setItem("usersList", JSON.stringify(updatedList));
+      }
+
       window.dispatchEvent(new Event("auth-change")); // Update header secara instan
       router.push("/profile");
     } catch (err) {
