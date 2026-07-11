@@ -14,7 +14,9 @@ export default function Header() {
   useEffect(() => {
     // Read user from localStorage or default to USR-001 (Joice)
     const loadUser = () => {
+      const isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
       const stored = localStorage.getItem("currentUser");
+      
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
@@ -24,8 +26,15 @@ export default function Header() {
           console.error("Failed to parse local user", e);
         }
       }
-      // Fallback
-      setUser(usersData[0]);
+      
+      if (isLoggedOut) {
+        setUser(null);
+      } else {
+        // First visit: default to Joice
+        localStorage.setItem("isLoggedOut", "false");
+        localStorage.setItem("currentUser", JSON.stringify(usersData[0]));
+        setUser(usersData[0]);
+      }
     };
 
     loadUser();
@@ -49,6 +58,7 @@ export default function Header() {
   }, []);
 
   const handleLogout = () => {
+    localStorage.setItem("isLoggedOut", "true");
     localStorage.removeItem("currentUser");
     window.dispatchEvent(new Event("auth-change"));
     router.push("/");
@@ -157,6 +167,7 @@ export default function Header() {
                 className={`font-pixel text-[9px] hover:underline border-none bg-transparent cursor-pointer transition-colors duration-500 ${
                   isScrolled ? "text-red-400" : "text-red-600"
                 }`}
+                suppressHydrationWarning
               >
                 [EXIT]
               </button>

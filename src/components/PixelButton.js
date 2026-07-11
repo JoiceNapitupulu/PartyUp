@@ -27,6 +27,7 @@ export default function PixelButton({
       onClick={onClick}
       disabled={disabled}
       className={`${baseStyles} ${selectedTheme} ${className}`}
+      suppressHydrationWarning
     >
       {children}
     </button>

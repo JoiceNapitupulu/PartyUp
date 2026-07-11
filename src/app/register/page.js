@@ -40,6 +40,7 @@ export default function Register() {
       };
 
       // 1. Simpan ke currentUser (Sesi Login Aktif)
+      localStorage.setItem("isLoggedOut", "false");
       localStorage.setItem("currentUser", JSON.stringify(newUser));
 
       // 2. SINKRONISASI: Masukkan ke database lokal usersList agar dideteksi Admin & Dropdown Swapper

@@ -22,7 +22,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${pressStart2P.variable} ${inter.variable}`}>
+    <html lang="en" className={`${pressStart2P.variable} ${inter.variable}`} suppressHydrationWarning>
       <body className="font-sans bg-retro-bg text-retro-black min-h-screen flex flex-col selection:bg-pixel-green selection:text-retro-black">
         {children}
 

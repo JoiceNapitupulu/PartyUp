@@ -25,6 +25,7 @@ export default function Login() {
     );
 
     try {
+      localStorage.setItem("isLoggedOut", "false");
       if (matchedUser) {
         localStorage.setItem("currentUser", JSON.stringify(matchedUser));
       } else {
@@ -65,6 +66,7 @@ export default function Login() {
     );
     if (matchedUser) {
       try {
+        localStorage.setItem("isLoggedOut", "false");
         localStorage.setItem("currentUser", JSON.stringify(matchedUser));
         window.dispatchEvent(new Event("auth-change"));
 

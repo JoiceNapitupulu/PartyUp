@@ -22,7 +22,9 @@ export default function Profile() {
       const activeUsersList = storedUsersList ? JSON.parse(storedUsersList) : usersData;
       setAllUsers(activeUsersList);
 
+      const isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
       const stored = localStorage.getItem("currentUser");
+      
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
@@ -31,6 +33,7 @@ export default function Profile() {
 
           // PROTEKSI AKUN: Jika akun Anda di-ban oleh Admin, paksa log out instan!
           if (synced.isBanned) {
+            localStorage.setItem("isLoggedOut", "true");
             localStorage.removeItem("currentUser");
             window.dispatchEvent(new Event("auth-change"));
             alert("[SECURITY] YOUR CHARACTER ACCOUNT HAS BEEN BANNED BY THE GRANDMASTER!");
@@ -44,7 +47,13 @@ export default function Profile() {
           console.error(e);
         }
       }
-      setUser(activeUsersList[0]);
+      
+      if (isLoggedOut) {
+        window.location.href = "/login";
+        return;
+      } else {
+        setUser(activeUsersList[0]);
+      }
     };
 
     loadUser();

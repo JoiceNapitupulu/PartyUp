@@ -110,6 +110,7 @@ export default function Chatbot() {
                     <button
                         onClick={() => setIsOpen(false)}
                         className="font-pixel text-[10px] text-red-500 hover:text-red-400 select-none cursor-pointer"
+                        suppressHydrationWarning
                     >
                         [X]
                     </button>
@@ -153,10 +154,12 @@ export default function Chatbot() {
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         className="flex-1 p-2 border-2 border-retro-black text-xs focus:outline-none focus:bg-retro-light-gray font-sans"
+                        suppressHydrationWarning
                     />
                     <button
                         type="submit"
                         className="font-pixel text-[9px] px-3 bg-pixel-green text-retro-black border-2 border-retro-black hover:bg-pixel-green-dark active:translate-y-[1px] select-none cursor-pointer"
+                        suppressHydrationWarning
                     >
                         SEND
                     </button>
@@ -167,6 +170,7 @@ export default function Chatbot() {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="group h-16 w-16 rounded-full bg-retro-black border-4 border-white text-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.3)] active:translate-y-[2px] transition-all select-none cursor-pointer"
+                suppressHydrationWarning
             >
                 <PixelDogIcon isOpen={isOpen} />
             </button>

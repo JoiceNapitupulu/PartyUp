@@ -37,7 +37,11 @@ export default function Board() {
     // 2. Membaca siapa user yang sedang aktif login untuk pengirim misi (author)
     const storedUser = localStorage.getItem("currentUser");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error(e);
+      }
     }
   }, []);
 
