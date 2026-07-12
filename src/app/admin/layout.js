@@ -6,19 +6,34 @@ import Link from "next/link";
 import { getCurrentUser, triggerAuthChange } from "@/utils/auth";
 import PixelButton from "@/components/PixelButton";
 
+// Ikon representasi visual sidebar terbuka (untuk aksi menciutkan/collapse)
+const CollapseIcon = () => (
+    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor">
+        <rect x="2" y="2" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" />
+        <rect x="3" y="2" width="3" height="12" />
+    </svg>
+);
+
+// Ikon representasi visual sidebar tertutup (untuk aksi melebarkan/expand)
+const ExpandIcon = () => (
+    <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor">
+        <rect x="2" y="2" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" />
+        <rect x="11" y="2" width="3" height="12" />
+    </svg>
+);
+
 export default function AdminLayout({ children }) {
     const router = useRouter();
     const pathname = usePathname();
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false); // State pelacak buka-tutup sidebar
+    const [mounted, setMounted] = useState(false); // Penyelamat dari Hydration Error
 
     useEffect(() => {
-        // Verifikasi keamanan akses admin secara lokal lewat utilitas
+        setMounted(true); // Menandakan komponen telah sukses termuat di browser client
         const user = getCurrentUser();
         if (user && user.role?.toLowerCase() === "admin") {
             setIsAdmin(true);
-        } else {
-            setIsAdmin(false);
         }
     }, []);
 
@@ -28,13 +43,23 @@ export default function AdminLayout({ children }) {
         router.push("/");
     };
 
-    // Menu navigasi admin dengan label panjang dan versi inisial pendek saat menciut
     const menuItems = [
         { name: "DASHBOARD METRICS", short: "D", path: "/admin" },
         { name: "ADVENTURER DIRECTORY", short: "A", path: "/admin/users" },
         { name: "QUEST AUDIT BOARD", short: "Q", path: "/admin/quests" },
+        { name: "SYSTEM SETTINGS", short: "S", path: "/admin/settings" },
     ];
 
+    // Jembatan SSR: Sebelum ter-mount di browser client, render layar loading netral yang sama di server & client
+    if (!mounted) {
+        return (
+            <div className="min-h-screen bg-retro-black flex items-center justify-center font-pixel text-xs text-retro-gray">
+                [BOOTING SECURE CONSOLE...]
+            </div>
+        );
+    }
+
+    // Jika sudah ter-mount di client tetapi ternyata bukan admin, tampilkan layar blokir merah
     if (!isAdmin) {
         return (
             <div className="min-h-screen bg-retro-black flex flex-col items-center justify-center p-6 text-center font-pixel">
@@ -51,46 +76,53 @@ export default function AdminLayout({ children }) {
         );
     }
 
+    // Jika sudah ter-mount di client dan terbukti admin, tampilkan layout sidebar admin sesungguhnya
     return (
         <div className="min-h-screen flex bg-retro-bg font-sans">
 
-            {/* SIDEBAR KIRI INTERAKTIF (Lebar dinamis dengan transisi halus) */}
+            {/* SIDEBAR KIRI PERMANEN */}
             <aside
-                className={`relative bg-retro-black border-r-4 border-retro-black flex flex-col justify-between text-white p-4 sticky top-0 h-screen z-10 transition-all duration-300 ease-in-out ${isCollapsed ? "w-20 items-center" : "w-64"
+                className={`bg-retro-black border-r-4 border-retro-black flex flex-col justify-between text-white p-4 sticky top-0 h-screen z-10 transition-all duration-300 ease-in-out ${isCollapsed ? "w-20 items-center" : "w-64"
                     }`}
             >
-                {/* Tombol Pemicu Buka-Tutup Melayang (Floating Toggle Button) */}
-                <button
-                    onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="absolute top-1/2 -right-3.5 -translate-y-1/2 w-6 h-6 rounded-full bg-white border-2 border-retro-black text-retro-black flex items-center justify-center font-pixel text-[8px] cursor-pointer hover:bg-pixel-green hover:scale-105 active:scale-95 transition-all z-20 shadow-md"
-                >
-                    {isCollapsed ? ">" : "<"}
-                </button>
-
                 <div className="flex flex-col gap-8 w-full">
-                    {/* Logo Dashboard Admin */}
-                    {isCollapsed ? (
-                        <Link href="/" className="flex flex-col items-center border-b-2 border-retro-dark-gray pb-4">
-                            <span className="font-pixel text-[13px] text-pixel-green animate-pulse">
+                    {/* HEADER: LOGO & TOGGLE BUTTON (Menggunakan Flexbox Dinamis, Bebas Tabrakan!) */}
+                    <div
+                        className={`flex border-b-2 border-retro-dark-gray pb-4 items-center ${isCollapsed
+                                ? "flex-col gap-3 justify-center"
+                                : "flex-row gap-2 justify-between"
+                            }`}
+                    >
+                        {/* Brand Logo */}
+                        {isCollapsed ? (
+                            <Link href="/" className="font-pixel text-[13px] text-pixel-green animate-pulse">
                                 P!
-                            </span>
-                        </Link>
-                    ) : (
-                        <Link href="/" className="flex flex-col gap-1 border-b-2 border-retro-dark-gray pb-4">
-                            <span className="font-pixel text-[13px] text-pixel-green tracking-wider">
-                                PARTYUP! MASTER
-                            </span>
-                            <span className="font-pixel text-[7px] text-retro-gray">
-                                [SYSTEMS_CONTROL_PANEL]
-                            </span>
-                        </Link>
-                    )}
+                            </Link>
+                        ) : (
+                            <Link href="/" className="flex flex-col gap-1 max-w-[150px]">
+                                <span className="font-pixel text-[10px] text-pixel-green tracking-wider truncate">
+                                    PARTYUP! MASTER
+                                </span>
+                                <span className="font-pixel text-[6px] text-retro-gray">
+                                    [SYSTEMS_CONTROL]
+                                </span>
+                            </Link>
+                        )}
 
-                    {/* Navigasi Link Sidebar */}
+                        {/* Tombol Pemicu Buka-Tutup Minimalis (Mengikuti Aliran Flex) */}
+                        <button
+                            onClick={() => setIsCollapsed(!isCollapsed)}
+                            className="w-7 h-7 rounded-lg bg-white border-2 border-retro-black text-retro-black flex items-center justify-center cursor-pointer hover:bg-pixel-green hover:scale-105 active:scale-95 transition-all shadow-sm shrink-0"
+                        >
+                            {isCollapsed ? <ExpandIcon /> : <CollapseIcon />}
+                        </button>
+                    </div>
+
+                    {/* Nav Links */}
                     <nav className="flex flex-col gap-2 w-full">
                         {!isCollapsed && (
                             <span className="font-pixel text-[8px] text-retro-dark-gray tracking-widest mb-1">
-                // NAVIGATION
+                                {/* NAVIGATION */}
                             </span>
                         )}
 
@@ -100,7 +132,7 @@ export default function AdminLayout({ children }) {
                                 <Link
                                     key={item.path}
                                     href={item.path}
-                                    title={isCollapsed ? item.name : ""} // Memunculkan tooltip saat kursor diarahkan ke ikon
+                                    title={isCollapsed ? item.name : ""}
                                     className={`font-pixel text-[9px] p-3 border-2 transition-all flex items-center ${isCollapsed
                                             ? "justify-center w-10 h-10 mx-auto rounded-lg"
                                             : "text-left w-full"

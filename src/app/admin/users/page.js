@@ -1,19 +1,22 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
 import { usersData, triggerAuthChange } from "@/utils/auth";
 
 export default function AdminUsers() {
     const router = useRouter();
-    const [users, setUsers] = useState([]);
     const [logs, setLogs] = useState(["[SYSTEM] Adventurer directory connected."]);
 
-    useEffect(() => {
-        const localUsers = localStorage.getItem("usersList");
-        setUsers(localUsers ? JSON.parse(localUsers) : usersData);
-    }, []);
+    // Lazy Initialization untuk mencegah error set-state-in-effect
+    const [users, setUsers] = useState(() => {
+        if (typeof window !== "undefined") {
+            const localUsers = localStorage.getItem("usersList");
+            return localUsers ? JSON.parse(localUsers) : usersData;
+        }
+        return usersData;
+    });
 
     const addLog = (message) => {
         const timestamp = new Date().toLocaleTimeString();
@@ -59,7 +62,10 @@ export default function AdminUsers() {
             </div>
 
             <div className="bg-white border-4 border-retro-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-4">
-                <span className="font-pixel text-[9px] text-navy-blue">// DATA DIRECTORY</span>
+                <span className="font-pixel text-[9px] text-navy-blue">
+                    {/* Perbaikan komentar JSX */}
+                    {/* DATA DIRECTORY */}
+                </span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {users.map((item) => (
                         <div key={item.user_id} className={`p-4 border-2 border-retro-black bg-retro-light-gray flex flex-col gap-3 ${item.isBanned ? "opacity-60 bg-red-50 border-red-300" : ""

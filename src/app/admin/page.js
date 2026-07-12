@@ -1,24 +1,35 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Footer from "@/components/Footer";
 import { usersData, projectsData } from "@/utils/auth";
 
 export default function AdminDashboard() {
-    const [usersCount, setUsersCount] = useState(0);
-    const [projectsCount, setProjectsCount] = useState(0);
-    const [bannedCount, setBannedCount] = useState(0);
+    // Inisialisasi metrik secara Lazy untuk menghilangkan error set-state-in-effect
+    const [usersCount] = useState(() => {
+        if (typeof window !== "undefined") {
+            const localUsers = localStorage.getItem("usersList");
+            return localUsers ? JSON.parse(localUsers).length : usersData.length;
+        }
+        return usersData.length;
+    });
 
-    useEffect(() => {
-        const localUsers = localStorage.getItem("usersList");
-        const activeUsers = localUsers ? JSON.parse(localUsers) : usersData;
-        setUsersCount(activeUsers.length);
-        setBannedCount(activeUsers.filter(u => u.isBanned).length);
+    const [bannedCount] = useState(() => {
+        if (typeof window !== "undefined") {
+            const localUsers = localStorage.getItem("usersList");
+            const list = localUsers ? JSON.parse(localUsers) : usersData;
+            return list.filter((u) => u.isBanned).length;
+        }
+        return 0;
+    });
 
-        const localProjects = localStorage.getItem("projectsList");
-        const activeProjects = localProjects ? JSON.parse(localProjects) : projectsData;
-        setProjectsCount(activeProjects.length);
-    }, []);
+    const [projectsCount] = useState(() => {
+        if (typeof window !== "undefined") {
+            const localProjects = localStorage.getItem("projectsList");
+            return localProjects ? JSON.parse(localProjects).length : projectsData.length;
+        }
+        return projectsData.length;
+    });
 
     return (
         <div className="flex-grow p-6 md:p-8 flex flex-col gap-6">
@@ -45,7 +56,10 @@ export default function AdminDashboard() {
 
             {/* Metrics System */}
             <div className="bg-white border-4 border-retro-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-4">
-                <span className="font-pixel text-[9px] text-navy-blue">// SYSTEM CAPACITY AND ENGINE READOUTS</span>
+                <span className="font-pixel text-[9px] text-navy-blue">
+                    {/* Perbaikan komentar JSX */}
+                    {/* SYSTEM CAPACITY AND ENGINE READOUTS */}
+                </span>
                 <div className="space-y-4">
                     <div>
                         <div className="flex justify-between font-pixel text-[8px] text-retro-black mb-1">

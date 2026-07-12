@@ -1,17 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Footer from "@/components/Footer";
 import { projectsData } from "@/utils/auth";
 
 export default function AdminQuests() {
-    const [projects, setProjects] = useState([]);
     const [logs, setLogs] = useState(["[SYSTEM] Quest Audit system connected."]);
 
-    useEffect(() => {
-        const localProjects = localStorage.getItem("projectsList");
-        setProjects(localProjects ? JSON.parse(localProjects) : projectsData);
-    }, []);
+    // Lazy Initialization untuk mencegah error set-state-in-effect
+    const [projects, setProjects] = useState(() => {
+        if (typeof window !== "undefined") {
+            const localProjects = localStorage.getItem("projectsList");
+            return localProjects ? JSON.parse(localProjects) : projectsData;
+        }
+        return projectsData;
+    });
 
     const addLog = (message) => {
         const timestamp = new Date().toLocaleTimeString();
@@ -33,7 +36,10 @@ export default function AdminQuests() {
             </div>
 
             <div className="bg-white border-4 border-retro-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-4">
-                <span className="font-pixel text-[9px] text-navy-blue">// SANITIZE SYSTEM</span>
+                <span className="font-pixel text-[9px] text-navy-blue">
+                    {/* Perbaikan komentar JSX */}
+                    {/* SANITIZE SYSTEM */}
+                </span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {projects.map((item) => (
                         <div key={item.project_id} className="p-4 border-2 border-retro-black bg-retro-light-gray flex flex-col justify-between gap-3">
