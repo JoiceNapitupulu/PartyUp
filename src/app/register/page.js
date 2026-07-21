@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import userData from "@/data/users.json"; // Mengimpor data dummy Anda
+import PixelAvatar from "@/components/PixelAvatar";
+import { usersData } from "@/utils/auth";
 
 export default function Register() {
   const router = useRouter();

@@ -113,7 +113,18 @@ export default function Board() {
               Filter through active party quests or dispatch your own request to find comrades.
             </p>
           </div>
-          <PixelButton variant="green" onClick={() => setIsModalOpen(true)}>
+          {/* Proteksi Tombol Dispatch Quest */} 
+          <PixelButton
+            variant="green" 
+            onClick={() => {
+              if (!user) {
+                alert("[RESTRICTED] YOU MUST LOG IN TO THE GUILD TO DISPATCH QUESTS!"); // Harus login dlu baru ngehdc
+                router.push("/login");
+              } else {
+                setIsModalOpen(true);
+              }
+            }}
+          >
             + DISPATCH QUEST
           </PixelButton>
         </div>

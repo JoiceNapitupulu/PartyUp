@@ -7,6 +7,7 @@ import PixelButton from "@/components/PixelButton";
 import ProjectCard from "@/components/ProjectCard";
 import usersData from "@/data/users.json";
 import projectsData from "@/data/projects.json";
+import PixelAvatar from "@/components/PixelAvatar";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("overview"); // overview, projects, board, skills
@@ -160,10 +161,10 @@ export default function Profile() {
           {/* Left Column: Detail Profile Card */}
           <div className="lg:col-span-4 bg-white pixel-border pixel-shadow p-6 flex flex-col gap-6 items-center text-center">
 
-            {/* Avatar block dengan proteksi crash */}
-            <div className="w-24 h-24 bg-retro-gray border-4 border-retro-black flex items-center justify-center font-pixel text-4xl text-navy-blue font-bold shadow-inner relative">
-              {user.name ? user.name[0].toUpperCase() : "?"}
-              <div className="absolute -bottom-2 right-2 bg-pixel-green text-retro-black font-pixel text-[8px] px-1.5 py-0.5 pixel-border-sm">
+            {/* Avatar block RPG Manusia Piksel Dinamis */}
+            <div className="w-28 h-28 bg-retro-black border-4 border-retro-black flex items-center justify-center relative">
+              <PixelAvatar role={user.role} size="w-24 h-24" />
+              <div className="absolute -bottom-2 right-2 bg-pixel-green text-retro-black font-pixel text-[8px] px-1.5 py-0.5 pixel-border-sm shadow-md">
                 LV.{(user.skills?.length || 0) + (user.semester || 1)}
               </div>
             </div>
