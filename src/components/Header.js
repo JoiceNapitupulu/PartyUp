@@ -93,13 +93,6 @@ export default function Header() {
           >
             PARTYUP!
           </div>
-          <span
-            className={`font-pixel text-[10px] animate-pulse hidden sm:inline ${
-              isScrolled ? "text-retro-gray/60" : "text-navy-blue"
-            }`}
-          >
-            [Q_BOARD]
-          </span>
         </Link>
 
         {/* Nav Links */}

@@ -1,20 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // Ditambahkan untuk proteksi redirect
+import { useRouter } from "next/navigation";
 import usersData from "@/data/users.json";
 import PixelButton from "./PixelButton";
-import PixelTechIcon from "./PixelTechIcon";
+import PixelTechIcon from "./PixelTechIcon"; // Menggunakan ikon tech animasi Anda
 
 export default function ProjectCard({ project, showAuthor = true, onApply }) {
   const router = useRouter();
   const [isApplied, setIsApplied] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
-  const [isDetailOpen, setIsDetailOpen] = useState(false); // State untuk kontrol pop-up detail
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    // Membaca status login secara aman di client-side
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("currentUser");
       if (stored) {
@@ -23,15 +22,14 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
     }
   }, []);
 
-  // Find author details
+  // Mencari data detail pembuat misi
   const author = usersData.find((u) => u.user_id === project.author);
 
   const handleApply = (e) => {
-    if (e) e.stopPropagation(); // Mencegah terpicunya klik pembuka modal pada kartu utama
+    if (e) e.stopPropagation();
 
-    // PROTEKSI: Jika belum login, paksa masuk halaman login
     if (!currentUser) {
-      alert("[RESTRICTED] YOU MUST JOIN THE GUILD (LOG IN) TO APPLY FOR PARTIES!");
+      alert("[RESTRICTED] YOU MUST JOIN THE GUILD (LOG IN) TO JOIN PARTIES!");
       router.push("/login");
       return;
     }
@@ -49,9 +47,32 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
 
   const isClosed = project.status === "Filled";
 
+  // LOGIKA PEMISAHAN DINAMIS (Kritis): Memisahkan kelas karakter dengan skill teknologi
+  const rolesRequired = project.looking_for.filter((item) =>
+    ["Hacker", "Hipster", "Hustler"].includes(item)
+  );
+
+  const skillsRequired = project.looking_for.filter((item) =>
+    !["Hacker", "Hipster", "Hustler"].includes(item)
+  );
+
+  // LOGIKA DETEKSI KELAYAKAN KAMPUS (Dinamis berdasarkan Kategori Misi)
+  const getEligibility = (category) => {
+    const cat = category?.toLowerCase() || "";
+    if (
+      cat.includes("gemastik") ||
+      cat.includes("invention") ||
+      cat.includes("hackathon") ||
+      cat.includes("hackfest")
+    ) {
+      return "All IT / Design / Business Students Nationwide (UI, ITB, UGM, Binus, UNAIR, etc.)";
+    }
+    return `Restricted to Internal Students of Author's Guild (${author?.university || "Same University"})`;
+  };
+
   return (
     <>
-      {/* 1. KARTU UTAMA (Bisa diklik untuk melihat detail) */}
+      {/* 1. KARTU UTAMA */}
       <div
         onClick={() => setIsDetailOpen(true)}
         className={`bg-white pixel-border pixel-shadow p-5 flex flex-col justify-between gap-4 transition-transform hover:-translate-y-1 cursor-pointer select-none ${isClosed ? "opacity-75" : ""
@@ -83,7 +104,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
             {project.description}
           </p>
 
-          {/* Requirements */}
+          {/* Requirements (Roles & Skills) */}
           <div className="mb-4 text-left">
             <p className="font-pixel text-[8px] text-navy-blue mb-2">LOOKING FOR:</p>
             <div className="flex flex-wrap gap-1.5">
@@ -97,7 +118,6 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                         : "bg-retro-light-gray text-retro-black"
                       }`}
                   >
-                    {/* Render logo animasi 8-bit jika bukan kartu role kelas */}
                     {!isRole && <PixelTechIcon tech={skill} size="w-3.5 h-3.5" />}
                     {skill}
                   </span>
@@ -136,10 +156,10 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
         </div>
       </div>
 
-      {/* 2. POP-UP DETAIL QUEST (MODAL 8-BIT INTERAKTIF) */}
+      {/* 2. POP-UP DETAIL QUEST (MODAL RETRO MODERN - REVISI SEMPURNA) */}
       {isDetailOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-retro-black/60 p-4 backdrop-blur-sm">
-          <div className="bg-retro-bg pixel-border pixel-shadow w-full max-w-lg p-6 flex flex-col gap-5 relative animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-retro-bg pixel-border pixel-shadow w-full max-w-lg p-6 flex flex-col gap-4 relative max-h-[95vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
             {/* Tombol Tutup [X] */}
             <button
               onClick={() => setIsDetailOpen(false)}
@@ -149,60 +169,92 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
             </button>
 
             <h2 className="font-pixel text-xs text-navy-blue border-b-2 border-retro-gray pb-2 text-left">
-              [QUEST DETAILS SHEET]
+              [QUEST SPECIFICATION SHEET]
             </h2>
 
             {/* Informasi Utama */}
             <div className="space-y-4 text-left">
               <div>
                 <span className="font-pixel text-[8px] bg-navy-blue text-white px-2 py-0.5 border border-retro-black">
-                  {project.category}
+                  {project.category?.toUpperCase()}
                 </span>
                 <h3 className="font-pixel text-sm text-retro-black mt-2 leading-snug">{project.title}</h3>
               </div>
 
-              {/* Deskripsi Proyek */}
+              {/* Project Overview */}
               <div className="bg-white p-3 border-2 border-retro-black">
-                <span className="font-pixel text-[8px] text-navy-blue block mb-1">// PROJECT OVERVIEW:</span>
+                <span className="font-pixel text-[8px] text-navy-blue block mb-1">// QUEST OVERVIEW:</span>
                 <p className="font-sans text-xs text-retro-dark-gray leading-relaxed">{project.description}</p>
               </div>
 
-              {/* Atribut Creator Role & Collabs */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Pemisahan 1: Roles Required & Kelayakan Kampus */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                {/* Roles Required (Berapa member yang dicari) */}
                 <div className="bg-white p-3 border-2 border-retro-black">
-                  <span className="font-pixel text-[8px] text-navy-blue block mb-1.5">// AUTHOR ROLE:</span>
-                  <span className="font-pixel text-[8px] bg-pixel-green text-retro-black px-2 py-0.5 border border-retro-black font-bold">
-                    {author?.role?.toUpperCase() || "HACKER"}
-                  </span>
+                  <span className="font-pixel text-[8px] text-navy-blue block mb-2">// ROLES REQUIRED (PARTY SIZE):</span>
+                  <div className="flex flex-col gap-2">
+                    {rolesRequired.map((role, i) => (
+                      <div key={i} className="flex items-center justify-between">
+                        <span className="font-pixel text-[8px] bg-pixel-green text-retro-black px-2 py-0.5 border border-retro-black font-bold">
+                          {role?.toUpperCase()}
+                        </span>
+                        <span className="font-pixel text-[8px] text-retro-black">
+                          x1 MEMBER
+                        </span>
+                      </div>
+                    ))}
+                    {rolesRequired.length === 0 && (
+                      <span className="font-sans text-xs text-retro-dark-gray">Party is full!</span>
+                    )}
+                  </div>
                 </div>
-                <div className="bg-white p-3 border-2 border-retro-black">
-                  <span className="font-pixel text-[8px] text-navy-blue block mb-1">// PARTY COLLABS:</span>
-                  <p className="font-sans text-xs text-retro-dark-gray">
-                    {project.looking_for?.length > 2 ? "✓ Multi-Class Party (Ramean)" : "✓ Solo Quest (Sendiri)"}
-                  </p>
+
+                {/* Eligibility / Asal Kampus */}
+                <div className="bg-white p-3 border-2 border-retro-black flex flex-col justify-between">
+                  <div>
+                    <span className="font-pixel text-[8px] text-navy-blue block mb-1.5">// ELIGIBILITY CRITERIA:</span>
+                    <p className="font-sans text-[11px] text-retro-dark-gray leading-tight">
+                      {getEligibility(project.category)}
+                    </p>
+                  </div>
                 </div>
+
               </div>
 
-              {/* Requirement Tags */}
+              {/* Pemisahan 2: Built-With Tech Stack Badges */}
               <div>
-                <span className="font-pixel text-[8px] text-retro-dark-gray block mb-1.5">LOOKING FOR SKILLS:</span>
+                <span className="font-pixel text-[8px] text-retro-dark-gray block mb-1.5">REQUIRED TECHNOLOGY INVENTORY:</span>
                 <div className="flex flex-wrap gap-1.5">
-                  {project.looking_for.map((item, i) => (
-                    <span key={i} className="font-pixel text-[8px] bg-retro-light-gray text-retro-black px-2 py-1 border border-retro-black">
-                      {item}
+                  {skillsRequired.map((tech, i) => (
+                    <span key={i} className="flex items-center gap-1.5 font-pixel text-[8px] bg-retro-light-gray text-retro-black px-2.5 py-1 border border-retro-black">
+                      <PixelTechIcon tech={tech} size="w-3.5 h-3.5" />
+                      {tech}
                     </span>
                   ))}
                 </div>
+              </div>
+
+              {/* Creator Info */}
+              <div className="bg-white p-3 border-2 border-retro-black flex items-center justify-between">
+                <div className="text-left">
+                  <span className="font-pixel text-[8px] text-retro-dark-gray block mb-1">DISPATCHED BY:</span>
+                  <p className="font-pixel text-[9px] text-retro-black font-bold">{author?.name || "Unknown Adventurer"}</p>
+                  <p className="font-sans text-[9px] text-retro-dark-gray">{author?.university} • {author?.major}</p>
+                </div>
+                <span className="font-pixel text-[8px] bg-navy-blue text-white px-2 py-1 border border-retro-black">
+                  ROLE: {author?.role?.toUpperCase() || "HACKER"}
+                </span>
               </div>
             </div>
 
             {/* Tombol Tautan Live Demo / Code */}
             <div className="flex justify-between items-center border-t-2 border-retro-light-gray pt-4">
               <div className="flex gap-4">
-                <a href="https://github.com/prabogo/prabogo" target="_blank" rel="noreferrer" className="font-pixel text-[8px] text-navy-blue hover:text-navy-light hover:underline">
+                <a href="https://github.com" target="_blank" rel="noreferrer" className="font-pixel text-[8px] text-navy-blue hover:text-navy-light hover:underline">
                   [SOURCE_CODE]
                 </a>
-                <a href="https://prabogo.com/" target="_blank" rel="noreferrer" className="font-pixel text-[8px] text-green-700 hover:text-green-600 hover:underline">
+                <a href="https://vercel.com" target="_blank" rel="noreferrer" className="font-pixel text-[8px] text-green-700 hover:text-green-600 hover:underline">
                   [LIVE_DEMO]
                 </a>
               </div>
