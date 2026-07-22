@@ -6,6 +6,20 @@ import usersData from "@/data/users.json";
 import PixelButton from "./PixelButton";
 import PixelTechIcon from "./PixelTechIcon"; // Menggunakan ikon tech animasi Anda
 
+// 1. Definisikan 10 nama peran baru secara konsisten di tingkat global file
+const roleNames = [
+  "Product Manager (PM)",
+  "Project / Scrum Master",
+  "UI/UX Designer",
+  "UX Researcher",
+  "Frontend Developer",
+  "Backend Developer",
+  "Full-stack Developer",
+  "Mobile App Developer",
+  "QA (Quality Assurance) Engineer",
+  "DevOps Engineer"
+];
+
 export default function ProjectCard({ project, showAuthor = true, onApply }) {
   const router = useRouter();
   const [isApplied, setIsApplied] = useState(false);
@@ -47,13 +61,13 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
 
   const isClosed = project.status === "Filled";
 
-  // LOGIKA PEMISAHAN DINAMIS (Kritis): Memisahkan kelas karakter dengan skill teknologi
+  // 2. LOGIKA PEMISAHAN DINAMIS: Menyaring berdasarkan 10 peran baru
   const rolesRequired = project.looking_for.filter((item) =>
-    ["Hacker", "Hipster", "Hustler"].includes(item)
+    roleNames.includes(item)
   );
 
   const skillsRequired = project.looking_for.filter((item) =>
-    !["Hacker", "Hipster", "Hustler"].includes(item)
+    !roleNames.includes(item)
   );
 
   // LOGIKA DETEKSI KELAYAKAN KAMPUS (Dinamis berdasarkan Kategori Misi)
@@ -86,8 +100,8 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
             </span>
             <span
               className={`font-pixel text-[8px] px-2 py-1 pixel-border-sm uppercase ${isClosed
-                  ? "bg-retro-gray text-retro-dark-gray"
-                  : "bg-pixel-green text-retro-black animate-pulse"
+                ? "bg-retro-gray text-retro-dark-gray"
+                : "bg-pixel-green text-retro-black animate-pulse"
                 }`}
             >
               {project.status === "Open" ? "● OPEN QUEST" : "■ FILLED"}
@@ -109,13 +123,13 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
             <p className="font-pixel text-[8px] text-navy-blue mb-2">LOOKING FOR:</p>
             <div className="flex flex-wrap gap-1.5">
               {project.looking_for.map((skill, index) => {
-                const isRole = ["Hacker", "Hipster", "Hustler"].includes(skill);
+                const isRole = roleNames.includes(skill); // Mencocokkan 10 peran baru Anda
                 return (
                   <span
                     key={index}
                     className={`flex items-center gap-1.5 font-pixel text-[8px] px-2 py-1 pixel-border-sm ${isRole
-                        ? "bg-pixel-green text-retro-black font-bold"
-                        : "bg-retro-light-gray text-retro-black"
+                      ? "bg-pixel-green text-retro-black font-bold"
+                      : "bg-retro-light-gray text-retro-black"
                       }`}
                   >
                     {!isRole && <PixelTechIcon tech={skill} size="w-3.5 h-3.5" />}
@@ -156,7 +170,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
         </div>
       </div>
 
-      {/* 2. POP-UP DETAIL QUEST (MODAL RETRO MODERN - REVISI SEMPURNA) */}
+      {/* 2. POP-UP DETAIL QUEST (MODAL RETRO MODERN) */}
       {isDetailOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-retro-black/60 p-4 backdrop-blur-sm">
           <div className="bg-retro-bg pixel-border pixel-shadow w-full max-w-lg p-6 flex flex-col gap-4 relative max-h-[95vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
@@ -243,7 +257,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                   <p className="font-sans text-[9px] text-retro-dark-gray">{author?.university} • {author?.major}</p>
                 </div>
                 <span className="font-pixel text-[8px] bg-navy-blue text-white px-2 py-1 border border-retro-black">
-                  ROLE: {author?.role?.toUpperCase() || "HACKER"}
+                  ROLE: {author?.role?.toUpperCase()}
                 </span>
               </div>
             </div>
@@ -251,10 +265,20 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
             {/* Tombol Tautan Live Demo / Code */}
             <div className="flex justify-between items-center border-t-2 border-retro-light-gray pt-4">
               <div className="flex gap-4">
-                <a href="https://github.com" target="_blank" rel="noreferrer" className="font-pixel text-[8px] text-navy-blue hover:text-navy-light hover:underline">
+                <a
+                  href="https://github.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-pixel text-[8px] text-navy-blue hover:text-green-600 hover:translate-x-[1px] transition-all"
+                >
                   [SOURCE_CODE]
                 </a>
-                <a href="https://vercel.com" target="_blank" rel="noreferrer" className="font-pixel text-[8px] text-green-700 hover:text-green-600 hover:underline">
+                <a
+                  href="https://vercel.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-pixel text-[8px] text-green-700 hover:text-green-600 hover:translate-x-[1px] transition-all"
+                >
                   [LIVE_DEMO]
                 </a>
               </div>

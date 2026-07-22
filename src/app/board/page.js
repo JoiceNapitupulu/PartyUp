@@ -21,7 +21,7 @@ export default function Board() {
   const [newCategory, setNewCategory] = useState("GEMASTIK 2026");
   const [newDescription, setNewDescription] = useState("");
   const [newSkills, setNewSkills] = useState("");
-  const [newClass, setNewClass] = useState("Hacker");
+  const [newClass, setNewClass] = useState("Frontend Developer");
 
   // Jalankan efek sinkronisasi data lokal saat halaman dibuka
   useEffect(() => {
@@ -92,11 +92,23 @@ export default function Board() {
     setNewTitle("");
     setNewDescription("");
     setNewSkills("");
-    setNewClass("Hacker");
+    setNewClass("Frontend Developer");
   };
 
   const categories = ["ALL", "GEMASTIK", "INVENTION", "College Project", "HackFest"];
-  const classes = ["ALL", "Hacker", "Hipster", "Hustler"];
+  const classes = [
+    "ALL",
+    "Product Manager (PM)",
+    "Project / Scrum Master",
+    "UI/UX Designer",
+    "UX Researcher",
+    "Frontend Developer",
+    "Backend Developer",
+    "Full-stack Developer",
+    "Mobile App Developer",
+    "QA (Quality Assurance) Engineer",
+    "DevOps Engineer"
+  ];
 
   return (
     <>
@@ -264,9 +276,16 @@ export default function Board() {
                       onChange={(e) => setNewClass(e.target.value)}
                       className="font-sans text-xs p-2 bg-white pixel-border-sm focus:outline-none cursor-pointer"
                     >
-                      <option value="Hacker">Hacker (Dev)</option>
-                      <option value="Hipster">Hipster (Designer)</option>
-                      <option value="Hustler">Hustler (Biz/PM)</option>
+                      <option value="Product Manager (PM)">Product Manager (PM)</option>
+                      <option value="Project / Scrum Master">Project / Scrum Master</option>
+                      <option value="UI/UX Designer">UI/UX Designer</option>
+                      <option value="UX Researcher">UX Researcher</option>
+                      <option value="Frontend Developer">Frontend Developer</option>
+                      <option value="Backend Developer">Backend Developer</option>
+                      <option value="Full-stack Developer">Full-stack Developer</option>
+                      <option value="Mobile App Developer">Mobile App Developer</option>
+                      <option value="QA (Quality Assurance) Engineer">QA (Quality Assurance) Engineer</option>
+                      <option value="DevOps Engineer">DevOps Engineer</option>
                     </select>
                   </div>
                 </div>

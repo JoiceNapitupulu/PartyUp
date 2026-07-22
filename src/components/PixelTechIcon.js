@@ -423,25 +423,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
             <rect x="3" y="3" width="10" height="10" rx="1" fill="none" stroke="currentColor" strokeWidth="2" />
             <rect x="6" y="6" width="4" height="4" />
         </svg>
-    );
-
-    
+    );   
 }
 
-//  FIGMA (F Warna-warni - Memantul/Bounce saat hover)
-if (name === "figma") {
-    return (
-        <svg viewBox="0 0 16 16" className={`${size} hover:-translate-y-1 transition-transform duration-300`} style={{ imageRendering: "pixelated" }} fill="currentColor">
-            {/* Lingkaran Merah atas kiri */}
-            <path d="M5 3h3v3H5zm0 3h3v3H5z" fill="#f24e1e" />
-            {/* Lingkaran Orange atas kanan */}
-            <path d="M8 3h3v3H8z" fill="#ff7262" />
-            {/* Lingkaran Ungu tengah */}
-            <path d="M8 6h3v3H8z" fill="#a259ff" />
-            {/* Bentuk daun biru bawah kiri */}
-            <path d="M5 9h3v3H5z" fill="#1abc9c" />
-            {/* Bentuk bulat hijau bawah kanan */}
-            <path d="M8 9h3v3H8z" fill="#0acf83" />
-        </svg>
-    );
-}
+

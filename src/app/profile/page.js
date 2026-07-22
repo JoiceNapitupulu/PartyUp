@@ -101,10 +101,17 @@ export default function Profile() {
 
   // Statistik kelas RPG yang dipetakan (Ditambahkan ADMIN untuk stats dewa)
   const roleStats = {
-    Hacker: { CODE: 95, DESIGN: 30, BUSINESS: 10, CHARISMA: 50 },
-    Hipster: { CODE: 40, DESIGN: 95, BUSINESS: 40, CHARISMA: 75 },
-    Hustler: { CODE: 10, DESIGN: 40, BUSINESS: 95, CHARISMA: 90 },
-    Admin: { CODE: 99, DESIGN: 99, BUSINESS: 99, CHARISMA: 99 }, // Ditambahkan secara konsisten
+    "Product Manager (PM)": { CODE: 10, DESIGN: 60, BUSINESS: 95, CHARISMA: 90 },
+    "Project / Scrum Master": { CODE: 20, DESIGN: 30, BUSINESS: 90, CHARISMA: 95 },
+    "UI/UX Designer": { CODE: 45, DESIGN: 95, BUSINESS: 40, CHARISMA: 75 },
+    "UX Researcher": { CODE: 15, DESIGN: 85, BUSINESS: 60, CHARISMA: 85 },
+    "Frontend Developer": { CODE: 85, DESIGN: 75, BUSINESS: 10, CHARISMA: 50 },
+    "Backend Developer": { CODE: 95, DESIGN: 10, BUSINESS: 10, CHARISMA: 45 },
+    "Full-stack Developer": { CODE: 90, DESIGN: 50, BUSINESS: 30, CHARISMA: 55 },
+    "Mobile App Developer": { CODE: 85, DESIGN: 50, BUSINESS: 20, CHARISMA: 50 },
+    "QA (Quality Assurance) Engineer": { CODE: 75, DESIGN: 20, BUSINESS: 30, CHARISMA: 60 },
+    "DevOps Engineer": { CODE: 90, DESIGN: 10, BUSINESS: 20, CHARISMA: 50 },
+    Admin: { CODE: 99, DESIGN: 99, BUSINESS: 99, CHARISMA: 99 },
   };
 
   const activeStats = roleStats[user.role] || { CODE: 50, DESIGN: 50, BUSINESS: 50, CHARISMA: 50 };

@@ -65,20 +65,55 @@ export default function Register() {
 
   const roles = [
     {
-      name: "Hacker",
-      desc: "Software developer, backend architect, or algorithms expert. Translates ideas into code.",
-      stats: { Code: 95, Design: 30, Business: 10 },
+      name: "Product Manager (PM)",
+      desc: "Menentukan arah produk, menganalisis kebutuhan pengguna, serta menyusun prioritas pengerjaan.",
+      stats: { Code: 10, Design: 60, Business: 95 }
     },
     {
-      name: "Hipster",
-      desc: "UI/UX designer, brand expert, or frontend visualist. Creates pixel-perfect experiences.",
-      stats: { Code: 40, Design: 95, Business: 40 },
+      name: "Project / Scrum Master",
+      desc: "Memastikan kelancaran proses kerja tim dengan metodologi Agile/Scrum dan mengatur jadwal sprint.",
+      stats: { Code: 20, Design: 30, Business: 90 }
     },
     {
-      name: "Hustler",
-      desc: "Product manager, business analyst, or presenter. Pitches the team's vision.",
-      stats: { Code: 10, Design: 40, Business: 95 },
+      name: "UI/UX Designer",
+      desc: "Merancang alur penggunaan aplikasi (user flow), membuat wireframe, hingga tampilan visual yang intuitif.",
+      stats: { Code: 45, Design: 95, Business: 40 }
     },
+    {
+      name: "UX Researcher",
+      desc: "Melakukan riset mendalam untuk memahami perilaku, kebutuhan, dan kendala pengguna.",
+      stats: { Code: 15, Design: 85, Business: 60 }
+    },
+    {
+      name: "Frontend Developer",
+      desc: "Membangun bagian antarmuka aplikasi (tampilan layar, tombol, animasi) menggunakan React/Next.js.",
+      stats: { Code: 85, Design: 75, Business: 10 }
+    },
+    {
+      name: "Backend Developer",
+      desc: "Mengurus dapur aplikasi: database, logika bisnis, keamanan server, dan pembuatan API.",
+      stats: { Code: 95, Design: 10, Business: 10 }
+    },
+    {
+      name: "Full-stack Developer",
+      desc: "Menguasai frontend sekaligus backend untuk menangani pembuatan aplikasi secara menyeluruh.",
+      stats: { Code: 90, Design: 50, Business: 30 }
+    },
+    {
+      name: "Mobile App Developer",
+      desc: "Fokus khusus membuat aplikasi mobile Android/iOS menggunakan Kotlin, Swift, atau Flutter.",
+      stats: { Code: 85, Design: 50, Business: 20 }
+    },
+    {
+      name: "QA (Quality Assurance) Engineer",
+      desc: "Menguji aplikasi secara menyeluruh untuk menemukan bug dan kesalahan sebelum diluncurkan.",
+      stats: { Code: 75, Design: 20, Business: 30 }
+    },
+    {
+      name: "DevOps Engineer",
+      desc: "Mengatur infrastruktur server, keamanan sistem, dan otomatisasi deployment (CI/CD).",
+      stats: { Code: 90, Design: 10, Business: 20 }
+    }
   ];
 
   return (
