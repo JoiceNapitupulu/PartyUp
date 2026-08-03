@@ -68,3 +68,19 @@
 body {
   image-rendering: pixelated;
 }
+
+body {
+  image-rendering: pixelated;
+
+  /* Cursor kustom pixel-art */
+  cursor: url('/cursors/cursor.png') 4 2, auto;
+}
+
+/* Opsional: cursor beda saat hover elemen yang bisa diklik,
+   pakai gambar yang sama tapi bisa kamu ganti kalau punya versi "pointer" */
+a,
+button,
+[role="button"],
+.cursor-pointer {
+  cursor: url('/cursors/cursor.png') 4 2, pointer;
+}
