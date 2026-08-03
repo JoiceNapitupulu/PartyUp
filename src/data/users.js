@@ -6,7 +6,7 @@ export const usersData = [
     "semester": 4,
     "university": "Universitas Indonesia",
     "major": "Information Systems",
-    "role": "Hipster",
+    "role": "UI/UX Designer",
     "skills": ["Figma", "UI/UX", "Next.js", "Java", "PostgreSQL"],
     "bio": "Pixel design enthusiast and frontend dabbler. Passionate about building seamless user flows for student communities.",
     "portfolio": [
@@ -29,7 +29,7 @@ export const usersData = [
     "semester": 6,
     "university": "Institut Teknologi Bandung",
     "major": "Informatics",
-    "role": "Hacker",
+    "role": "Full-stack Developer",
     "skills": ["React", "Next.js", "Node.js", "Go", "Docker", "PostgreSQL"],
     "bio": "Full-stack developer focused on performance and scalable system architectures. I break things so I can build them stronger.",
     "portfolio": [
@@ -52,7 +52,7 @@ export const usersData = [
     "semester": 4,
     "university": "Universitas Gadjah Mada",
     "major": "Business Management",
-    "role": "Hustler",
+    "role": "Product Manager (PM)",
     "skills": ["Product Management", "Business Model Canvas", "Pitching", "Marketing", "Figma"],
     "bio": "Detail-oriented product strategist. I bridge the gap between technical requirements, design language, and market viability.",
     "portfolio": [
@@ -70,7 +70,7 @@ export const usersData = [
     "semester": 6,
     "university": "Binus University",
     "major": "Computer Science",
-    "role": "Hacker",
+    "role": "Mobile App Developer",
     "skills": ["Flutter", "Dart", "Firebase", "Python", "PyTorch"],
     "bio": "Mobile app developer and machine learning beginner. Love turning complex designs into responsive pixel-perfect native apps.",
     "portfolio": [
@@ -88,7 +88,7 @@ export const usersData = [
     "semester": 2,
     "university": "Universitas Airlangga",
     "major": "Information Systems",
-    "role": "Hipster",
+    "role": "UX Researcher",
     "skills": ["Figma", "Graphic Design", "Illustrator", "Tailwind CSS"],
     "bio": "Freshman IS student focusing on design layouts and micro-interactions. Loving retro styles and game UI.",
     "portfolio": [

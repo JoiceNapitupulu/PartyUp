@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import {  usePathname } from "next/navigation";
 
 const PixelDogIcon = ({ isOpen }) => (
     <svg
@@ -46,6 +47,13 @@ const PixelDogIcon = ({ isOpen }) => (
 );
 
 export default function Chatbot() {
+    const pathname = usePathname();
+    
+    // PROTEKSI KONTROL (Kritis): Sembunyikan chatbot sepenuhnya jika berada di area admin
+    if (pathname?.startsWith("/admin")) {
+        return null;
+    }
+    
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
         { sender: "bot", text: "Greetings, Adventurer! 🎮 I am your Guild Guide. Need help finding a Party or checking your Quest stats?" }

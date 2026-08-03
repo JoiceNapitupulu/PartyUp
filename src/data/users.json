@@ -6,7 +6,7 @@
     "semester": 4,
     "university": "Universitas Indonesia",
     "major": "Information Systems",
-    "role": "Hipster",
+    "role": "UI/UX Designer",
     "skills": [
       "Figma",
       "UI/UX",
@@ -35,7 +35,7 @@
     "semester": 6,
     "university": "Institut Teknologi Bandung",
     "major": "Informatics",
-    "role": "Hacker",
+    "role": "Full-stack Developer",
     "skills": [
       "React",
       "Next.js",
@@ -65,7 +65,7 @@
     "semester": 4,
     "university": "Universitas Gadjah Mada",
     "major": "Business Management",
-    "role": "Hustler",
+    "role": "Product Manager (PM)",
     "skills": [
       "Product Management",
       "Business Model Canvas",
@@ -89,7 +89,7 @@
     "semester": 6,
     "university": "Binus University",
     "major": "Computer Science",
-    "role": "Hacker",
+    "role": "Mobile App Developer",
     "skills": [
       "Flutter",
       "Dart",
@@ -113,7 +113,7 @@
     "semester": 2,
     "university": "Universitas Airlangga",
     "major": "Information Systems",
-    "role": "Hipster",
+    "role": "UX Researcher",
     "skills": [
       "Figma",
       "Graphic Design",
