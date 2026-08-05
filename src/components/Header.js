@@ -10,17 +10,27 @@ export default function Header() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLightMode, setIsLightMode] = useState(false); // State tema
+
+  // 1. Membaca status tema dari localStorage agar bertahan di semua halaman
+  const [isLightMode, setIsLightMode] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        setIsLightMode(true);
+        document.documentElement.classList.add("light");
+        document.documentElement.classList.remove("dark");
+      }
+    }
+
     const loadUser = () => {
       const isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
       const stored = localStorage.getItem("currentUser");
 
       if (stored) {
         try {
-          const parsed = JSON.parse(stored);
-          setUser(parsed);
+          setUser(JSON.parse(stored));
           return;
         } catch (e) {
           console.error("Failed to parse local user", e);
@@ -54,16 +64,21 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // SINKRONISASI TEMA GLOBAL: Menambahkan kelas "light" atau "dark" pada root HTML (Standar Tailwind)
-  useEffect(() => {
-    if (isLightMode) {
+  // 2. Terapkan kelas 'light' ke Tag HTML Utama saat tombol sakelar diklik
+  const toggleTheme = () => {
+    const nextMode = !isLightMode;
+    setIsLightMode(nextMode);
+
+    if (nextMode) {
       document.documentElement.classList.add("light");
       document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
     } else {
       document.documentElement.classList.add("dark");
       document.documentElement.classList.remove("light");
+      localStorage.setItem("theme", "dark");
     }
-  }, [isLightMode]);
+  };
 
   const handleLogout = () => {
     localStorage.setItem("isLoggedOut", "true");
@@ -82,9 +97,8 @@ export default function Header() {
     ? [{ name: "ADMIN CONTROL", path: "/admin" }, ...baseNavItems]
     : baseNavItems;
 
-  // Ikon Matahari 8-Bit (Light Mode)
   const SunIcon = () => (
-    <svg viewBox="0 0 16 16" className="w-4 h-4 text-yellow-400 animate-pulse" style={{ imageRendering: "pixelated" }} fill="currentColor">
+    <svg viewBox="0 0 16 16" className="w-4 h-4 text-yellow-500 animate-pulse" style={{ imageRendering: "pixelated" }} fill="currentColor">
       <rect x="7" y="1" width="2" height="2" />
       <rect x="7" y="13" width="2" height="2" />
       <rect x="1" y="7" width="2" height="2" />
@@ -97,7 +111,6 @@ export default function Header() {
     </svg>
   );
 
-  // Ikon Bulan & Bintang 8-Bit (Dark Mode)
   const MoonIcon = () => (
     <svg viewBox="0 0 16 16" className="w-4 h-4 text-sky-200" style={{ imageRendering: "pixelated" }} fill="currentColor">
       <path d="M6 2h5v1H6zm4 1h2v1h-2zm1 1h1v2h-1zm1 2h1v4h-1zm-1 4h1v2h-1zm-1 2h1v1h-1zm-1 1h-5v1h5zm-5-1h-1v-1h1zm-1-1h-1v-2h1zm-1-4h-1v-4h1zm1-2h-1v-2h1zm1-1h-1v-1h1z" />
@@ -108,25 +121,24 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-500 ease-in-out px-4 md:px-8 backdrop-blur-md ${
-        isLightMode
+      className={`fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-500 ease-in-out px-4 md:px-8 backdrop-blur-md border-retro-black ${isLightMode
           ? isScrolled
-            ? "top-3 py-2.5 w-[90%] max-w-6xl rounded-full border-2 border-slate-300 bg-white/85 text-retro-black shadow-lg"
-            : "top-0 py-3.5 w-full rounded-none border-b-2 border-slate-200 bg-white/95 text-retro-black shadow-none"
+            ? "top-3 py-2.5 w-[90%] max-w-6xl rounded-full border-2 border-slate-400 bg-white/90 text-retro-black shadow-lg"
+            : "top-0 py-3.5 w-full rounded-none border-b-2 border-slate-300 bg-white/95 text-retro-black shadow-none"
           : isScrolled
-            ? "top-3 py-2.5 w-[90%] max-w-6xl rounded-full border-2 border-retro-black bg-retro-black/85 text-white shadow-[0_12px_40px_-12px_rgba(0,0,0,0.8)]"
-            : "top-0 py-3.5 w-full rounded-none border-b-2 border-retro-black bg-retro-black/90 text-white shadow-none"
-      }`}
+            ? "top-3 py-2.5 w-[90%] max-w-6xl rounded-full border-2 bg-retro-black/85 text-white shadow-[0_12px_40px_-12px_rgba(0,0,0,0.8)]"
+            : "top-0 py-3.5 w-full rounded-none border-b-2 bg-retro-black/90 text-white shadow-none"
+        }`}
     >
       <div className="max-w-6xl mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Brand Logo */}
         <Link href="/" className="group flex items-center gap-2">
-          <div className="font-pixel text-lg md:text-xl px-3 py-1.5 pixel-border transition-all duration-500 bg-retro-black text-pixel-green rounded-full border-retro-black">
+          <div className="font-pixel text-lg md:text-xl px-3 py-1.5 pixel-border transition-all duration-500 bg-retro-black text-pixel-green rounded-none border-retro-black">
             PARTYUP!
           </div>
         </Link>
 
-        {/* Nav Links Dinamis */}
+        {/* Nav Links */}
         <nav className="flex items-center gap-2 sm:gap-4 flex-wrap justify-center">
           {navItems.map((item) => {
             const isActive = pathname === item.path;
@@ -134,13 +146,12 @@ export default function Header() {
               <Link
                 key={item.path}
                 href={item.path}
-                className={`font-pixel text-[11px] px-4 py-1.5 border-2 rounded-full transition-all duration-300 ${
-                  isActive
-                    ? "bg-navy-blue text-white border-retro-black"
+                className={`font-pixel text-[11px] px-4 py-1.5 border-2 transition-all duration-300 ${isActive
+                    ? "bg-navy-blue text-white border-retro-black rounded-full"
                     : isLightMode
-                      ? "bg-transparent text-retro-black border-transparent hover:bg-black/5"
-                      : "bg-transparent text-white border-transparent hover:bg-white/20"
-                }`}
+                      ? "bg-transparent text-retro-black border-transparent hover:bg-black/10 rounded-full"
+                      : "bg-transparent text-white border-transparent hover:bg-white/20 rounded-full"
+                  }`}
               >
                 {item.name}
               </Link>
@@ -148,17 +159,16 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Profile & Auth State Dinamis */}
+        {/* Profile & Auth State */}
         <div className="flex items-center gap-4">
 
-          {/* Tombol Sakelar Tema Interaktif */}
+          {/* Tombol Sakelar Tema */}
           <button
-            onClick={() => setIsLightMode(!isLightMode)}
-            className={`p-2 rounded-full border-2 transition-all duration-300 active:scale-90 shrink-0 flex items-center justify-center shadow-md ${
-              isLightMode
+            onClick={toggleTheme}
+            className={`p-2 rounded-full border-2 transition-all duration-300 active:scale-90 shrink-0 flex items-center justify-center shadow-md ${isLightMode
                 ? "border-slate-300 bg-black/5 hover:bg-black/10"
                 : "border-retro-black/30 bg-white/10 hover:bg-white/20 text-white"
-            }`}
+              }`}
             title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
           >
             {isLightMode ? <SunIcon /> : <MoonIcon />}
@@ -168,22 +178,19 @@ export default function Header() {
             <div className="flex items-center gap-3">
               <Link
                 href="/profile"
-                className={`flex items-center gap-2.5 p-1 border-2 rounded-full px-3 transition-all ${
-                  isLightMode
+                className={`flex items-center gap-2.5 p-1 border-2 rounded-full px-3 transition-all ${isLightMode
                     ? "border-slate-300 bg-black/5 hover:bg-black/10"
                     : "border-retro-black/30 bg-white/10 hover:bg-white/20"
-                }`}
+                  }`}
               >
-                {/* Retro Avatar */}
-                <div className={`w-8 h-8 flex items-center justify-center font-pixel text-xs font-bold border rounded-full ${
-                  isLightMode
-                    ? "bg-white text-retro-black border-slate-200"
+                <div className={`w-8 h-8 flex items-center justify-center font-pixel text-xs font-bold border rounded-full ${isLightMode
+                    ? "bg-white text-retro-black border-slate-300"
                     : "bg-retro-black text-white border-white/10"
-                }`}>
+                  }`}>
                   {user.name ? user.name[0].toUpperCase() : "P"}
                 </div>
                 <div className="text-left pr-2">
-                  <p className={`font-pixel text-[10px] leading-tight ${isLightMode ? "text-retro-black" : "text-white"}`}>
+                  <p className={`font-pixel text-[10px] leading-tight ${isLightMode ? "text-retro-black font-bold" : "text-white"}`}>
                     {user.name}
                   </p>
                   <p className="font-pixel text-[8px] leading-tight text-pixel-green mt-0.5">
@@ -194,7 +201,7 @@ export default function Header() {
               </Link>
               <button
                 onClick={handleLogout}
-                className="font-pixel text-[9px] hover:underline border-none bg-transparent cursor-pointer text-red-400"
+                className="font-pixel text-[9px] hover:underline border-none bg-transparent cursor-pointer text-red-500 font-bold"
                 suppressHydrationWarning
               >
                 [EXIT]

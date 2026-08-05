@@ -10,8 +10,8 @@ import projectsData from "@/data/projects.json";
 export default function Showcase() {
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedProject, setSelectedProject] = useState(projectsData[0].title);
-  const [invitationStatus, setInvitationStatus] = useState("idle"); // idle, sending, success
+  const [selectedProject, setSelectedProject] = useState(projectsData[0]?.title || "");
+  const [invitationStatus, setInvitationStatus] = useState("idle");
 
   // Flat list of all portfolio items across all users
   const allShowcases = [];
@@ -54,31 +54,52 @@ export default function Showcase() {
   };
 
   return (
-    <>
+    <div className="bg-[#0c1322] min-h-screen text-white flex flex-col font-sans overflow-x-hidden selection:bg-yellow-400 selection:text-black">
       <Header />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-24 md:pt-28 pb-12 flex flex-col gap-8">
-        {/* Header Block */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-4 border-retro-black pb-6">
-          <div>
-            <h1 className="font-pixel text-xl text-retro-black mb-2">
-              [ADVENTURER SHOWCASE GALLERY]
-            </h1>
-            <p className="font-sans text-sm text-retro-dark-gray">
-              Browse historical quest logs and finished works completed by active guild members. Recruit them for your party.
-            </p>
-          </div>
-          {/* Search bar */}
-          <div className="w-full md:w-80">
+      <section
+        className="relative w-full min-h-[380px] md:min-h-[460px] bg-cover bg-center bg-no-repeat overflow-hidden border-b-4 border-retro-black flex items-center justify-center pt-24 md:pt-28"
+        style={{ backgroundImage: "url('/bg4.gif')" }} // Bisa diganti ke /showcase-bg.gif atau /bg3.gif
+      >
+        {/* Layer Overlay Dark Vignette untuk transisi sangat halus */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0c1322]/80 via-black/50 to-[#0c1322] pointer-events-none z-0" />
+
+        {/* Konten Hero Banner di Tengah — Proporsi Sama Persis Seperti Board */}
+        <div className="relative z-10 max-w-4xl mx-auto px-6 py-12 md:py-16 text-center flex flex-col items-center justify-center gap-4">
+          <span className="font-pixel text-[9px] md:text-[11px] text-yellow-300 tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+            ✦ HISTORICAL ARCHIVES ✦
+          </span>
+
+          <h1 className="font-pixel text-3xl md:text-5xl text-yellow-300 drop-shadow-[0_6px_0px_rgba(0,0,0,1)] leading-tight tracking-wide">
+            [ ADVENTURER SHOWCASE GALLERY ]
+          </h1>
+
+          <p className="font-sans text-sm md:text-base text-gray-100 leading-relaxed max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+            Browse historical quest logs and finished works completed by active guild members. Recruit them for your party!
+          </p>
+
+          {/* Search Bar di Dalam Banner */}
+          <div className="w-full max-w-md pt-2">
             <input
               type="text"
-              placeholder="Search works, classes, roles..."
+              placeholder="Search works, classes, roles, or authors..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full font-sans text-xs p-2 bg-white pixel-border-sm focus:outline-none"
+              className="w-full font-sans text-xs p-3 bg-[#1c2a4a]/90 text-white border-2 border-yellow-400 focus:outline-none placeholder-gray-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] backdrop-blur-sm"
             />
           </div>
         </div>
+      </section>
+
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-8 pb-16 flex flex-col gap-8">
+
+        {/* Informasi Ringkas */}
+        <section className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6 bg-[#0f1b30] border-l-4 border-yellow-400 px-5 py-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <span className="font-pixel text-[9px] text-yellow-400 whitespace-nowrap">// RECRUITMENT HUB</span>
+          <p className="font-sans text-xs md:text-sm text-gray-300 leading-relaxed">
+            Every showcase below represents verified past projects from student members. Click <strong className="text-yellow-300 font-bold">RECRUIT</strong> on any creator card to invite them directly to your party!
+          </p>
+        </section>
 
         {/* Timeline Gallery Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -86,42 +107,42 @@ export default function Showcase() {
             filteredShowcases.map((item) => (
               <div
                 key={item.id}
-                className="bg-white pixel-border pixel-shadow p-6 flex flex-col justify-between gap-6 hover:-translate-y-1 transition-all"
+                className="bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 p-6 flex flex-col justify-between gap-6 hover:-translate-y-1 transition-all duration-200"
               >
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 text-left">
                   {/* Decorative Banner Tag */}
-                  <div className="flex items-center justify-between border-b-2 border-retro-light-gray pb-2">
-                    <span className="font-pixel text-[8px] text-navy-blue">
+                  <div className="flex items-center justify-between border-b-2 border-gray-700/60 pb-2">
+                    <span className="font-pixel text-[8px] text-yellow-400">
                       ★ HISTORICAL ARCHIVE
                     </span>
-                    <span className="font-pixel text-[8px] px-1.5 py-0.5 bg-retro-light-gray text-retro-black pixel-border-sm">
+                    <span className="font-pixel text-[8px] px-2 py-0.5 bg-[#1e2d42] text-pixel-green border border-pixel-green/40 font-bold">
                       {item.role}
                     </span>
                   </div>
 
                   {/* Project Name */}
-                  <h3 className="font-pixel text-xs text-retro-black leading-relaxed">
+                  <h3 className="font-pixel text-xs text-white leading-relaxed font-bold">
                     {item.project_name}
                   </h3>
 
                   {/* Description */}
-                  <p className="font-sans text-xs text-retro-dark-gray leading-relaxed">
+                  <p className="font-sans text-xs text-gray-300 leading-relaxed">
                     {item.description}
                   </p>
                 </div>
 
                 {/* Developer Profile Info & Recruit Button */}
-                <div className="border-t-2 border-retro-light-gray pt-4 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-navy-blue text-white flex items-center justify-center font-pixel text-xs font-bold border border-retro-black">
+                <div className="border-t-2 border-gray-700/60 pt-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2 text-left">
+                    <div className="w-8 h-8 bg-retro-black border border-yellow-400 text-yellow-300 flex items-center justify-center font-pixel text-xs font-bold shadow-sm">
                       {item.user.name[0]}
                     </div>
                     <div>
-                      <p className="font-pixel text-[8px] text-retro-black leading-none mb-1">
+                      <p className="font-pixel text-[8px] text-white leading-none mb-1 font-bold">
                         {item.user.name}
                       </p>
-                      <p className="font-sans text-[9px] text-retro-dark-gray leading-none">
-                        {item.user.role} • LV.{item.user.skills.length + (item.user.semester || 1)}
+                      <p className="font-sans text-[9px] text-gray-400 leading-none">
+                        {item.user.role} • LV.{(item.user.skills?.length || 0) + (item.user.semester || 1)}
                       </p>
                     </div>
                   </div>
@@ -129,7 +150,7 @@ export default function Showcase() {
                   <PixelButton
                     variant="green"
                     onClick={() => setSelectedUser(item.user)}
-                    className="py-1 px-3 text-[9px] border-2"
+                    className="py-1 px-3 text-[9px] border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                   >
                     RECRUIT
                   </PixelButton>
@@ -137,9 +158,9 @@ export default function Showcase() {
               </div>
             ))
           ) : (
-            <div className="col-span-full bg-white pixel-border p-12 text-center flex flex-col items-center justify-center gap-4">
-              <span className="font-pixel text-xl text-retro-dark-gray">? ? ?</span>
-              <p className="font-pixel text-[10px] text-retro-dark-gray">
+            <div className="col-span-full bg-[#131f37] border-4 border-retro-black p-12 text-center flex flex-col items-center justify-center gap-4">
+              <span className="font-pixel text-xl text-yellow-400">? ? ?</span>
+              <p className="font-pixel text-[10px] text-gray-300">
                 NO COMPLETED QUESTS MATCH YOUR FILTERS.
               </p>
               <PixelButton variant="secondary" onClick={() => setSearch("")}>
@@ -151,35 +172,35 @@ export default function Showcase() {
 
         {/* Modal: Invite Developer */}
         {selectedUser && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-retro-black/50 p-4">
-            <div className="bg-retro-bg pixel-border pixel-shadow w-full max-w-sm p-6 flex flex-col gap-4 relative animate-in fade-in zoom-in-95 duration-150">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-retro-black/80 p-4 backdrop-blur-sm">
+            <div className="bg-[#121b2d] border-4 border-retro-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-white w-full max-w-sm p-6 flex flex-col gap-4 relative animate-in fade-in zoom-in-95 duration-150">
               <button
                 onClick={closeInviteModal}
-                className="absolute top-4 right-4 font-pixel text-xs text-retro-black hover:text-red-600 border-none bg-transparent cursor-pointer"
+                className="absolute top-4 right-4 font-pixel text-xs text-red-400 hover:text-red-500 border-none bg-transparent cursor-pointer"
               >
                 [X]
               </button>
 
-              <h2 className="font-pixel text-xs text-navy-blue border-b-2 border-retro-gray pb-2">
+              <h2 className="font-pixel text-xs text-yellow-400 border-b-2 border-gray-700 pb-2 text-left">
                 [RECRUIT PARTY MEMBER]
               </h2>
 
               {invitationStatus === "idle" && (
-                <form onSubmit={handleSendInvite} className="flex flex-col gap-4">
-                  <p className="font-sans text-xs text-retro-black leading-relaxed">
-                    Invite <span className="font-bold">{selectedUser.name}</span> (Class:{" "}
-                    <span className="text-navy-blue font-bold">{selectedUser.role}</span>) to join one of your active projects.
+                <form onSubmit={handleSendInvite} className="flex flex-col gap-4 text-left">
+                  <p className="font-sans text-xs text-gray-200 leading-relaxed">
+                    Invite <span className="font-bold text-white">{selectedUser.name}</span> (Class:{" "}
+                    <span className="text-yellow-400 font-bold">{selectedUser.role}</span>) to join one of your active projects.
                   </p>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="font-pixel text-[8px] text-retro-black">SELECT ACTIVE QUEST</label>
+                    <label className="font-pixel text-[8px] text-yellow-400">SELECT ACTIVE QUEST</label>
                     <select
                       value={selectedProject}
                       onChange={(e) => setSelectedProject(e.target.value)}
-                      className="font-sans text-xs p-2 bg-white pixel-border-sm focus:outline-none cursor-pointer"
+                      className="font-sans text-xs p-2 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none cursor-pointer"
                     >
                       {projectsData.map((proj) => (
-                        <option key={proj.project_id} value={proj.title}>
+                        <option key={proj.project_id} value={proj.title} className="bg-[#1c2a4a]">
                           {proj.title}
                         </option>
                       ))}
@@ -199,21 +220,21 @@ export default function Showcase() {
 
               {invitationStatus === "sending" && (
                 <div className="py-8 text-center flex flex-col items-center justify-center gap-3">
-                  <div className="w-8 h-8 bg-retro-gray border-4 border-dashed border-navy-blue animate-spin" />
-                  <p className="font-pixel text-[10px] text-retro-black">SENDING QUEST REQUEST...</p>
+                  <div className="w-8 h-8 bg-retro-black border-4 border-dashed border-yellow-400 animate-spin" />
+                  <p className="font-pixel text-[10px] text-yellow-400">SENDING QUEST REQUEST...</p>
                 </div>
               )}
 
               {invitationStatus === "success" && (
                 <div className="py-4 text-center flex flex-col items-center justify-center gap-4">
-                  <div className="w-10 h-10 bg-pixel-green border-4 border-retro-black flex items-center justify-center text-xl font-bold">
+                  <div className="w-10 h-10 bg-pixel-green text-retro-black border-4 border-retro-black flex items-center justify-center text-xl font-bold">
                     ✓
                   </div>
                   <div className="flex flex-col gap-1">
-                    <p className="font-pixel text-[10px] text-retro-black">REQUEST TRANSMITTED!</p>
-                    <p className="font-sans text-xs text-retro-dark-gray leading-relaxed">
-                      Invitation to join <strong>{selectedProject}</strong> sent to{" "}
-                      <strong>{selectedUser.name}</strong>. Wait for their response!
+                    <p className="font-pixel text-[10px] text-yellow-400">REQUEST TRANSMITTED!</p>
+                    <p className="font-sans text-xs text-gray-300 leading-relaxed">
+                      Invitation to join <strong className="text-white">{selectedProject}</strong> sent to{" "}
+                      <strong className="text-white">{selectedUser.name}</strong>. Wait for their response!
                     </p>
                   </div>
                   <PixelButton variant="navy" onClick={closeInviteModal} className="w-full">
@@ -227,6 +248,6 @@ export default function Showcase() {
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 }
