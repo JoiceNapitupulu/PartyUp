@@ -58,7 +58,7 @@ export default function Showcase() {
       <Header />
 
       <section
-        className="relative w-full min-h-[380px] md:min-h-[460px] bg-cover bg-center bg-no-repeat overflow-hidden border-b-4 border-retro-black flex items-center justify-center pt-24 md:pt-28"
+        className="relative w-full min-h-[400px] md:min-h-[400px] bg-cover bg-center bg-no-repeat overflow-hidden border-b-4 border-retro-black flex items-center justify-center pt-24 md:pt-28"
         style={{ backgroundImage: "url('/bg4.gif')" }} // Bisa diganti ke /showcase-bg.gif atau /bg3.gif
       >
         {/* Layer Overlay Dark Vignette untuk transisi sangat halus */}
