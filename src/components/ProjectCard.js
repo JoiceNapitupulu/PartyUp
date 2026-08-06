@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import usersData from "@/data/users.json";
@@ -20,7 +20,7 @@ const roleNames = [
   "DevOps Engineer"
 ];
 
-// Helper Banner Default ala Codedex jika proyek belum memiliki gambar khusus
+// Helper Banner Default ala Codedex
 const getDefaultBanner = (category) => {
   const cat = category?.toLowerCase() || "";
   if (cat.includes("gemastik")) return "/bg.png";
@@ -29,22 +29,33 @@ const getDefaultBanner = (category) => {
 };
 
 export default function ProjectCard({ project, showAuthor = true, onApply }) {
+  if (!project) return null;
+
   const router = useRouter();
   const [isApplied, setIsApplied] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
+
+  // isDetailOpen -> component is mounted. isDetailVisible -> drives the
+  // enter/exit transition so the panel can animate in/out smoothly
+  // instead of popping instantly.
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("currentUser");
       if (stored) {
-        setCurrentUser(JSON.parse(stored));
+        try {
+          setCurrentUser(JSON.parse(stored));
+        } catch (e) {
+          console.error(e);
+        }
       }
     }
   }, []);
 
-  const author = usersData.find((u) => u.user_id === project.author);
+  const author = usersData.find((u) => u.user_id === project?.author);
 
   const handleApply = (e) => {
     if (e) e.stopPropagation();
@@ -66,13 +77,48 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
     }, 800);
   };
 
-  const isClosed = project.status === "Filled";
+  // ---- Detail panel open/close with a smooth transition ----
+  const openDetail = useCallback(() => {
+    setIsDetailOpen(true);
+  }, []);
 
-  const rolesRequired = project.looking_for.filter((item) =>
+  const closeDetail = useCallback(() => {
+    setIsDetailVisible(false);
+    // wait for the exit transition to finish before unmounting
+    window.setTimeout(() => setIsDetailOpen(false), 260);
+  }, []);
+
+  useEffect(() => {
+    if (isDetailOpen) {
+      // lock body scroll while the full-screen sheet is open
+      const previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      // next frame so the CSS transition actually animates from 0 -> 1
+      const raf = requestAnimationFrame(() => setIsDetailVisible(true));
+      return () => {
+        document.body.style.overflow = previousOverflow;
+        cancelAnimationFrame(raf);
+      };
+    }
+  }, [isDetailOpen]);
+
+  useEffect(() => {
+    if (!isDetailOpen) return undefined;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") closeDetail();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isDetailOpen, closeDetail]);
+
+  const isClosed = project?.status === "Filled";
+  const lookingForList = Array.isArray(project?.looking_for) ? project.looking_for : [];
+
+  const rolesRequired = lookingForList.filter((item) =>
     roleNames.includes(item)
   );
 
-  const skillsRequired = project.looking_for.filter((item) =>
+  const skillsRequired = lookingForList.filter((item) =>
     !roleNames.includes(item)
   );
 
@@ -89,24 +135,22 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
     return `Restricted to Internal Students of Author's Guild (${author?.university || "Same University"})`;
   };
 
-  // Banner Gambar Kartu (Bisa dari project.image atau default)
-  const cardBanner = project.image || getDefaultBanner(project.category);
+  const cardBanner = project?.image || getDefaultBanner(project?.category);
 
   return (
     <>
       {/* 1. KARTU UTAMA GAYA CODÉDEX DARK THEME */}
       <div
-        onClick={() => setIsDetailOpen(true)}
-        className={`bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 flex flex-col justify-between overflow-hidden group transition-all duration-200 cursor-pointer select-none ${
-          project.isVerified ? "ring-2 ring-amber-400/50" : ""
-        } ${isClosed ? "opacity-70" : ""}`}
+        onClick={openDetail}
+        className={`bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 flex flex-col justify-between overflow-hidden group transition-all duration-200 cursor-pointer select-none ${project?.isVerified ? "ring-2 ring-amber-400/50" : ""
+          } ${isClosed ? "opacity-70" : ""}`}
       >
         <div>
-          {/* A. GAMBAR BANNER PIXEL ATAS (SEPERTI GAMBAR CODÉDEX) */}
+          {/* A. GAMBAR BANNER PIXEL ATAS */}
           <div className="relative h-36 w-full border-b-4 border-retro-black overflow-hidden bg-retro-black">
             <Image
               src={cardBanner}
-              alt={project.title}
+              alt={project?.title || "Quest"}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
@@ -116,9 +160,9 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
             <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between flex-wrap gap-1.5 z-10">
               <div className="flex items-center gap-1 flex-wrap">
                 <span className="font-pixel text-[8px] px-2 py-0.5 bg-navy-blue text-white border border-retro-black shadow-sm">
-                  {project.category}
+                  {project?.category}
                 </span>
-                {project.isVerified && (
+                {project?.isVerified && (
                   <span className="font-pixel text-[7px] bg-yellow-400 text-retro-black px-1.5 py-0.5 border border-retro-black font-bold animate-pulse">
                     ★ VERIFIED
                   </span>
@@ -126,43 +170,38 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
               </div>
 
               <span
-                className={`font-pixel text-[7px] px-2 py-0.5 border border-retro-black uppercase ${
-                  isClosed
-                    ? "bg-gray-600 text-gray-200"
-                    : "bg-pixel-green text-retro-black font-bold animate-pulse"
-                }`}
+                className={`font-pixel text-[7px] px-2 py-0.5 border border-retro-black uppercase ${isClosed
+                  ? "bg-gray-600 text-gray-200"
+                  : "bg-pixel-green text-retro-black font-bold animate-pulse"
+                  }`}
               >
-                {project.status === "Open" ? "● OPEN QUEST" : "■ FILLED"}
+                {project?.status === "Open" ? "● OPEN QUEST" : "■ FILLED"}
               </span>
             </div>
           </div>
 
           {/* B. KONTEN DESKRIPSI KARTU GELAP */}
           <div className="p-4 flex flex-col gap-3 text-left">
-            {/* Title */}
             <h3 className="font-pixel text-xs leading-relaxed text-white group-hover:text-yellow-300 transition-colors line-clamp-2">
-              {project.title}
+              {project?.title}
             </h3>
 
-            {/* Description */}
             <p className="font-sans text-xs text-gray-300 line-clamp-2 leading-relaxed">
-              {project.description}
+              {project?.description}
             </p>
 
-            {/* Requirements (Roles & Skills Badges Gelap) */}
             <div className="mt-1">
               <p className="font-pixel text-[8px] text-yellow-400 mb-1.5">// LOOKING FOR:</p>
               <div className="flex flex-wrap gap-1.5">
-                {project.looking_for.map((skill, index) => {
+                {lookingForList.map((skill, index) => {
                   const isRole = roleNames.includes(skill);
                   return (
                     <span
                       key={index}
-                      className={`flex items-center gap-1 font-pixel text-[7px] px-2 py-0.5 border ${
-                        isRole
-                          ? "bg-[#1e2d42] text-pixel-green border-pixel-green/40 font-bold"
-                          : "bg-[#182236] text-gray-200 border-gray-600/40"
-                      }`}
+                      className={`flex items-center gap-1 font-pixel text-[7px] px-2 py-0.5 border ${isRole
+                        ? "bg-[#1e2d42] text-pixel-green border-pixel-green/40 font-bold"
+                        : "bg-[#182236] text-gray-200 border-gray-600/40"
+                        }`}
                     >
                       {!isRole && <PixelTechIcon tech={skill} size="w-3 h-3" />}
                       {skill}
@@ -174,10 +213,10 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
           </div>
         </div>
 
-        {/* C. FOOTER KARTU: AUTHOR INFO & BUTTON */}
+        {/* C. FOOTER KARTU */}
         <div className="p-4 pt-0">
           <div className="border-t border-gray-700/60 pt-3 flex items-center justify-between gap-3">
-            {showAuthor && author ? (
+            {showAuthor && author && (
               <div className="flex items-center gap-2 text-left">
                 <div className="w-7 h-7 bg-retro-black border border-yellow-400 flex items-center justify-center font-pixel text-[9px] text-yellow-300 font-bold">
                   {author.name[0]}
@@ -189,8 +228,6 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                   </p>
                 </div>
               </div>
-            ) : (
-              <div />
             )}
 
             <PixelButton
@@ -205,131 +242,220 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
         </div>
       </div>
 
-      {/* 2. POP-UP DETAIL QUEST MODAL (TETAP SAMA) */}
       {isDetailOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-retro-black/80 p-4 backdrop-blur-sm">
-          <div className="bg-[#121b2d] border-4 border-retro-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-lg p-6 flex flex-col gap-4 relative max-h-[95vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150 text-white">
-            {/* Tombol Tutup [X] */}
-            <button
-              onClick={() => setIsDetailOpen(false)}
-              className="absolute top-4 right-4 font-pixel text-xs text-red-400 hover:text-red-500 border-none bg-transparent cursor-pointer"
-            >
-              [X]
-            </button>
+        <div
+          className={`fixed inset-0 z-40 bg-[#0b1220] text-white overflow-y-auto pt-24 md:pt-28 transition-opacity duration-300 ease-out ${isDetailVisible ? "opacity-100" : "opacity-0"
+            }`}
+        >
+          <div
+            className={`transition-all duration-300 ease-out ${isDetailVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+              }`}
+          >
+            {/* BAR TOMBOL KEMBALI DI ATAS HERO BANNER */}
+            <div className="max-w-5xl mx-auto px-5 sm:px-8 pb-3 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={closeDetail}
+                className="font-pixel text-[9px] text-yellow-300 hover:text-yellow-400 bg-retro-black border-2 border-yellow-400 px-3 py-1.5 cursor-pointer shadow-sm transition-transform duration-150 active:translate-y-[1px] hover:-translate-y-0.5"
+              >
+                [← BACK TO QUEST BOARD]
+              </button>
+              <span className="font-pixel text-[8px] text-gray-400 font-bold hidden sm:inline">
+          // SPEC SHEET: {project?.project_id}
+              </span>
+              <button
+                type="button"
+                onClick={closeDetail}
+                aria-label="Close"
+                className="font-pixel text-[9px] text-red-400 hover:text-red-300 bg-retro-black border-2 border-red-500 px-3 py-1.5 cursor-pointer shadow-sm transition-transform duration-150 active:translate-y-[1px] hover:-translate-y-0.5"
+              >
+                [X] CLOSE
+              </button>
+            </div>
 
-            <h2 className="font-pixel text-xs text-yellow-400 border-b-2 border-gray-700 pb-2 text-left">
-              [QUEST SPECIFICATION SHEET]
-            </h2>
+            {/* ---------------------------------------------------------- */}
+            {/* HERO — full-bleed banner, konten overlay ala Codédex       */}
+            {/* ---------------------------------------------------------- */}
+            <div className="relative w-full h-[420px] sm:h-[480px] lg:h-[560px] border-b-4 border-retro-black overflow-hidden bg-retro-black">
+              <Image
+                src={cardBanner}
+                alt={project?.title || "Quest Detail"}
+                fill
+                priority
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0b1220] via-[#0b1220]/70 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0b1220] via-transparent to-transparent" />
 
-            {/* Informasi Utama */}
-            <div className="space-y-4 text-left">
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-pixel text-[8px] bg-navy-blue text-white px-2 py-0.5 border border-retro-black">
-                    {project.category?.toUpperCase()}
+              <div className="relative z-10 h-full max-w-5xl mx-auto px-5 sm:px-8 flex flex-col justify-center gap-5">
+                {/* Badges */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-pixel text-[9px] bg-navy-blue text-white px-2.5 py-1 border border-retro-black shadow">
+                    {project?.category?.toUpperCase()}
                   </span>
-                  {project.isVerified && (
-                    <span className="font-pixel text-[8px] bg-yellow-400 text-retro-black px-1.5 py-0.5 border border-retro-black font-bold animate-pulse">
-                      ★ GUILD VERIFIED QUEST
+                  {project?.isVerified && (
+                    <span className="font-pixel text-[9px] bg-yellow-400 text-retro-black px-2.5 py-1 border border-retro-black font-bold animate-pulse">
+                      ★ GUILD VERIFIED
                     </span>
                   )}
+                  <span
+                    className={`font-pixel text-[9px] px-2.5 py-1 border border-retro-black uppercase ${isClosed
+                      ? "bg-gray-600 text-white"
+                      : "bg-pixel-green text-retro-black font-bold animate-pulse"
+                      }`}
+                  >
+                    {project?.status === "Open" ? "● OPEN QUEST" : "■ FILLED"}
+                  </span>
                 </div>
-                <h3 className="font-pixel text-sm text-white mt-2 leading-snug">{project.title}</h3>
+
+                {/* Title */}
+                <h1 className="font-pixel text-2xl sm:text-3xl lg:text-4xl text-yellow-300 drop-shadow-[0_4px_0px_rgba(0,0,0,1)] leading-tight max-w-2xl">
+                  {project?.title}
+                </h1>
+
+                {/* Short description */}
+                <p className="font-sans text-sm sm:text-base text-gray-200 leading-relaxed max-w-xl line-clamp-3">
+                  {project?.description}
+                </p>
+
+                {/* Meta row — ala "Prerequisite / Time to complete / learners" */}
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-sans text-xs sm:text-sm text-gray-300">
+                  <span className="flex items-center gap-1.5">
+                    ⏱️ Duration: <span className="text-white font-semibold">2 - 4 Weeks Sprint</span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    👥 Party Size: <span className="text-white font-semibold">{rolesRequired.length + 1} Members Max</span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    🎯 Slots Open: <span className="text-white font-semibold">{rolesRequired.length}</span>
+                  </span>
+                </div>
+
+                {/* CTA */}
+                <div className="pt-1">
+                  <PixelButton
+                    variant={isApplied ? "secondary" : isClosed ? "disabled" : "green"}
+                    disabled={isClosed || isApplying || isApplied}
+                    onClick={(e) => handleApply(e)}
+                    className="py-3 px-8 text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition-transform duration-150 active:translate-y-[1px] hover:-translate-y-0.5"
+                  >
+                    {isApplying ? "SENDING..." : isApplied ? "APPLIED ✓" : isClosed ? "FILLED" : "JOIN PARTY ▶"}
+                  </PixelButton>
+                </div>
+              </div>
+            </div>
+
+            {/* ---------------------------------------------------------- */}
+            {/* CONTENT — tersusun rapi single column di bawah hero        */}
+            {/* ---------------------------------------------------------- */}
+            <div className="max-w-5xl mx-auto px-5 sm:px-8 py-10 flex flex-col gap-6 pb-24">
+
+              {/* OVERVIEW */}
+              <div className="bg-[#121b2d] p-6 border-2 border-retro-black text-left flex flex-col gap-2">
+                <span className="font-pixel text-[10px] text-yellow-400">// QUEST OVERVIEW &amp; SCOPE:</span>
+                <p className="font-sans text-sm text-gray-200 leading-relaxed">
+                  {project?.description}
+                </p>
               </div>
 
-              {/* Project Overview */}
-              <div className="bg-[#1a253b] p-3 border-2 border-retro-black">
-                <span className="font-pixel text-[8px] text-yellow-400 block mb-1">// QUEST OVERVIEW:</span>
-                <p className="font-sans text-xs text-gray-200 leading-relaxed">{project.description}</p>
-              </div>
-
-              {/* Roles Required & Eligibility */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-[#1a253b] p-3 border-2 border-retro-black">
-                  <span className="font-pixel text-[8px] text-yellow-400 block mb-2">// ROLES REQUIRED (PARTY SIZE):</span>
+              {/* ROLES + ELIGIBILITY */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                <div className="bg-[#121b2d] p-6 border-2 border-retro-black flex flex-col gap-3">
+                  <span className="font-pixel text-[10px] text-yellow-400 block mb-1">// ROLES NEEDED (SLOTS):</span>
                   <div className="flex flex-col gap-2">
                     {rolesRequired.map((role, i) => (
-                      <div key={i} className="flex items-center justify-between">
-                        <span className="font-pixel text-[8px] bg-pixel-green text-retro-black px-2 py-0.5 border border-retro-black font-bold">
-                          {role?.toUpperCase()}
+                      <div
+                        key={i}
+                        className="flex items-center justify-between bg-[#0b1220] p-3 border border-gray-700 transition-colors duration-150 hover:border-pixel-green/60"
+                      >
+                        <span className="font-pixel text-[9px] text-pixel-green font-bold">
+                          +{role?.toUpperCase()}
                         </span>
-                        <span className="font-pixel text-[8px] text-gray-300">
-                          x1 MEMBER
+                        <span className="font-pixel text-[8px] bg-yellow-400 text-retro-black px-2 py-0.5 font-bold">
+                          1 SLOT OPEN
                         </span>
                       </div>
                     ))}
                     {rolesRequired.length === 0 && (
-                      <span className="font-sans text-xs text-gray-400">Party is full!</span>
+                      <span className="font-sans text-xs text-gray-400">Party slots are completely filled!</span>
                     )}
                   </div>
                 </div>
 
-                <div className="bg-[#1a253b] p-3 border-2 border-retro-black flex flex-col justify-between">
+                <div className="bg-[#121b2d] p-6 border-2 border-retro-black flex flex-col justify-between">
                   <div>
-                    <span className="font-pixel text-[8px] text-yellow-400 block mb-1.5">// ELIGIBILITY CRITERIA:</span>
-                    <p className="font-sans text-[11px] text-gray-300 leading-tight">
-                      {getEligibility(project.category)}
+                    <span className="font-pixel text-[10px] text-yellow-400 block mb-2">// ELIGIBILITY CRITERIA:</span>
+                    <p className="font-sans text-xs text-gray-300 leading-relaxed">
+                      {getEligibility(project?.category)}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Tech Stack Badges */}
-              <div>
-                <span className="font-pixel text-[8px] text-gray-400 block mb-1.5">REQUIRED TECHNOLOGY INVENTORY:</span>
-                <div className="flex flex-wrap gap-1.5">
+              {/* TECH STACK */}
+              <div className="text-left bg-[#121b2d] p-6 border-2 border-retro-black">
+                <span className="font-pixel text-[9px] text-gray-400 block mb-3">// REQUIRED TECH STACK INVENTORY:</span>
+                <div className="flex flex-wrap gap-2.5">
                   {skillsRequired.map((tech, i) => (
-                    <span key={i} className="flex items-center gap-1.5 font-pixel text-[8px] bg-[#1a253b] text-gray-200 px-2.5 py-1 border border-gray-600">
-                      <PixelTechIcon tech={tech} size="w-3.5 h-3.5" />
+                    <span
+                      key={i}
+                      className="flex items-center gap-2 font-pixel text-[9px] bg-[#0b1220] text-white px-3.5 py-2 border border-gray-600 transition-colors duration-150 hover:border-yellow-400/70"
+                    >
+                      <PixelTechIcon tech={tech} size="w-4 h-4" />
                       {tech}
                     </span>
                   ))}
                 </div>
               </div>
 
-              {/* Creator Info */}
-              <div className="bg-[#1a253b] p-3 border-2 border-retro-black flex items-center justify-between">
-                <div className="text-left">
-                  <span className="font-pixel text-[8px] text-gray-400 block mb-1">DISPATCHED BY:</span>
-                  <p className="font-pixel text-[9px] text-white font-bold">{author?.name || "Unknown Adventurer"}</p>
-                  <p className="font-sans text-[9px] text-gray-400">{author?.university} • {author?.major}</p>
+              {/* DISPATCHER */}
+              <div className="bg-[#121b2d] p-6 border-2 border-retro-black flex items-center justify-between text-left gap-4 flex-wrap">
+                <div className="text-left flex items-center gap-4">
+                  <div className="w-12 h-10 bg-[#0b1220] border-2 border-yellow-400 text-yellow-300 flex items-center justify-center font-pixel text-base font-bold shadow-sm">
+                    {author?.name ? author.name[0] : "A"}
+                  </div>
+                  <div>
+                    <span className="font-pixel text-[8px] text-gray-400 block">QUEST DISPATCHER:</span>
+                    <p className="font-pixel text-xs text-white font-bold">{author?.name || "Unknown Adventurer"}</p>
+                    <p className="font-sans text-xs text-gray-400">{author?.university} • {author?.major}</p>
+                  </div>
                 </div>
-                <span className="font-pixel text-[8px] bg-navy-blue text-white px-2 py-1 border border-retro-black">
-                  ROLE: {author?.role?.toUpperCase()}
+                <span className="font-pixel text-[9px] bg-navy-blue text-white px-3 py-1.5 border border-retro-black">
+                  {author?.role?.toUpperCase() || "HACKER"}
                 </span>
               </div>
-            </div>
 
-            {/* Links & Apply Button */}
-            <div className="flex justify-between items-center border-t-2 border-gray-700 pt-4">
-              <div className="flex gap-4">
-                <a
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-pixel text-[8px] text-yellow-400 hover:text-yellow-300 transition-colors"
+              {/* LINKS + FINAL CTA */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#121b2d] p-6 border-2 border-retro-black">
+                <div className="flex gap-6">
+                  <a
+                    href="https://github.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-pixel text-[9px] text-yellow-400 hover:text-yellow-300 transition-colors"
+                  >
+                    [SOURCE_CODE]
+                  </a>
+                  <a
+                    href="https://vercel.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-pixel text-[9px] text-pixel-green hover:text-green-400 transition-colors"
+                  >
+                    [LIVE_DEMO]
+                  </a>
+                </div>
+
+                <PixelButton
+                  variant={isApplied ? "secondary" : isClosed ? "disabled" : "green"}
+                  disabled={isClosed || isApplying || isApplied}
+                  onClick={(e) => handleApply(e)}
+                  className="py-3 px-8 text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition-transform duration-150 active:translate-y-[1px] hover:-translate-y-0.5"
                 >
-                  [SOURCE_CODE]
-                </a>
-                <a
-                  href="https://vercel.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-pixel text-[8px] text-pixel-green hover:text-green-400 transition-colors"
-                >
-                  [LIVE_DEMO]
-                </a>
+                  {isApplying ? "SENDING..." : isApplied ? "APPLIED ✓" : isClosed ? "FILLED" : "JOIN PARTY ▶"}
+                </PixelButton>
               </div>
-              <PixelButton
-                variant={isApplied ? "secondary" : isClosed ? "disabled" : "green"}
-                disabled={isClosed || isApplying || isApplied}
-                onClick={(e) => handleApply(e)}
-                className="py-2 px-4 text-[9px]"
-              >
-                {isApplying ? "SENDING..." : isApplied ? "APPLIED ✓" : isClosed ? "FILLED" : "JOIN PARTY"}
-              </PixelButton>
             </div>
-
           </div>
         </div>
       )}

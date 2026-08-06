@@ -10,6 +10,52 @@ import ProjectCard from "@/components/ProjectCard";
 import projectsData from "@/data/projects.json";
 
 export default function Home() {
+  // 1. EFEK TEKS KETIK SATU PER SATU (WORKSTATION TITLE)
+  const fullWorkspaceTitle = "REAL-TIME RETRO PROGRAMMING WORKSPACE";
+  const [typedWorkspaceTitle, setTypedWorkspaceTitle] = useState("");
+
+  useEffect(() => {
+    let index = 0;
+    setTypedWorkspaceTitle("");
+    const typingTimer = setInterval(() => {
+      if (index < fullWorkspaceTitle.length) {
+        setTypedWorkspaceTitle(fullWorkspaceTitle.slice(0, index + 1));
+        index++;
+      } else {
+        clearInterval(typingTimer);
+      }
+    }, 70); // Kecepatan ketik per huruf (40ms)
+
+    return () => clearInterval(typingTimer);
+  }, []);
+
+  // 2. EFEK ANGKA BERTAMBAH CEPAT (COUNT-UP ANIMATION)
+  const [heroesCount, setHeroesCount] = useState(0);
+  const [questsCount, setQuestsCount] = useState(0);
+  const [matchRateCount, setMatchRateCount] = useState(0);
+
+  useEffect(() => {
+    const duration = 3000; // Total waktu hitungan cepat (1.5 detik)
+    const steps = 40;
+    const intervalTime = duration / steps;
+
+    let step = 0;
+    const countTimer = setInterval(() => {
+      step++;
+      const progress = step / steps;
+
+      setHeroesCount(Math.min(342, Math.floor(342 * progress)));
+      setQuestsCount(Math.min(1208, Math.floor(1208 * progress)));
+      setMatchRateCount(Math.min(94, Math.floor(94 * progress)));
+
+      if (step >= steps) {
+        clearInterval(countTimer);
+      }
+    }, intervalTime);
+
+    return () => clearInterval(countTimer);
+  }, []);
+
   const [scrollY, setScrollY] = useState(0);
   const [isAudioOn, setIsAudioOn] = useState(true);
   const videoRef = useRef(null);
@@ -219,8 +265,11 @@ export default function Home() {
               <span className="font-pixel text-[9px] text-yellow-400 bg-retro-black px-2 py-1 w-fit border border-retro-black">
                 // ADVANCED MATCHMAKING ENGINE
               </span>
-              <h2 className="font-pixel text-lg md:text-xl text-white leading-relaxed">
-                REAL-TIME RETRO PROGRAMMING WORKSPACE
+              <h2 className="font-pixel text-lg md:text-xl text-white leading-relaxed min-h-[50px] flex items-center">
+                <span>
+                  {typedWorkspaceTitle}
+                  <span className="animate-pulse text-yellow-400 font-bold">|</span>
+                </span>
               </h2>
               <p className="font-sans text-xs md:text-sm text-gray-300 leading-relaxed">
                 PartyUp! connects student programmers directly with designers and product managers. Build high-performing hackathon parties equipped with 10 modern IT class roles.
@@ -238,23 +287,34 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ========================================================= */}
-        {/* STATISTIK QUEST HUB (RPG HUD STYLE)                        */}
-        {/* ========================================================= */}
+        {/* STATISTIK QUEST HUB (ANGKA BERTAMBAH OTOMATIS) */}
         <section className="max-w-6xl w-full mx-auto px-4 relative z-20 my-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-retro-black text-white p-6 border-4 border-retro-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+
+            {/* Hero Count */}
             <div className="flex flex-col items-center justify-center text-center p-4 border-2 border-dashed border-yellow-400/30">
               <span className="font-pixel text-xs text-yellow-400 mb-1">ACTIVE PARTY HEROES</span>
-              <span className="font-pixel text-2xl text-white font-bold drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">342+</span>
+              <span className="font-pixel text-2xl text-white font-bold drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">
+                {heroesCount.toLocaleString()}+
+              </span>
             </div>
+
+            {/* Quests Count */}
             <div className="flex flex-col items-center justify-center text-center p-4 border-2 border-dashed border-pixel-green/30">
               <span className="font-pixel text-xs text-pixel-green mb-1">QUESTS COMPLETED</span>
-              <span className="font-pixel text-2xl text-white font-bold drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">1,208+</span>
+              <span className="font-pixel text-2xl text-white font-bold drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">
+                {questsCount.toLocaleString()}+
+              </span>
             </div>
+
+            {/* Match Rate Count */}
             <div className="flex flex-col items-center justify-center text-center p-4 border-2 border-dashed border-sky-400/30">
               <span className="font-pixel text-xs text-sky-400 mb-1">GUILD MATCH RATE</span>
-              <span className="font-pixel text-2xl text-white font-bold drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]">94%</span>
+              <span className="font-pixel text-2xl text-white font-bold drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]">
+                {matchRateCount}%
+              </span>
             </div>
+
           </div>
         </section>
 
