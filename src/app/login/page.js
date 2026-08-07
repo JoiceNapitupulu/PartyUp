@@ -248,12 +248,25 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Sign Up Link */}
-          <div className="text-center border-t border-slate-200 pt-3">
+          {/* Sign Up & Reset Password Links */}
+          <div className="text-center border-t border-slate-200 pt-3 flex flex-col gap-2 relative z-20">
             <p className="font-sans text-xs text-gray-500">
               Need an account?{" "}
-              <Link href="/register" className="font-pixel text-[9px] text-navy-blue font-bold hover:underline pl-1">
+              <Link
+                href="/register"
+                className="font-pixel text-[9px] text-navy-blue font-bold hover:underline pl-1 cursor-pointer inline-block relative z-20"
+              >
                 Sign up &gt;
+              </Link>
+            </p>
+
+            <p className="font-sans text-xs text-gray-500 mt-2.5">
+              Lost security key?{" "}
+              <Link
+                href="/forgot-password"
+                className="font-pixel text-[9px] text-navy-blue font-bold hover:underline pl-1 cursor-pointer inline-block relative z-20"
+              >
+                Reset Password &gt;
               </Link>
             </p>
           </div>
