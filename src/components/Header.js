@@ -91,6 +91,7 @@ export default function Header() {
     { name: "QUEST BOARD", path: "/board" },
     { name: "SHOWCASE", path: "/showcase" },
     { name: "TIMELINE", path: "/following" },
+    { name: "GUIDE", path: "/guide" },
   ];
 
   const navItems = user && user.role?.toLowerCase() === "admin"

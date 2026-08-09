@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import usersData from "@/data/users.json";
+import PixelAvatar from "@/components/PixelAvatar";
 
 const ROLE_THEME = {
   hacker: { accent: "#22c55e", ring: "border-emerald-400", label: "Hacker" },
@@ -76,20 +77,12 @@ function RoleAvatarIcon({ role, className = "" }) {
   );
 }
 
+// Menggunakan PixelAvatar yang sama persis dengan halaman Profile!
 function AccountAvatar({ account, className = "" }) {
-  const [imgFailed, setImgFailed] = useState(false);
-
-  if (!account.avatar || imgFailed) {
-    return <RoleAvatarIcon role={account.role} className={className} />;
-  }
-
   return (
-    <img
-      src={account.avatar}
-      alt={account.name}
-      onError={() => setImgFailed(true)}
-      className={`${className} object-cover rounded-full`}
-    />
+    <div className={`flex items-center justify-center bg-retro-black ${className}`}>
+      <PixelAvatar role={account.role} size="w-full h-full" />
+    </div>
   );
 }
 
