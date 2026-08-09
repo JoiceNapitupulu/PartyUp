@@ -5,34 +5,34 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PixelButton from "@/components/PixelButton";
 import ProjectCard from "@/components/ProjectCard";
+import PixelAvatar from "@/components/PixelAvatar";
+import PixelTechIcon from "@/components/PixelTechIcon";
 import usersData from "@/data/users.json";
 import projectsData from "@/data/projects.json";
-import PixelAvatar from "@/components/PixelAvatar";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("overview"); // overview, projects, board, skills
   const [user, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState(usersData);
-  const [isEditMode, setIsEditMode] = useState(false); // Simulasi interaksi edit path
+  const [isEditMode, setIsEditMode] = useState(false);
   const [projects, setProjects] = useState(projectsData);
 
   useEffect(() => {
     const loadUser = () => {
-      // 1. Membaca database user ter-update dari Admin (localStorage)
+      // 1. Membaca database user ter-update dari Admin
       const storedUsersList = localStorage.getItem("usersList");
       const activeUsersList = storedUsersList ? JSON.parse(storedUsersList) : usersData;
       setAllUsers(activeUsersList);
 
       const isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
       const stored = localStorage.getItem("currentUser");
-      
+
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          // Sinkronisasi karakter aktif dengan daftar ter-update dari Admin
           const synced = activeUsersList.find((u) => u.user_id === parsed.user_id) || parsed;
 
-          // PROTEKSI AKUN: Jika akun Anda di-ban oleh Admin, paksa log out instan!
+          // PROTEKSI AKUN: Jika akun di-ban oleh Admin, paksa log out instan!
           if (synced.isBanned) {
             localStorage.setItem("isLoggedOut", "true");
             localStorage.removeItem("currentUser");
@@ -48,7 +48,7 @@ export default function Profile() {
           console.error(e);
         }
       }
-      
+
       if (isLoggedOut) {
         window.location.href = "/login";
         return;
@@ -63,7 +63,7 @@ export default function Profile() {
     return () => window.removeEventListener("auth-change", loadUser);
   }, []);
 
-  // Dropdown handler untuk menukar profile secara instan (terproteksi)
+  // Dropdown handler untuk menukar profile secara instan
   const handleProfileSwitch = (userId) => {
     const selected = allUsers.find((u) => u.user_id === userId);
     if (selected) {
@@ -78,19 +78,22 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    // Membaca daftar proyek ter-update dari database lokal
     const localProjects = localStorage.getItem("projectsList");
     if (localProjects) {
-      setProjects(JSON.parse(localProjects));
+      try {
+        setProjects(JSON.parse(localProjects));
+      } catch (e) {
+        setProjects(projectsData);
+      }
     } else {
       setProjects(projectsData);
       localStorage.setItem("projectsList", JSON.stringify(projectsData));
     }
-  }, [user]); // memicu ulang jika user berganti
+  }, [user]);
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-retro-bg flex items-center justify-center font-pixel text-xs text-retro-black">
+      <div className="min-h-screen bg-[#0c1322] flex items-center justify-center font-pixel text-xs text-yellow-300">
         [LOADING STAT SHEETS...]
       </div>
     );
@@ -99,7 +102,7 @@ export default function Profile() {
   // Filter project yang diposting oleh user ini
   const userProjects = projects.filter((p) => p.author === user.user_id);
 
-  // Statistik kelas RPG yang dipetakan (Ditambahkan ADMIN untuk stats dewa)
+  // Statistik kelas RPG
   const roleStats = {
     "Product Manager (PM)": { CODE: 10, DESIGN: 60, BUSINESS: 95, CHARISMA: 90 },
     "Project / Scrum Master": { CODE: 20, DESIGN: 30, BUSINESS: 90, CHARISMA: 95 },
@@ -124,92 +127,92 @@ export default function Profile() {
   ];
 
   return (
-    <>
+    <div className="bg-[#0c1322] min-h-screen text-white flex flex-col font-sans overflow-x-hidden selection:bg-yellow-400 selection:text-black">
       <Header />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-24 md:pt-28 pb-12 flex flex-col gap-8">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-28 md:pt-32 pb-16 flex flex-col gap-8">
 
         {/* Top Control Header: Dropdown & Title */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b-4 border-retro-black pb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b-4 border-gray-700 pb-6">
           <div>
-            <h1 className="font-pixel text-xl text-retro-black mb-2">
+            <h1 className="font-pixel text-xl text-yellow-300 mb-2">
               [GUILD MEMBER SHEET]
             </h1>
-            <p className="font-sans text-sm text-retro-dark-gray">
+            <p className="font-sans text-sm text-gray-300">
               Inspect student stats, active quests, and completed historical achievements.
             </p>
           </div>
 
           {/* Profile Switcher Dropdown */}
           <div className="flex items-center gap-2">
-            <span className="font-pixel text-[8px] text-navy-blue">SWITCH PROFILE:</span>
+            <span className="font-pixel text-[8px] text-yellow-400">// SWITCH PROFILE:</span>
             <div className="relative">
               <select
                 value={user.user_id}
                 onChange={(e) => handleProfileSwitch(e.target.value)}
-                className="font-sans text-xs p-2 bg-white pixel-border-sm focus:outline-none appearance-none pr-8 cursor-pointer"
+                className="font-sans text-xs p-2 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none appearance-none pr-8 cursor-pointer"
               >
                 {allUsers.map((u) => (
-                  <option key={u.user_id} value={u.user_id}>
+                  <option key={u.user_id} value={u.user_id} className="bg-[#1c2a4a] text-white">
                     {u.name} ({u.role})
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-retro-black">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-yellow-400">
                 ▼
               </div>
             </div>
           </div>
         </div>
 
-        {/* Profile Layout */}
+        {/* Profile Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-          {/* Left Column: Detail Profile Card */}
-          <div className="lg:col-span-4 bg-white pixel-border pixel-shadow p-6 flex flex-col gap-6 items-center text-center">
+          {/* Kolom Kiri: Detail Profile Card */}
+          <div className="lg:col-span-4 bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 flex flex-col gap-6 items-center text-center">
 
             {/* Avatar block RPG Manusia Piksel Dinamis */}
-            <div className="w-28 h-28 bg-retro-black border-4 border-retro-black flex items-center justify-center relative">
+            <div className="w-28 h-28 bg-retro-black border-4 border-yellow-400 flex items-center justify-center relative shadow-lg">
               <PixelAvatar role={user.role} size="w-24 h-24" />
-              <div className="absolute -bottom-2 right-2 bg-pixel-green text-retro-black font-pixel text-[8px] px-1.5 py-0.5 pixel-border-sm shadow-md">
+              <div className="absolute -bottom-2.5 right-1 bg-pixel-green text-retro-black font-pixel text-[8px] px-2 py-0.5 border border-retro-black shadow-md font-bold">
                 LV.{(user.skills?.length || 0) + (user.semester || 1)}
               </div>
             </div>
 
             {/* User Details */}
-            <div className="flex flex-col gap-1 w-full">
-              <h2 className="font-pixel text-base text-retro-black">{user.name}</h2>
-              <span className="font-pixel text-[9px] px-2 py-0.5 bg-navy-blue text-white pixel-border-sm mx-auto w-fit">
+            <div className="flex flex-col gap-1.5 w-full text-center">
+              <h2 className="font-pixel text-base text-white font-bold">{user.name}</h2>
+              <span className="font-pixel text-[8px] px-2.5 py-1 bg-navy-blue text-white border border-yellow-400 mx-auto w-fit font-bold">
                 CLASS: {user.role?.toUpperCase()}
               </span>
-              <p className="font-sans text-xs text-retro-dark-gray mt-2 font-semibold">
+              <p className="font-sans text-xs text-yellow-300 mt-2 font-semibold">
                 {user.university}
               </p>
-              <p className="font-sans text-xs text-retro-dark-gray leading-none">
+              <p className="font-sans text-xs text-gray-400 leading-none">
                 {user.major} • Semester {user.semester || 4}
               </p>
             </div>
 
             {/* Bio */}
-            <div className="w-full border-t-2 border-retro-light-gray pt-4 text-left">
-              <span className="font-pixel text-[8px] text-navy-blue block mb-2">GUILD ALIAS BIO</span>
-              <p className="font-sans text-xs text-retro-dark-gray leading-relaxed italic">
+            <div className="w-full border-t border-gray-700/60 pt-4 text-left">
+              <span className="font-pixel text-[8px] text-yellow-400 block mb-2">// GUILD ALIAS BIO</span>
+              <p className="font-sans text-xs text-gray-300 leading-relaxed italic bg-[#18233a] p-3 border border-gray-700">
                 "{user.bio || "No bio written yet."}"
               </p>
             </div>
 
-            {/* Quick Actions (Simulasi Interaktif Tanpa Native Alert) */}
-            <div className="w-full border-t-2 border-retro-light-gray pt-4 flex flex-col gap-2">
-              <span className="font-pixel text-[8px] text-navy-blue block text-left mb-1">GUILD ACTIONS</span>
+            {/* Quick Actions */}
+            <div className="w-full border-t border-gray-700/60 pt-4 flex flex-col gap-2">
+              <span className="font-pixel text-[8px] text-yellow-400 block text-left mb-1">// GUILD ACTIONS</span>
 
               {isEditMode ? (
-                <div className="p-2 border-2 border-dashed border-green-500 bg-green-50 text-left font-sans text-[10px] text-green-700 leading-tight">
+                <div className="p-3 border-2 border-dashed border-pixel-green bg-[#18233a] text-left font-sans text-xs text-pixel-green leading-tight">
                   [SYSTEM] Creative path active. Post a team quest on the board to level up!
                 </div>
               ) : (
                 <PixelButton
                   variant="green"
-                  className="w-full py-1.5 text-[9px] border-2"
+                  className="w-full py-2 text-[9px] border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                   onClick={() => setIsEditMode(true)}
                 >
                   ACTIVATE CREATIVE PATH
@@ -218,20 +221,20 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Right Column: Dynamic Sub-Navigation Tabs & Views */}
+          {/* Kolom Kanan: Dynamic Sub-Navigation Tabs & Views */}
           <div className="lg:col-span-8 flex flex-col gap-6">
 
             {/* Sub-Navigation Tabs */}
-            <div className="flex border-b-4 border-retro-black bg-retro-light-gray pixel-border p-1 gap-2 flex-wrap">
+            <div className="flex border-4 border-retro-black bg-[#131f37] p-1.5 gap-2 flex-wrap rounded shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               {tabs.map((tab) => {
                 const isActive = activeTab === tab.id;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`font-pixel text-[9px] px-3.5 py-2 border-2 cursor-pointer transition-all select-none ${isActive
-                      ? "bg-retro-black text-white border-retro-black translate-x-[1px] translate-y-[1px]"
-                      : "bg-transparent text-retro-black border-transparent hover:border-retro-black hover:bg-white"
+                    className={`font-pixel text-[9px] px-4 py-2 border-2 cursor-pointer transition-all select-none ${isActive
+                      ? "bg-navy-blue text-white border-yellow-400 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                      : "bg-transparent text-gray-300 border-transparent hover:border-gray-600 hover:text-white"
                       }`}
                   >
                     {tab.name}
@@ -240,28 +243,28 @@ export default function Profile() {
               })}
             </div>
 
-            {/* Tab Panels */}
-            <div className="bg-white pixel-border pixel-shadow p-6 min-h-[350px]">
+            {/* Tab Panels Container */}
+            <div className="bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 min-h-[380px]">
 
               {/* Tab 1: Overview */}
               {activeTab === "overview" && (
-                <div className="flex flex-col gap-6">
-                  <h3 className="font-pixel text-xs text-navy-blue border-b-2 border-retro-light-gray pb-2 mb-2">
-                    [CLASS ATTRIBUTES & STATISTICS]
+                <div className="flex flex-col gap-6 text-left">
+                  <h3 className="font-pixel text-xs text-yellow-300 border-b border-gray-700 pb-2 mb-1">
+                    [CLASS ATTRIBUTES &amp; STATISTICS]
                   </h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Stat items */}
+                    {/* Stat Items */}
                     <div className="flex flex-col gap-4">
                       {Object.entries(activeStats).map(([stat, val]) => (
                         <div key={stat} className="flex flex-col gap-1">
-                          <div className="flex justify-between font-pixel text-[8px] text-retro-black">
+                          <div className="flex justify-between font-pixel text-[8px] text-gray-200">
                             <span>{stat}</span>
-                            <span>{val}/100</span>
+                            <span className="text-yellow-400 font-bold">{val}/100</span>
                           </div>
-                          <div className="h-4 bg-retro-light-gray border-2 border-retro-black p-0.5">
+                          <div className="h-4 bg-[#18233a] border-2 border-retro-black p-0.5">
                             <div
-                              className="h-full bg-pixel-green border border-black"
+                              className="h-full bg-pixel-green border border-black transition-all duration-300"
                               style={{ width: `${val}%` }}
                             />
                           </div>
@@ -269,15 +272,15 @@ export default function Profile() {
                       ))}
                     </div>
 
-                    {/* Class passive detail */}
-                    <div className="bg-retro-light-gray border-4 border-dashed border-retro-gray p-4 flex flex-col gap-3 justify-center">
-                      <span className="font-pixel text-[8px] text-navy-blue">CLASS PASSIVES</span>
-                      <div className="flex flex-col gap-2 font-sans text-xs text-retro-dark-gray leading-normal">
+                    {/* Class Passive Detail */}
+                    <div className="bg-[#18233a] border-2 border-dashed border-gray-600 p-4 flex flex-col gap-3 justify-center">
+                      <span className="font-pixel text-[8px] text-yellow-400">// CLASS PASSIVES</span>
+                      <div className="flex flex-col gap-2 font-sans text-xs text-gray-300 leading-normal">
                         <p>
-                          <strong>✓ Synergizer:</strong> Increases party matching success rate by +15% when matching with other classes.
+                          <strong className="text-pixel-green">✓ Synergizer:</strong> Increases party matching success rate by +15% when matching with other classes.
                         </p>
                         <p>
-                          <strong>✓ Digital Learning Badge:</strong> Earned by completing 1+ community hackathon quests.
+                          <strong className="text-pixel-green">✓ Digital Learning Badge:</strong> Earned by completing 1+ community hackathon quests.
                         </p>
                       </div>
                     </div>
@@ -285,24 +288,24 @@ export default function Profile() {
                 </div>
               )}
 
-              {/* Tab 2: Projects dengan Proteksi Array */}
+              {/* Tab 2: Projects */}
               {activeTab === "projects" && (
-                <div className="flex flex-col gap-4">
-                  <h3 className="font-pixel text-xs text-navy-blue border-b-2 border-retro-light-gray pb-2 mb-2">
-                    [PORTFOLIO & FINISHED WORK LOGS]
+                <div className="flex flex-col gap-4 text-left">
+                  <h3 className="font-pixel text-xs text-yellow-300 border-b border-gray-700 pb-2 mb-1">
+                    [PORTFOLIO &amp; FINISHED WORK LOGS]
                   </h3>
 
                   {user.portfolio && user.portfolio.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {user.portfolio.map((p, index) => (
-                        <div key={index} className="bg-retro-light-gray pixel-border p-4 flex flex-col gap-2">
-                          <span className="font-pixel text-[8px] text-navy-blue bg-white border border-retro-black px-1.5 py-0.5 w-fit">
+                        <div key={index} className="bg-[#18233a] border-2 border-retro-black p-4 flex flex-col gap-2">
+                          <span className="font-pixel text-[8px] text-pixel-green bg-[#121b2d] border border-pixel-green/40 px-2 py-0.5 w-fit font-bold">
                             {p.role}
                           </span>
-                          <h4 className="font-pixel text-[10px] text-retro-black mt-1">
+                          <h4 className="font-pixel text-[10px] text-white mt-1 font-bold">
                             {p.project_name}
                           </h4>
-                          <p className="font-sans text-xs text-retro-dark-gray leading-relaxed">
+                          <p className="font-sans text-xs text-gray-300 leading-relaxed">
                             {p.description}
                           </p>
                         </div>
@@ -310,8 +313,8 @@ export default function Profile() {
                     </div>
                   ) : (
                     <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
-                      <span className="font-pixel text-xs text-retro-dark-gray">NO HISTORICAL WORK</span>
-                      <p className="font-sans text-xs text-retro-dark-gray max-w-xs">
+                      <span className="font-pixel text-xs text-gray-400">NO HISTORICAL WORK</span>
+                      <p className="font-sans text-xs text-gray-400 max-w-xs">
                         Create custom completed items to build up your adventurer profile rating.
                       </p>
                     </div>
@@ -321,8 +324,8 @@ export default function Profile() {
 
               {/* Tab 3: Project Board */}
               {activeTab === "board" && (
-                <div className="flex flex-col gap-4">
-                  <h3 className="font-pixel text-xs text-navy-blue border-b-2 border-retro-light-gray pb-2 mb-2">
+                <div className="flex flex-col gap-4 text-left">
+                  <h3 className="font-pixel text-xs text-yellow-300 border-b border-gray-700 pb-2 mb-1">
                     [YOUR ACTIVE DISPATCHED QUESTS]
                   </h3>
 
@@ -338,8 +341,8 @@ export default function Profile() {
                     </div>
                   ) : (
                     <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
-                      <span className="font-pixel text-xs text-retro-dark-gray">NO ACTIVE QUESTS DETECTED</span>
-                      <p className="font-sans text-xs text-retro-dark-gray max-w-xs leading-normal">
+                      <span className="font-pixel text-xs text-gray-400">NO ACTIVE QUESTS DETECTED</span>
+                      <p className="font-sans text-xs text-gray-400 max-w-xs leading-normal">
                         You have not posted any active teammate quests looking for party members yet.
                       </p>
                     </div>
@@ -347,10 +350,10 @@ export default function Profile() {
                 </div>
               )}
 
-              {/* Tab 4: Skills dengan Proteksi Array */}
+              {/* Tab 4: Skills dengan Ikon Tech Stack Animasi (PixelTechIcon) */}
               {activeTab === "skills" && (
-                <div className="flex flex-col gap-4">
-                  <h3 className="font-pixel text-xs text-navy-blue border-b-2 border-retro-light-gray pb-2 mb-2">
+                <div className="flex flex-col gap-4 text-left">
+                  <h3 className="font-pixel text-xs text-yellow-300 border-b border-gray-700 pb-2 mb-1">
                     [SKILL INVENTORY BADGES]
                   </h3>
 
@@ -358,14 +361,14 @@ export default function Profile() {
                     {(user.skills || []).map((skill, index) => (
                       <div
                         key={index}
-                        className="bg-retro-light-gray pixel-border p-3 flex flex-col gap-2 min-w-[120px] items-center justify-center text-center"
+                        className="bg-[#18233a] border-2 border-retro-black p-3.5 flex flex-col gap-2 min-w-[130px] items-center justify-center text-center shadow-md hover:border-yellow-400 transition-colors"
                       >
-                        {/* Shield icon placeholder */}
-                        <div className="w-8 h-8 rounded-full bg-navy-blue text-white flex items-center justify-center font-bold font-pixel text-[10px]">
-                          {skill ? skill[0].toUpperCase() : "S"}
+                        {/* Ikon Tech Stack Animasi Presisi */}
+                        <div className="w-10 h-10 rounded-full bg-[#121b2d] border border-gray-600 flex items-center justify-center">
+                          <PixelTechIcon tech={skill} size="w-6 h-6" />
                         </div>
-                        <span className="font-pixel text-[8px] text-retro-black">{skill}</span>
-                        <span className="font-pixel text-[7px] text-pixel-green-dark">MASTERED</span>
+                        <span className="font-pixel text-[8px] text-white font-bold">{skill}</span>
+                        <span className="font-pixel text-[7px] text-pixel-green font-bold">MASTERED</span>
                       </div>
                     ))}
                   </div>
@@ -378,6 +381,6 @@ export default function Profile() {
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 }

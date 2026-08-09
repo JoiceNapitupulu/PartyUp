@@ -3,10 +3,11 @@ export const usersData = [
     "user_id": "USR-001",
     "name": "Joice",
     "avatar": "/avatars/avatar1.png",
+    "password": "joice123",
     "semester": 4,
     "university": "Universitas Indonesia",
     "major": "Information Systems",
-    "role": "Hipster",
+    "role": "UI/UX Designer",
     "skills": ["Figma", "UI/UX", "Next.js", "Java", "PostgreSQL"],
     "bio": "Pixel design enthusiast and frontend dabbler. Passionate about building seamless user flows for student communities.",
     "portfolio": [
@@ -18,7 +19,7 @@ export const usersData = [
       {
         "project_name": "Sora",
         "description": "UI/UX project for a boat rental application.",
-        "role": "Designer"
+        "role": "UI/UX Designer"
       }
     ]
   },
@@ -26,22 +27,23 @@ export const usersData = [
     "user_id": "USR-002",
     "name": "Alex",
     "avatar": "/avatars/avatar2.png",
+    "password": "alex123",
     "semester": 6,
     "university": "Institut Teknologi Bandung",
     "major": "Informatics",
-    "role": "Hacker",
+    "role": "Full-stack Developer",
     "skills": ["React", "Next.js", "Node.js", "Go", "Docker", "PostgreSQL"],
     "bio": "Full-stack developer focused on performance and scalable system architectures. I break things so I can build them stronger.",
     "portfolio": [
       {
         "project_name": "EcoSphere",
         "description": "Campus carbon footprint tracker utilizing high-frequency telemetry API.",
-        "role": "Lead Developer"
+        "role": "Full-stack Developer"
       },
       {
         "project_name": "GoCache",
         "description": "Lightweight distributed in-memory cache system built in Golang.",
-        "role": "Backend Engineer"
+        "role": "Backend Developer"
       }
     ]
   },
@@ -49,17 +51,18 @@ export const usersData = [
     "user_id": "USR-003",
     "name": "Sarah",
     "avatar": "/avatars/avatar3.png",
+    "password": "sarah123",
     "semester": 4,
     "university": "Universitas Gadjah Mada",
     "major": "Business Management",
-    "role": "Hustler",
+    "role": "Product Manager (PM)",
     "skills": ["Product Management", "Business Model Canvas", "Pitching", "Marketing", "Figma"],
     "bio": "Detail-oriented product strategist. I bridge the gap between technical requirements, design language, and market viability.",
     "portfolio": [
       {
         "project_name": "EduQuest",
         "description": "Pitch deck and business canvas strategy for gamified student flashcards.",
-        "role": "Product Manager"
+        "role": "Product Manager (PM)"
       }
     ]
   },
@@ -67,17 +70,18 @@ export const usersData = [
     "user_id": "USR-004",
     "name": "Kevin",
     "avatar": "/avatars/avatar4.png",
+    "password": "kevin123",
     "semester": 6,
     "university": "Binus University",
     "major": "Computer Science",
-    "role": "Hacker",
+    "role": "Mobile App Developer",
     "skills": ["Flutter", "Dart", "Firebase", "Python", "PyTorch"],
     "bio": "Mobile app developer and machine learning beginner. Love turning complex designs into responsive pixel-perfect native apps.",
     "portfolio": [
       {
         "project_name": "MediLink",
         "description": "Remote healthcare app with real-time consultation matching logic.",
-        "role": "Mobile Developer"
+        "role": "Mobile App Developer"
       }
     ]
   },
@@ -85,18 +89,40 @@ export const usersData = [
     "user_id": "USR-005",
     "name": "Rian",
     "avatar": "/avatars/avatar5.png",
+    "password": "rian123",
     "semester": 2,
     "university": "Universitas Airlangga",
     "major": "Information Systems",
-    "role": "Hipster",
+    "role": "UX Researcher",
     "skills": ["Figma", "Graphic Design", "Illustrator", "Tailwind CSS"],
     "bio": "Freshman IS student focusing on design layouts and micro-interactions. Loving retro styles and game UI.",
     "portfolio": [
       {
         "project_name": "InisiatorKampus",
         "description": "Aggregator of campus-wide student organizations with customizable styling blocks.",
-        "role": "UI/UX Designer"
+        "role": "UX Researcher"
+      }
+    ]
+  },
+  {
+    "user_id": "USR-000",
+    "name": "Admin",
+    "avatar": "/avatars/avatar6.png",
+    "password": "admin123",
+    "semester": 8,
+    "university": "PARTYUP! HQ",
+    "major": "System Security",
+    "role": "Admin",
+    "skills": ["System Control", "Quest Moderation", "Database Tuning"],
+    "bio": "System Overseer of the PartyUp! Guild. Maintaining balance and ensuring smooth quest matchmaking across the realm.",
+    "portfolio": [
+      {
+        "project_name": "Grand Console",
+        "description": "The master system dashboard designed to oversee student registrations and global activity metrics.",
+        "role": "Administrator"
       }
     ]
   }
 ];
+
+export default usersData;

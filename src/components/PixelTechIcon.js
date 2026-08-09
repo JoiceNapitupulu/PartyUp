@@ -2,13 +2,21 @@
 
 import React from "react";
 
+// Menghapus spasi, titik, garis miring, dan simbol lain agar nama skill
+function normalize(str) {
+    return (str || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
 export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
-    const name = tech?.toLowerCase().trim() || "";
+    const key = normalize(tech);
+
+    // Helper: cek apakah key cocok dengan salah satu alias yang diberikan
+    const is = (...aliases) => aliases.some((alias) => normalize(alias) === key);
 
     // === 1. FRONTIER LANGUAGES ===
 
     // JAVASCRIPT (Kotak Kuning JS)
-    if (name === "javascript" || name === "js") {
+    if (is("javascript", "js")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-yellow-400 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <rect x="2" y="2" width="12" height="12" />
@@ -17,32 +25,25 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
         );
     }
 
-    // 1. FIGMA (F Warna-warni - Memantul/Bounce saat hover)
-    if (name === "figma") {
+    // FIGMA (F Warna-warni - Memantul/Bounce saat hover)
+    if (is("figma")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} hover:-translate-y-1 transition-transform duration-300`} style={{ imageRendering: "pixelated" }} fill="currentColor">
-                {/* Lingkaran Merah atas kiri */}
                 <path d="M5 3h3v3H5zm0 3h3v3H5z" fill="#f24e1e" />
-                {/* Lingkaran Orange atas kanan */}
                 <path d="M8 3h3v3H8z" fill="#ff7262" />
-                {/* Lingkaran Ungu tengah */}
                 <path d="M8 6h3v3H8z" fill="#a259ff" />
-                {/* Bentuk daun biru bawah kiri */}
                 <path d="M5 9h3v3H5z" fill="#1abc9c" />
-                {/* Bentuk bulat hijau bawah kanan */}
                 <path d="M8 9h3v3H8z" fill="#0acf83" />
             </svg>
         );
     }
 
-    // 2. GOLANG / GO (Gopher Biru Muda - Memantul/Bounce)
-    if (name === "go" || name === "golang") {
+    // GOLANG / GO (Gopher Biru Muda - Memantul/Bounce)
+    if (is("go", "golang")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-sky-400 hover:-translate-y-1 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <rect x="4" y="3" width="8" height="10" rx="3" />
-                {/* Gigi kelinci */}
                 <rect x="7" y="9" width="2" height="2" fill="white" />
-                {/* Mata besar */}
                 <rect x="5" y="5" width="2" height="2" fill="white" />
                 <rect x="9" y="5" width="2" height="2" fill="white" />
                 <rect x="5.5" y="5.5" width="1" height="1" fill="black" />
@@ -51,22 +52,20 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
         );
     }
 
-    // 3. UI/UX (Layout Monitor & Wireframe Pink - Berdenyut/Pulse)
-    if (name === "ui/ux" || name === "ui" || name === "ux") {
+    // UI/UX (Layout Monitor & Wireframe Pink - Berdenyut/Pulse)
+    if (is("ui/ux", "ui", "ux", "uiux", "uiuxdesign", "uiuxdesigner")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-pink-500 hover:scale-110 transition-transform duration-300`} style={{ imageRendering: "pixelated" }} fill="currentColor">
-                {/* Kerangka Layar Monitor */}
                 <rect x="2" y="2" width="12" height="10" rx="1" fill="none" stroke="currentColor" strokeWidth="2" />
-                {/* Desain grid layout di dalam layar */}
                 <rect x="4" y="5" width="3" height="4" />
                 <rect x="9" y="5" width="3" height="2" />
                 <rect x="9" y="8" width="3" height="1" />
             </svg>
         );
     }
-    
+
     // TYPESCRIPT (Kotak Biru TS)
-    if (name === "typescript" || name === "ts") {
+    if (is("typescript", "ts")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-blue-500 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <rect x="2" y="2" width="12" height="12" />
@@ -76,7 +75,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // PYTHON (Ular Biru-Kuning)
-    if (name === "python" || name === "py") {
+    if (is("python", "py")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} hover:scale-125 hover:rotate-6 transition-transform duration-300`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M3 3h7v3H3zm3 3h4v4H6z" fill="#306998" />
@@ -88,7 +87,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // PHP (Konsol Ungu PHP)
-    if (name === "php") {
+    if (is("php")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-indigo-400 hover:-translate-y-1 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <rect x="2" y="4" width="12" height="8" rx="2" />
@@ -98,7 +97,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // JAVA (Cangkir Kopi Mengepul)
-    if (name === "java") {
+    if (is("java")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-red-500 hover:-translate-y-1 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M4 10h8v2H4zm-1-1h10v1H3z" fill="#007397" />
@@ -111,7 +110,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     // === 2. FRONTEND FRAMEWORKS ===
 
     // REACT / REACT NATIVE (Atom Putar)
-    if (name === "react" || name === "react native" || name === "reactnative") {
+    if (is("react", "react native", "reactnative")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-sky-400 hover:rotate-180 transition-transform duration-700 ease-out`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <rect x="7" y="7" width="2" height="2" />
@@ -122,7 +121,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // NEXT.JS (Kapsul N)
-    if (name === "next.js" || name === "nextjs") {
+    if (is("next.js", "nextjs", "next")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-black hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <rect x="2" y="2" width="12" height="12" rx="6" />
@@ -132,8 +131,8 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
         );
     }
 
-    // TAILWIND CSS (Dua Gelombang Biru)
-    if (name === "tailwind" || name === "tailwindcss") {
+    // TAILWIND CSS (Dua Gelombang Biru) — sekarang cocok untuk "Tailwind", "TailwindCSS", "Tailwind CSS", dst.
+    if (is("tailwind", "tailwindcss", "tailwind css")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-teal-400 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M2 8c2-3 4-3 6 0s4 3 6 0" fill="none" stroke="currentColor" strokeWidth="2" />
@@ -143,7 +142,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // BOOTSTRAP (Mahkota Ungu B)
-    if (name === "bootstrap") {
+    if (is("bootstrap")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-purple-600 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <rect x="2" y="2" width="12" height="12" rx="2" />
@@ -153,7 +152,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // FLUTTER (Burung Sayap Biru)
-    if (name === "flutter") {
+    if (is("flutter")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-sky-500 hover:translate-x-1 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M8 2l4 4-4 4-4-4zm4 4l-4 4 4 4zm-4 4l-4 4 4-4z" />
@@ -162,7 +161,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // HTML (Tameng 5 Orange)
-    if (name === "html" || name === "html5") {
+    if (is("html", "html5")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-orange-500 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M2 2l1.5 11h9L14 2zm10 4H6v1.5h6l-.5 3-3.5 1-3.5-1-.2-1.5h1.5l.1.7L8 10l1.9-.5.2-1.5H4.5V4h7.7z" />
@@ -171,7 +170,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // CSS (Tameng 3 Biru)
-    if (name === "css" || name === "css3") {
+    if (is("css", "css3")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-blue-500 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M2 2l1.5 11h9L14 2zm10 4H6v1.5h6l-.5 3-3.5 1-3.5-1-.2-1.5h1.5l.1.7L8 10l1.9-.5.2-1.5H4.5V4h7.7z" />
@@ -182,7 +181,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     // === 3. BACKEND & WEB FRAMEWORKS ===
 
     // NODE.JS (Hexagon Hijau)
-    if (name === "node.js" || name === "nodejs" || name === "node") {
+    if (is("node.js", "nodejs", "node")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-green-500 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M8 2l6 3.5v7L8 16 2 12.5v-7z" fill="none" stroke="currentColor" strokeWidth="2" />
@@ -192,7 +191,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // LARAVEL (Perisai Merah L)
-    if (name === "laravel") {
+    if (is("laravel")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-red-600 hover:-translate-y-1 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M8 2l6 3v7L8 15 2 12V5z" fill="none" stroke="currentColor" strokeWidth="2" />
@@ -202,7 +201,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // NESTJS (Kucing Merah Nest)
-    if (name === "nestjs") {
+    if (is("nestjs", "nest")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-red-500 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M8 2l6 3v6L8 14 2 11V5z" />
@@ -212,7 +211,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // FASTAPI (Kilatan Petir Teal)
-    if (name === "fastapi") {
+    if (is("fastapi")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-teal-500 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <rect x="2" y="2" width="12" height="12" rx="2" />
@@ -222,7 +221,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // GIN (Botol Biru Gin)
-    if (name === "gin") {
+    if (is("gin")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-sky-400 hover:skew-y-6 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M6 3h4v2H6zm-1 3h6v8H5z" />
@@ -231,7 +230,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // BUN.JS (Roti Imut)
-    if (name === "bun.js" || name === "bun") {
+    if (is("bun.js", "bun")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} hover:-translate-y-1 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <rect x="4" y="4" width="8" height="8" rx="3" fill="#ffedd5" />
@@ -246,7 +245,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     // === 4. DATABASES & STORAGE ===
 
     // POSTGRESQL (Gajah Biru)
-    if (name === "postgresql" || name === "postgres") {
+    if (is("postgresql", "postgres")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-blue-500 hover:skew-x-6 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M4 3h7v1H4zm-1 1h9v1H3zm-1 1h10v3H2zm1 3h9v1H3zm1 1h7v1H4z" />
@@ -256,7 +255,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // MYSQL (Lumba-lumba Biru)
-    if (name === "mysql") {
+    if (is("mysql")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-sky-600 hover:-translate-y-1 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M3 6h10v4H3zM2 8h12v2H2zm1 3h10v2H3z" />
@@ -265,7 +264,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // MONGODB (Daun Hijau Mongo)
-    if (name === "mongodb" || name === "mongo") {
+    if (is("mongodb", "mongo")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-emerald-500 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M8 2c2 3 3 6 1 10h-2c-2-4-1-7 1-10z" />
@@ -274,7 +273,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // SUPABASE (Petir Hijau-Kuning)
-    if (name === "supabase") {
+    if (is("supabase")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-emerald-400 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M10 2L3 10h5v4l7-8H10z" />
@@ -283,7 +282,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // REDIS (Tumpukan Database Merah)
-    if (name === "redis") {
+    if (is("redis")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-red-600 hover:-translate-y-1 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M2 3h12v3H2zm0 4h12v3H2zm0 4h12v3H2z" />
@@ -292,7 +291,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // PRISMA (Segitiga Prisma)
-    if (name === "prisma") {
+    if (is("prisma")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-sky-900 hover:rotate-12 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M8 2l6 11H2z" fill="none" stroke="currentColor" strokeWidth="2" />
@@ -301,7 +300,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // NEONDB (Petir Neon Hijau)
-    if (name === "neondb" || name === "neon") {
+    if (is("neondb", "neon")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-lime-400 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M9 2L4 9h4v5l5-7H9z" />
@@ -312,7 +311,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     // === 5. DEVOPS & TOOLS ===
 
     // DOCKER (Paus Biru Kontainer)
-    if (name === "docker") {
+    if (is("docker")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-blue-400 hover:translate-y-1 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <rect x="5" y="3" width="6" height="4" />
@@ -322,7 +321,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // GIT (Cabang Logam Merah)
-    if (name === "git") {
+    if (is("git")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-red-500 hover:rotate-45 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <circle cx="8" cy="4" r="2" />
@@ -334,7 +333,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // GITHUB (Kucing Hitam Octocat)
-    if (name === "github") {
+    if (is("github")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-slate-800 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <circle cx="8" cy="8" r="6" />
@@ -344,7 +343,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // LINUX (Penguin Tux)
-    if (name === "linux") {
+    if (is("linux")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-yellow-500 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M4 12c0-3 3-5 4-5s4 2 4 5H4z" fill="black" />
@@ -355,7 +354,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // N8N (Node Konektor Hitam-Hijau)
-    if (name === "n8n") {
+    if (is("n8n")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-red-500 hover:rotate-12 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <circle cx="4" cy="8" r="2" />
@@ -366,7 +365,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // FIREBASE (Api Orange)
-    if (name === "firebase" || name === "firebace") {
+    if (is("firebase", "firebace")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-amber-500 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M3 13l5-11 5 11z" />
@@ -377,7 +376,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     // === 6. AI, DATA SCIENCE & TOOLS ===
 
     // PANDAS (Muka Panda Imut)
-    if (name === "pandas") {
+    if (is("pandas")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} hover:-translate-y-1 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <rect x="3" y="3" width="10" height="10" rx="3" fill="white" stroke="black" strokeWidth="1" />
@@ -388,7 +387,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // PYTORCH (Logo Api Segitiga)
-    if (name === "pytorch") {
+    if (is("pytorch")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-orange-600 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <path d="M8 2l6 11H2z" />
@@ -398,7 +397,7 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // JUPYTER (Planet Orange Ber-Cincin)
-    if (name === "jupyter") {
+    if (is("jupyter")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-orange-500 hover:rotate-45 transition-transform duration-500`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <circle cx="8" cy="8" r="4" />
@@ -408,11 +407,76 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
     }
 
     // SCIKIT-LEARN (Roda Gigi Oranye-Biru)
-    if (name === "scikitlearn" || name === "scikit-learn") {
+    if (is("scikitlearn", "scikit-learn", "scikit learn")) {
         return (
             <svg viewBox="0 0 16 16" className={`${size} text-sky-500 hover:rotate-90 transition-transform duration-500`} style={{ imageRendering: "pixelated" }} fill="currentColor">
                 <circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" strokeWidth="2" />
                 <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="2" />
+            </svg>
+        );
+    }
+
+    // === 7. DESAIN & KREATIF (BARU) ===
+
+    // ILLUSTRATOR (Kotak Hitam "Ai" Orange - identik dengan logo Adobe Illustrator asli)
+    if (is("illustrator", "adobeillustrator", "ai")) {
+        return (
+            <svg viewBox="0 0 16 16" className={`${size} hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
+                <rect x="1" y="2" width="14" height="12" rx="1.5" fill="#1a1a1a" />
+                <text x="8" y="11.5" textAnchor="middle" fontFamily="monospace" fontWeight="bold" fontSize="7" fill="#ff9a00">Ai</text>
+            </svg>
+        );
+    }
+
+    // PHOTOSHOP (Kotak Biru Tua "Ps" Cyan - identik dengan logo Adobe Photoshop asli)
+    if (is("photoshop", "adobephotoshop", "ps")) {
+        return (
+            <svg viewBox="0 0 16 16" className={`${size} hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
+                <rect x="1" y="2" width="14" height="12" rx="1.5" fill="#001e36" />
+                <text x="8" y="11.5" textAnchor="middle" fontFamily="monospace" fontWeight="bold" fontSize="7" fill="#31a8ff">Ps</text>
+            </svg>
+        );
+    }
+
+    // ADOBE XD (Kotak Hitam "Xd" Magenta)
+    if (is("adobexd", "xd", "adobe xd")) {
+        return (
+            <svg viewBox="0 0 16 16" className={`${size} hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
+                <rect x="1" y="2" width="14" height="12" rx="1.5" fill="#1a1a1a" />
+                <text x="8" y="11.5" textAnchor="middle" fontFamily="monospace" fontWeight="bold" fontSize="7" fill="#ff26bc">Xd</text>
+            </svg>
+        );
+    }
+
+    // SKETCH (Berlian Kuning-Oranye)
+    if (is("sketch")) {
+        return (
+            <svg viewBox="0 0 16 16" className={`${size} text-amber-400 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
+                <path d="M8 2l5 4-5 8-5-8z" />
+            </svg>
+        );
+    }
+
+    // CANVA (Lingkaran Gradasi Teal-Ungu dengan huruf C)
+    if (is("canva")) {
+        return (
+            <svg viewBox="0 0 16 16" className={`${size} hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
+                <circle cx="8" cy="8" r="6" fill="#00c4cc" />
+                <path d="M10.5 6.5c-.6-.6-1.4-1-2.5-1-2 0-3.3 1.4-3.3 3.2 0 1.7 1.2 3 2.9 3 .9 0 1.7-.4 2.2-1l.9.9c-.8.9-1.9 1.4-3.1 1.4-2.4 0-4.2-1.8-4.2-4.3S6.2 4.4 8.5 4.4c1.3 0 2.4.5 3.1 1.3z" fill="white" />
+            </svg>
+        );
+    }
+
+    // GRAPHIC DESIGN (ikon generik: palet warna + pena — dipakai jika skill tidak spesifik ke satu software)
+    if (is("graphic design", "graphicdesign", "design", "desain grafis", "desaingrafis")) {
+        return (
+            <svg viewBox="0 0 16 16" className={`${size} text-fuchsia-400 hover:scale-110 transition-transform`} style={{ imageRendering: "pixelated" }} fill="currentColor">
+                {/* Palet */}
+                <path d="M8 2c-3.3 0-6 2.5-6 5.6 0 2.2 1.7 3.4 3.2 3.4.6 0 1-.4 1-1 0-.3-.1-.5-.3-.7-.2-.2-.3-.4-.3-.7 0-.6.5-1 1.1-1H8c2.8 0 5-2 5-4.4C13 3.3 10.8 2 8 2z" />
+                <circle cx="6" cy="5.3" r="0.9" fill="#f97316" />
+                <circle cx="9" cy="4.6" r="0.9" fill="#22c55e" />
+                <circle cx="11" cy="6.5" r="0.9" fill="#3b82f6" />
+                <circle cx="5.5" cy="8" r="0.9" fill="#eab308" />
             </svg>
         );
     }
@@ -423,7 +487,5 @@ export default function PixelTechIcon({ tech, size = "w-4 h-4" }) {
             <rect x="3" y="3" width="10" height="10" rx="1" fill="none" stroke="currentColor" strokeWidth="2" />
             <rect x="6" y="6" width="4" height="4" />
         </svg>
-    );   
+    );
 }
-
-

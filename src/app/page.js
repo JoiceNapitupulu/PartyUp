@@ -138,6 +138,34 @@ export default function Home() {
           z-index: 5;
           animation: leafFalling 8s linear infinite;
         }
+
+        /* Animasi Judul "Coding Adventure": bernapas halus + berpendar emas,
+           dibuat sedikit lebih modern dengan mikro pergeseran letter-spacing
+           supaya terasa "hidup" tanpa mengganggu keterbacaan */
+        @keyframes titleGlow {
+          0%, 100% {
+            filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.65)) drop-shadow(0 6px 0px rgba(0,0,0,1));
+            transform: translateY(0px) scale(1);
+            letter-spacing: 0.01em;
+          }
+          50% {
+            filter: drop-shadow(0 0 26px rgba(250, 204, 21, 0.95)) drop-shadow(0 6px 0px rgba(0,0,0,1));
+            transform: translateY(-5px) scale(1.015);
+            letter-spacing: 0.02em;
+          }
+        }
+        .animate-title-glow {
+          animation: titleGlow 3.4s ease-in-out infinite;
+          will-change: transform, filter;
+        }
+
+        /* Hormati preferensi pengguna yang sensitif terhadap gerakan */
+        @media (prefers-reduced-motion: reduce) {
+          .animate-title-glow {
+            animation: none;
+            filter: drop-shadow(0 0 14px rgba(250, 204, 21, 0.8)) drop-shadow(0 6px 0px rgba(0,0,0,1));
+          }
+        }
       `}</style>
 
       {/* Header Utama */}
@@ -177,7 +205,7 @@ export default function Home() {
               START YOUR
             </div>
 
-            <h1 className="font-pixel text-4xl md:text-6xl lg:text-7xl text-yellow-300 drop-shadow-[0_6px_0px_rgba(0,0,0,1)] tracking-wide leading-tight">
+            <h1 className="font-pixel text-4xl md:text-6xl lg:text-7xl text-yellow-300 tracking-wide leading-tight animate-title-glow">
               Coding Adventure
             </h1>
 
