@@ -8,71 +8,70 @@ import Link from "next/link";
 
 const GROUP_STYLES = {
     manager: {
-        label: "MANAGER CLASS",
-        border: "border-yellow-400/70 hover:border-yellow-400",
-        badgeBg: "bg-yellow-400/10 border-yellow-400",
+        label: "MANAGEMENT (2)",
+        border: "border-yellow-400/80 hover:border-yellow-400 bg-yellow-400/10 text-yellow-300",
         dot: "bg-yellow-400",
     },
     designer: {
-        label: "DESIGNER CLASS",
-        border: "border-pink-400/70 hover:border-pink-400",
-        badgeBg: "bg-pink-400/10 border-pink-400",
+        label: "DESIGN (2)",
+        border: "border-pink-400/80 hover:border-pink-400 bg-pink-400/10 text-pink-300",
         dot: "bg-pink-400",
     },
     coder: {
-        label: "TECHNICAL CLASS",
-        border: "border-emerald-400/70 hover:border-emerald-400",
-        badgeBg: "bg-emerald-400/10 border-emerald-400",
+        label: "TECHNICAL (6)",
+        border: "border-emerald-400/80 hover:border-emerald-400 bg-emerald-400/10 text-emerald-300",
         dot: "bg-emerald-400",
     },
 };
 
 const rolesDetail = [
-    { role: "Product Manager (PM)", icon: "💼", group: "manager", desc: "Menentukan visi produk, menganalisis kebutuhan pengguna, serta menyusun strategi bisnis untuk kompetisi seperti Gemastik / Invention." },
-    { role: "Project / Scrum Master", icon: "⏱️", group: "manager", desc: "Mengatur alur kerja tim Agile/Scrum, membagi sprint pekerjaan, dan memastikan milestone proyek selesai tepat waktu." },
-    { role: "UI/UX Designer", icon: "🎨", group: "designer", desc: "Merancang wireframe, alur penggunaan (user flow), serta tampilan visual aplikasi yang intuitif dan berestetika tinggi." },
-    { role: "UX Researcher", icon: "🔍", group: "designer", desc: "Melakukan riset wawancara pengguna, validasi ide produk, serta menguji keterpakaian aplikasi (usability testing)." },
-    { role: "Frontend Developer", icon: "💻", group: "coder", desc: "Membangun bagian antarmuka aplikasi web/mobile yang responsif dan interaktif menggunakan React, Next.js, dan Tailwind CSS." },
-    { role: "Backend Developer", icon: "⚙️", group: "coder", desc: "Mengurus arsitektur server, API endpoint, manajemen database, dan keamanan logika bisnis aplikasi." },
-    { role: "Full-stack Developer", icon: "🚀", group: "coder", desc: "Menguasai frontend sekaligus backend untuk menangani pembuatan sistem aplikasi secara end-to-end." },
-    { role: "Mobile App Developer", icon: "📱", group: "coder", desc: "Fokus khusus mengembangkan aplikasi native Android/iOS menggunakan Flutter, React Native, Kotlin, atau Swift." },
-    { role: "QA (Quality Assurance) Engineer", icon: "🛡️", group: "coder", desc: "Menguji keandalan sistem, melakukan automated testing, serta memastikan aplikasi bebas dari bug sebelum dipresentasikan." },
-    { role: "DevOps Engineer", icon: "☁️", group: "coder", desc: "Mengatur otomatisasi deployment (CI/CD), pengelolaan cloud server (Vercel, AWS, Docker), dan pemantauan performa web." },
+    { role: "Product Manager (PM)", icon: "💼", group: "manager", desc: "Defines product vision, analyzes user needs, and aligns business strategy for Gemastik / Invention competitions." },
+    { role: "Project / Scrum Master", icon: "⏱️", group: "manager", desc: "Facilitates Agile/Scrum sprint workflows, removes team blockers, and ensures quest milestones are delivered on time." },
+    { role: "UI/UX Designer", icon: "🎨", group: "designer", desc: "Crafts intuitive user flows, wireframes, and pixel-perfect high-fidelity interfaces with seamless aesthetics." },
+    { role: "UX Researcher", icon: "🔍", group: "designer", desc: "Conducts deep user interviews, validates product hypotheses, and performs usability testing across student personas." },
+    { role: "Frontend Developer", icon: "💻", group: "coder", desc: "Builds responsive, interactive client interfaces and animations using React, Next.js, and Tailwind CSS." },
+    { role: "Backend Developer", icon: "⚙️", group: "coder", desc: "Architects robust server infrastructure, database schemas, secure REST APIs, and core business logic." },
+    { role: "Full-stack Developer", icon: "🚀", group: "coder", desc: "Master of both frontend and backend domains, building complete end-to-end scalable web applications." },
+    { role: "Mobile App Developer", icon: "📱", group: "coder", desc: "Specializes in native cross-platform mobile apps for Android/iOS using Flutter, React Native, Kotlin, or Swift." },
+    { role: "QA (Quality Assurance) Engineer", icon: "🛡️", group: "coder", desc: "Executes automated test suites, load testing, and system verification to ensure zero critical bugs before pitching." },
+    { role: "DevOps Engineer", icon: "☁️", group: "coder", desc: "Manages CI/CD deployment pipelines, cloud server orchestration (Vercel, AWS, Docker), and system monitoring." },
 ];
 
 const faqs = [
     {
-        q: "Apa itu PartyUp! dan untuk siapa platform ini dibuat?",
-        a: "PartyUp! adalah platform pencari tim proyek (matchmaking) dan micro-networking berbasis 8-bit RPG yang dirancang khusus untuk mahasiswa IT Indonesia agar mudah menemukan rekan tim sefrekuensi untuk lomba GEMASTIK, INVENTION 2026, maupun proyek perkuliahan.",
+        q: "What is PartyUp! and who is it designed for?",
+        a: "PartyUp! is an 8-bit RPG-themed student micro-networking & team matchmaking platform designed for Indonesian IT students to easily recruit party members for GEMASTIK, INVENTION 2026, and college projects.",
     },
     {
-        q: "Bagaimana cara mengajak mahasiswa lain bergabung dalam proyek saya?",
-        a: "Masuk ke halaman QUEST BOARD (/board), klik tombol '+ DISPATCH QUEST', lalu isi judul proyek, target lomba, serta slot peran kelas yang Anda butuhkan. Misi Anda akan langsung tampil secara publik untuk di-apply mahasiswa lain!",
+        q: "How do I recruit other students for my team project?",
+        a: "Navigate to the QUEST BOARD (/board), click '+ DISPATCH QUEST', fill in your project title, target competition, and open class slots. Your quest will immediately be listed for other adventurers to apply!",
     },
     {
-        q: "Bagaimana sistem level (LV) karakter dihitung?",
-        a: "Level karakter dihitung otomatis dari 3 komponen: jumlah skill yang dikuasai (×2 poin), semester perkuliahan saat ini (×2 poin), dan jumlah quest/proyek yang sudah diselesaikan (×3 poin). Lihat rincian lengkapnya di section LEVEL SYSTEM di atas.",
+        q: "How is character level (LV.) calculated?",
+        a: "Character LV. is automatically computed from 3 real metrics: Total skills mastered (×2 pts), current academic semester (×2 pts), and completed portfolio quests (×3 pts).",
     },
     {
-        q: "Apakah pengguna biasa dapat mendaftar tanpa akun dummy?",
-        a: "Bisa! Anda cukup masuk ke halaman Register (/register) untuk membuat karakter baru, memilih prodi, universitas, serta peran kelas RPG pilihan Anda.",
+        q: "Can regular students register without a pre-loaded mock account?",
+        a: "Yes! Simply head to the Register page (/register) to create a brand new character, set your university, major, and select your primary RPG class.",
     },
     {
-        q: "Apa bedanya QUEST BOARD, SHOWCASE, dan TIMELINE?",
-        a: "QUEST BOARD untuk mencari/menawarkan tim proyek yang sedang berjalan. SHOWCASE adalah galeri portofolio proyek yang sudah selesai (bukti keahlian). TIMELINE adalah feed obrolan harian & update progress ala media sosial ringan.",
+        q: "What is the difference between QUEST BOARD, SHOWCASE, and TIMELINE?",
+        a: "QUEST BOARD is for active party recruitment. SHOWCASE is a historical portfolio gallery of finished works (proof of skill). TIMELINE is a real-time social feed for daily progress updates and chatter.",
     },
 ];
 
 const NAV_SECTIONS = [
     { id: "overview", label: "OVERVIEW" },
     { id: "level-system", label: "LEVEL SYSTEM" },
-    { id: "roles", label: "ROLES" },
+    { id: "roles", label: "10 CLASSES" },
+    { id: "walkthrough", label: "VIDEO GUIDE" },
     { id: "faq", label: "FAQ" },
 ];
 
 export default function GuildGuide() {
-    const [activeFaq, setActiveFaq] = useState(null); // menyimpan teks pertanyaan yang sedang terbuka
+    const [activeFaq, setActiveFaq] = useState(null);
     const [faqSearch, setFaqSearch] = useState("");
+    const [selectedRoleGroup, setSelectedRoleGroup] = useState("ALL");
 
     const toggleFaq = (question) => {
         setActiveFaq(activeFaq === question ? null : question);
@@ -86,6 +85,11 @@ export default function GuildGuide() {
         );
     }, [faqSearch]);
 
+    const filteredRoles = useMemo(() => {
+        if (selectedRoleGroup === "ALL") return rolesDetail;
+        return rolesDetail.filter((r) => r.group === selectedRoleGroup);
+    }, [selectedRoleGroup]);
+
     const scrollToSection = (id) => {
         const el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -95,14 +99,16 @@ export default function GuildGuide() {
         <div className="bg-[#0c1322] min-h-screen text-white flex flex-col font-sans overflow-x-hidden selection:bg-yellow-400 selection:text-black">
             <Header />
 
-            {/* BANNER HERO GUILD GUIDE */}
+            {/* ========================================================= */}
+            {/* BANNER HERO GUILD GUIDE — Ukuran Panjang & Tingginya Pas   */}
+            {/* ========================================================= */}
             <section
-                className="relative w-full min-h-[340px] md:min-h-[420px] bg-cover bg-center bg-no-repeat overflow-hidden border-b-4 border-retro-black flex items-center justify-center pt-24 md:pt-28"
-                style={{ backgroundImage: "url('/bg3.gif')" }}
+                className="relative w-full min-h-[480px] md:min-h-[580px] bg-cover bg-center bg-no-repeat overflow-hidden border-b-4 border-retro-black flex items-center justify-center pt-32 md:pt-36"
+                style={{ backgroundImage: "url('/faq.gif')" }}
             >
                 <div className="absolute inset-0 bg-gradient-to-b from-[#0c1322]/80 via-black/50 to-[#0c1322] pointer-events-none z-0" />
 
-                <div className="relative z-10 max-w-4xl mx-auto px-6 py-10 md:py-14 text-center flex flex-col items-center justify-center gap-4">
+                <div className="relative z-10 max-w-4xl mx-auto px-6 py-20 md:py-24 text-center flex flex-col items-center justify-center gap-4">
                     <span className="font-pixel text-[9px] md:text-[11px] text-yellow-300 tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
                         ✦ GUILD INSTRUCTION MANUAL ✦
                     </span>
@@ -112,19 +118,20 @@ export default function GuildGuide() {
                     </h1>
 
                     <p className="font-sans text-sm md:text-base text-gray-100 leading-relaxed max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
-                        Official guide manual on how to navigate the PartyUp! guild, understanding 10 IT class roles, and forming winning parties for <strong className="text-yellow-300 font-bold">GEMASTIK &amp; INVENTION 2026</strong>.
+                        Official guide manual on navigating PartyUp!, mastering 10 Software Engineering RPG Class Roles, and forming winning hackathon parties for <strong className="text-yellow-300 font-bold">GEMASTIK &amp; INVENTION 2026</strong>.
                     </p>
                 </div>
             </section>
 
-            {/* STICKY QUICK-NAV — lompat cepat antar section */}
-            <nav className="sticky top-0 z-30 bg-[#0c1322]/95 backdrop-blur-sm border-b-4 border-retro-black">
-                <div className="max-w-6xl mx-auto px-4 md:px-6 flex gap-1 overflow-x-auto no-scrollbar">
+            {/* STICKY QUICK-NAV — Jump cepat antar section */}
+            <nav className="sticky top-0 z-30 bg-[#0c1322]/95 backdrop-blur-md border-b-4 border-retro-black shadow-md">
+                <div className="max-w-6xl mx-auto px-4 md:px-6 flex justify-center gap-2 overflow-x-auto no-scrollbar py-1">
                     {NAV_SECTIONS.map((s) => (
                         <button
                             key={s.id}
+                            type="button"
                             onClick={() => scrollToSection(s.id)}
-                            className="font-pixel text-[9px] md:text-[10px] text-gray-300 hover:text-yellow-300 whitespace-nowrap px-4 py-3.5 border-b-4 border-transparent hover:border-yellow-400 transition-colors cursor-pointer bg-transparent"
+                            className="font-pixel text-[9px] md:text-[10px] text-gray-300 hover:text-yellow-300 whitespace-nowrap px-4 py-3 border-b-2 border-transparent hover:border-yellow-400 transition-colors cursor-pointer bg-transparent"
                         >
                             {s.label}
                         </button>
@@ -132,118 +139,139 @@ export default function GuildGuide() {
                 </div>
             </nav>
 
-            <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-10 pb-16 flex flex-col gap-14">
+            <main className="flex-1 max-w-5xl w-full mx-auto px-4 md:px-6 pt-10 pb-16 flex flex-col gap-16">
 
-                {/* SECTION 1: PENJELASAN TENTANG PARTYUP! */}
-                <section id="overview" className="scroll-mt-16 bg-[#131f37] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 md:p-8 flex flex-col gap-4 text-left">
-                    <div className="flex items-center gap-2 border-b-2 border-gray-700 pb-3">
-                        <span className="font-pixel text-base text-yellow-400">📜</span>
-                        <h2 className="font-pixel text-xs md:text-sm text-yellow-300 uppercase">// WHAT IS PARTYUP!?</h2>
+                {/* SECTION 1: WHAT IS PARTYUP!? */}
+                <section id="overview" className="scroll-mt-32 flex flex-col gap-4 text-left">
+                    <div className="border-b-2 border-yellow-400/80 pb-3">
+                        <span className="font-pixel text-[9px] text-yellow-400 uppercase block mb-1">// GUILD SYSTEM ARCHITECTURE</span>
+                        <h2 className="font-pixel text-sm md:text-base text-white">
+                            WHAT IS PARTYUP!?
+                        </h2>
                     </div>
-                    <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed">
-                        PartyUp! adalah platform micro-networking dan matchmaking tim berbasis tema 8-bit RPG yang memfasilitasi mahasiswa IT seluruh Indonesia untuk saling menemukan rekan tim terbaik.
+
+                    <p className="font-sans text-sm text-gray-200 leading-relaxed">
+                        PartyUp! is an 8-bit RPG-themed student team matchmaking &amp; micro-networking platform designed to empower Indonesian IT students to form high-performing hackathon and competition parties based on verified skill sets.
                     </p>
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                        <div className="bg-[#1c2a4a] p-4 border-2 border-retro-black text-left hover:border-pixel-green transition-colors">
-                            <span className="font-pixel text-[9px] text-pixel-green block mb-1">01. QUEST BOARD</span>
-                            <p className="font-sans text-xs text-gray-300">Tempat ajak lomba, cari anggota tim, atau dispatch misi baru Anda.</p>
+                        <div className="bg-[#121b2d] p-5 border-2 border-retro-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-left hover:border-pixel-green transition-colors rounded">
+                            <span className="font-pixel text-[9px] text-pixel-green font-bold block mb-1.5">01. QUEST BOARD</span>
+                            <p className="font-sans text-xs text-gray-300 leading-relaxed">Central hub to dispatch competition requests and recruit party members.</p>
                         </div>
-                        <div className="bg-[#1c2a4a] p-4 border-2 border-retro-black text-left hover:border-yellow-300 transition-colors">
-                            <span className="font-pixel text-[9px] text-yellow-300 block mb-1">02. SHOWCASE</span>
-                            <p className="font-sans text-xs text-gray-300">Galeri portofolio karya historis mahasiswa untuk dibuktikan keahliannya.</p>
+                        <div className="bg-[#121b2d] p-5 border-2 border-retro-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-left hover:border-yellow-300 transition-colors rounded">
+                            <span className="font-pixel text-[9px] text-yellow-300 font-bold block mb-1.5">02. SHOWCASE</span>
+                            <p className="font-sans text-xs text-gray-300 leading-relaxed">Historical portfolio gallery highlighting finished student works as proof of skill.</p>
                         </div>
-                        <div className="bg-[#1c2a4a] p-4 border-2 border-retro-black text-left hover:border-sky-300 transition-colors">
-                            <span className="font-pixel text-[9px] text-sky-300 block mb-1">03. TIMELINE</span>
-                            <p className="font-sans text-xs text-gray-300">Feeds obrolan harian &amp; update progress tim antar sesama mahasiswa.</p>
+                        <div className="bg-[#121b2d] p-5 border-2 border-retro-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-left hover:border-sky-300 transition-colors rounded">
+                            <span className="font-pixel text-[9px] text-sky-300 font-bold block mb-1.5">03. TIMELINE</span>
+                            <p className="font-sans text-xs text-gray-300 leading-relaxed">Real-time social feeds for progress broadcasts and community chatter.</p>
                         </div>
                     </div>
                 </section>
 
-                {/* SECTION 2 (BARU): LEVEL SYSTEM — sebelumnya dijelaskan di chat tapi belum ada di halaman */}
-                <section id="level-system" className="scroll-mt-16 flex flex-col gap-6 text-left">
-                    <div className="border-b-4 border-gray-700 pb-3">
-                        <h2 className="font-pixel text-sm md:text-base text-yellow-300 mb-1">
-                            [ CHARACTER LEVEL SYSTEM ]
+                {/* SECTION 2: CHARACTER LEVEL SYSTEM */}
+                <section id="level-system" className="scroll-mt-32 flex flex-col gap-6 text-left">
+                    <div className="border-b-2 border-yellow-400/80 pb-3">
+                        <span className="font-pixel text-[9px] text-yellow-400 uppercase block mb-1">// CHARACTER RATING METRICS</span>
+                        <h2 className="font-pixel text-sm md:text-base text-white">
+                            CHARACTER LEVEL (LV.) CALCULATION
                         </h2>
-                        <p className="font-sans text-xs md:text-sm text-gray-300">
-                            Level (LV) karaktermu dihitung otomatis dari 3 pencapaian nyata — bukan angka acak.
-                        </p>
                     </div>
 
-                    <div className="bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 flex flex-col gap-6">
-                        {/* Rumus visual */}
+                    <div className="bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 rounded flex flex-col gap-6">
+                        {/* Visual Formula */}
                         <div className="flex flex-wrap items-center justify-center gap-3 font-pixel text-[10px] md:text-xs">
-                            <div className="flex flex-col items-center gap-1.5 bg-[#1c2a4a] border-2 border-emerald-400 px-4 py-3 min-w-[110px]">
+                            <div className="flex flex-col items-center gap-1.5 bg-[#18233a] border-2 border-emerald-400/80 px-4 py-3 min-w-[110px] rounded">
                                 <span className="text-emerald-300">SKILLS</span>
-                                <span className="text-white">× 2</span>
+                                <span className="text-white font-bold">× 2 PTS</span>
                             </div>
-                            <span className="text-yellow-400 text-lg">+</span>
-                            <div className="flex flex-col items-center gap-1.5 bg-[#1c2a4a] border-2 border-sky-400 px-4 py-3 min-w-[110px]">
+                            <span className="text-yellow-400 text-lg font-bold">+</span>
+                            <div className="flex flex-col items-center gap-1.5 bg-[#18233a] border-2 border-sky-400/80 px-4 py-3 min-w-[110px] rounded">
                                 <span className="text-sky-300">SEMESTER</span>
-                                <span className="text-white">× 2</span>
+                                <span className="text-white font-bold">× 2 PTS</span>
                             </div>
-                            <span className="text-yellow-400 text-lg">+</span>
-                            <div className="flex flex-col items-center gap-1.5 bg-[#1c2a4a] border-2 border-pink-400 px-4 py-3 min-w-[110px]">
+                            <span className="text-yellow-400 text-lg font-bold">+</span>
+                            <div className="flex flex-col items-center gap-1.5 bg-[#18233a] border-2 border-pink-400/80 px-4 py-3 min-w-[110px] rounded">
                                 <span className="text-pink-300">QUESTS</span>
-                                <span className="text-white">× 3</span>
+                                <span className="text-white font-bold">× 3 PTS</span>
                             </div>
-                            <span className="text-yellow-400 text-lg">=</span>
-                            <div className="flex flex-col items-center gap-1.5 bg-retro-black border-2 border-yellow-400 px-5 py-3 min-w-[110px]">
+                            <span className="text-yellow-400 text-lg font-bold">=</span>
+                            <div className="flex flex-col items-center gap-1.5 bg-retro-black border-2 border-yellow-400 px-5 py-3 min-w-[110px] rounded">
                                 <span className="text-yellow-300">YOUR LV.</span>
-                                <span className="text-white">?</span>
+                                <span className="text-white font-bold">RATING</span>
                             </div>
                         </div>
 
-                        {/* Contoh perhitungan */}
-                        <div className="border-t-2 border-dashed border-gray-700 pt-5 flex flex-col md:flex-row items-center justify-between gap-4">
-                            <div className="font-sans text-xs md:text-sm text-gray-300 leading-relaxed">
-                                <span className="font-pixel text-[9px] text-gray-400 block mb-1.5">// CONTOH PERHITUNGAN</span>
-                                Joice — Semester 4, menguasai 5 skill, sudah menyelesaikan 2 quest:
+                        {/* Example Calculation */}
+                        <div className="border-t border-gray-700/80 pt-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="font-sans text-xs md:text-sm text-gray-300 leading-relaxed text-left">
+                                <span className="font-pixel text-[8px] text-yellow-400 block mb-1">// REAL CALCULATION EXAMPLE</span>
+                                Joice — Semester 4, 5 Skills Mastered, 2 Completed Quests:
                                 <br />
-                                <span className="text-gray-200">(5 × 2) + (4 × 2) + (2 × 3) = 10 + 8 + 6</span>
+                                <span className="text-white font-mono">(5 × 2) + (4 × 2) + (2 × 3) = 10 + 8 + 6</span>
                             </div>
-                            <div className="font-pixel text-2xl text-yellow-300 bg-retro-black border-2 border-yellow-400 px-6 py-3 shrink-0">
-                                LV.24
+                            <div className="font-pixel text-xl text-yellow-300 bg-retro-black border-2 border-yellow-400 px-6 py-2.5 shrink-0 rounded shadow-md">
+                                LV. 24
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* SECTION 3: 10 PENJELASAN CLASS ROLES IT */}
-                <section id="roles" className="scroll-mt-16 flex flex-col gap-6 text-left">
-                    <div className="border-b-4 border-gray-700 pb-3">
-                        <h2 className="font-pixel text-sm md:text-base text-yellow-300 mb-1">
-                            [ 10 SOFTWARE ENGINEERING RPG CLASSES ]
-                        </h2>
-                        <p className="font-sans text-xs md:text-sm text-gray-300 mb-3">
-                            Pelajari peran 10 kelas keahlian Software Engineering dalam ekosistem PartyUp!:
-                        </p>
-                        {/* Legenda warna kelompok — konsisten dengan warna karakter di PixelAvatar */}
-                        <div className="flex flex-wrap gap-4">
+                {/* SECTION 3: 10 SOFTWARE ENGINEERING CLASSES (INTERAKSI TAB RINGKAS) */}
+                <section id="roles" className="scroll-mt-32 flex flex-col gap-6 text-left">
+                    <div className="border-b-2 border-yellow-400/80 pb-3 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                        <div>
+                            <span className="font-pixel text-[9px] text-yellow-400 uppercase block mb-1">// GUILD CLASS DIRECTORY</span>
+                            <h2 className="font-pixel text-sm md:text-base text-white">
+                                10 SOFTWARE ENGINEERING CLASSES
+                            </h2>
+                        </div>
+
+                        {/* Tab Filter Kelompok Role — Mencegah tampilan memanjang membosankan */}
+                        <div className="flex flex-wrap gap-1.5 font-pixel text-[8px]">
+                            <button
+                                type="button"
+                                onClick={() => setSelectedRoleGroup("ALL")}
+                                className={`px-3 py-1.5 border-2 rounded transition-colors cursor-pointer ${selectedRoleGroup === "ALL"
+                                        ? "bg-yellow-400 text-retro-black border-yellow-400 font-bold"
+                                        : "bg-[#18233a] text-gray-300 border-gray-700 hover:border-gray-500"
+                                    }`}
+                            >
+                                ALL (10)
+                            </button>
                             {Object.entries(GROUP_STYLES).map(([key, g]) => (
-                                <div key={key} className="flex items-center gap-2 font-pixel text-[8px] text-gray-400">
-                                    <span className={`w-2.5 h-2.5 ${g.dot}`} />
+                                <button
+                                    type="button"
+                                    key={key}
+                                    onClick={() => setSelectedRoleGroup(key)}
+                                    className={`px-3 py-1.5 border-2 rounded transition-colors cursor-pointer ${selectedRoleGroup === key
+                                            ? `${g.border} font-bold`
+                                            : "bg-[#18233a] text-gray-300 border-gray-700 hover:border-gray-500"
+                                        }`}
+                                >
                                     {g.label}
-                                </div>
+                                </button>
                             ))}
                         </div>
                     </div>
 
+                    {/* Grid Kartu Role Compact & Modern */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {rolesDetail.map((item, index) => {
+                        {filteredRoles.map((item, index) => {
                             const g = GROUP_STYLES[item.group];
                             return (
                                 <div
                                     key={index}
-                                    className={`bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-4 flex gap-4 items-start transition-colors ${g.border}`}
+                                    className="bg-[#121b2d] border-2 border-retro-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4 flex gap-4 items-start hover:border-yellow-400 transition-colors rounded"
                                 >
-                                    <div className={`w-10 h-10 border-2 flex items-center justify-center font-pixel text-lg shrink-0 ${g.badgeBg}`}>
+                                    <div className="w-10 h-10 bg-[#18233a] border border-gray-600 flex items-center justify-center font-pixel text-lg shrink-0 rounded">
                                         {item.icon}
                                     </div>
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1 text-left">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <h3 className="font-pixel text-xs text-yellow-300 font-bold">{item.role}</h3>
-                                            <span className={`w-1.5 h-1.5 rounded-full ${g.dot}`} title={g.label} />
+                                            <span className={`w-2 h-2 rounded-full ${g.dot}`} title={g.label} />
                                         </div>
                                         <p className="font-sans text-xs text-gray-300 leading-relaxed">{item.desc}</p>
                                     </div>
@@ -253,22 +281,56 @@ export default function GuildGuide() {
                     </div>
                 </section>
 
-                {/* SECTION 4: FAQ ACCORDION + SEARCH */}
-                <section id="faq" className="scroll-mt-16 bg-[#131f37] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 md:p-8 flex flex-col gap-6 text-left">
-                    <div className="border-b-2 border-gray-700 pb-3">
-                        <h2 className="font-pixel text-xs md:text-sm text-yellow-300">// FREQUENTLY ASKED QUESTIONS (FAQ)</h2>
-                        <p className="font-sans text-xs text-gray-400 mt-1">Pertanyaan umum seputar penggunaan platform PartyUp!:</p>
+                {/* SECTION 4: OFFICIAL GUILD VIDEO WALKTHROUGH */}
+                <section id="walkthrough" className="scroll-mt-32 flex flex-col gap-4 text-left">
+                    <div className="border-b-2 border-yellow-400/80 pb-3 flex items-center justify-between flex-wrap gap-2">
+                        <div>
+                            <span className="font-pixel text-[9px] text-yellow-400 uppercase block mb-1">// INTERACTIVE DEMO</span>
+                            <h2 className="font-pixel text-sm md:text-base text-white">
+                                OFFICIAL GUILD VIDEO WALKTHROUGH
+                            </h2>
+                        </div>
+                        <span className="font-pixel text-[8px] bg-pixel-green text-retro-black px-2.5 py-1 border border-retro-black font-bold">
+                            ● HD VIDEO DEMO
+                        </span>
+                    </div>
+
+                    <p className="font-sans text-xs md:text-sm text-gray-300 leading-relaxed">
+                        Watch the official video guide below to learn how to create your character, dispatch quests, and build high-performing parties for <strong className="text-yellow-300">GEMASTIK &amp; INVENTION 2026</strong>.
+                    </p>
+
+                    <div className="relative aspect-video w-full border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden bg-retro-black rounded mt-1">
+                        <video
+                            controls
+                            loop
+                            playsInline
+                            poster="/computer.png"
+                            className="w-full h-full object-cover"
+                        >
+                            <source src="/videos/faq.mp4" type="video/mp4" />
+                            Your browser does not support video playback.
+                        </video>
+                    </div>
+                </section>
+
+                {/* SECTION 5: FAQ ACCORDION + SEARCH */}
+                <section id="faq" className="scroll-mt-32 flex flex-col gap-6 text-left">
+                    <div className="border-b-2 border-yellow-400/80 pb-3">
+                        <span className="font-pixel text-[9px] text-yellow-400 uppercase block mb-1">// QUICK ANSWERS</span>
+                        <h2 className="font-pixel text-sm md:text-base text-white">
+                            FREQUENTLY ASKED QUESTIONS (FAQ)
+                        </h2>
                     </div>
 
                     {/* Search bar FAQ */}
                     <div className="flex flex-col gap-1.5">
-                        <label className="font-pixel text-[8px] text-yellow-400">// SEARCH QUESTIONS</label>
+                        <label className="font-pixel text-[8px] text-yellow-400">// SEARCH FAQ KEYWORDS</label>
                         <input
                             type="text"
-                            placeholder="e.g. level, dispatch, register..."
+                            placeholder="e.g. level, admin, quest, gemastik..."
                             value={faqSearch}
                             onChange={(e) => setFaqSearch(e.target.value)}
-                            className="w-full md:w-1/2 font-sans text-xs p-2.5 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none focus:border-yellow-400 placeholder-gray-400"
+                            className="w-full md:w-1/2 font-sans text-xs p-2.5 bg-[#18233a] text-white border-2 border-retro-black focus:outline-none focus:border-yellow-400 placeholder-gray-400 rounded"
                         />
                     </div>
 
@@ -279,7 +341,7 @@ export default function GuildGuide() {
                                 return (
                                     <div
                                         key={index}
-                                        className="bg-[#1c2a4a] border-2 border-retro-black rounded overflow-hidden transition-colors hover:border-yellow-400/50"
+                                        className="bg-[#121b2d] border-2 border-retro-black rounded overflow-hidden transition-colors hover:border-yellow-400/60"
                                     >
                                         <button
                                             type="button"
@@ -290,16 +352,11 @@ export default function GuildGuide() {
                                             <span className={`text-yellow-400 font-bold text-xs shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>▼</span>
                                         </button>
 
-                                        <div
-                                            className="grid transition-all duration-300 ease-in-out"
-                                            style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
-                                        >
-                                            <div className="overflow-hidden">
-                                                <div className="p-4 border-t border-gray-700 bg-[#121b2d] font-sans text-xs text-gray-200 leading-relaxed">
-                                                    {faq.a}
-                                                </div>
+                                        {isOpen && (
+                                            <div className="p-4 border-t border-gray-700 bg-[#18233a] font-sans text-xs text-gray-200 leading-relaxed">
+                                                {faq.a}
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
                                 );
                             })
@@ -312,7 +369,7 @@ export default function GuildGuide() {
                 </section>
 
                 {/* CALL TO ACTION BOTTOM */}
-                <section className="text-center py-4 flex flex-col items-center gap-4">
+                <section className="text-center py-6 flex flex-col items-center gap-4 bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded p-6">
                     <p className="font-pixel text-xs text-yellow-300">READY TO START YOUR PARTY ADVENTURE?</p>
                     <div className="flex flex-wrap justify-center gap-4">
                         <Link href="/register">
