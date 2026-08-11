@@ -159,11 +159,24 @@ export default function Home() {
           will-change: transform, filter;
         }
 
+        /* Animasi lencana XP kecil yang "pop" masuk satu-satu di section info baru */
+        @keyframes popIn {
+          0% { transform: scale(0.6); opacity: 0; }
+          70% { transform: scale(1.08); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop-in {
+          animation: popIn 0.5s ease-out both;
+        }
+
         /* Hormati preferensi pengguna yang sensitif terhadap gerakan */
         @media (prefers-reduced-motion: reduce) {
           .animate-title-glow {
             animation: none;
             filter: drop-shadow(0 0 14px rgba(250, 204, 21, 0.8)) drop-shadow(0 6px 0px rgba(0,0,0,1));
+          }
+          .animate-pop-in {
+            animation: none;
           }
         }
       `}</style>
@@ -256,7 +269,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Laptop Sprite (mack.png) Sebelah Kanan */}
+            {/* Laptop Sprite (mac.png) Sebelah Kanan */}
             <div className="hidden lg:flex flex-col items-center animate-float-gentle">
               <div className="w-24 h-24 relative">
                 <Image
@@ -343,6 +356,60 @@ export default function Home() {
               </span>
             </div>
 
+          </div>
+        </section>
+
+        <section className="max-w-6xl w-full mx-auto px-4 md:px-6 my-16 flex flex-col gap-8">
+          <div className="bg-[#13222e] border-4 border-retro-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10 flex flex-col lg:flex-row items-center gap-10">
+
+            {/* MOCKUP PANEL KIRI: gaya jendela "quest log" pixel */}
+            <div className="w-full lg:w-[380px] shrink-0">
+              <div className="border-4 border-retro-black bg-[#0f1c26] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+
+                {/* Title bar ala jendela retro */}
+                <div className="flex items-center gap-1.5 bg-retro-black px-3 py-2 border-b-4 border-retro-black">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-400 inline-block" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-300 inline-block" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-pixel-green inline-block" />
+                  <span className="font-pixel text-[7px] text-gray-300 ml-2">party_log.exe</span>
+                </div>
+
+                {/* Isi mockup: ikon party + XP badge yang "pop in" */}
+                <div className="p-6 flex flex-col items-center gap-4 bg-[#0f1c26]">
+                  <div className="relative w-28 h-28 border-4 border-retro-black bg-[#1a2f3b] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]">
+                    <Image
+                      src="/cursors/team.gif"
+                      alt="Party Team Sprite"
+                      fill
+                      unoptimized
+                      className="object-contain p-2"
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <span className="animate-pop-in font-pixel text-[7px] bg-yellow-400 text-retro-black px-2 py-1 border-2 border-retro-black" style={{ animationDelay: "0.1s" }}>
+                      +10 XP
+                    </span>
+                    <span className="animate-pop-in font-pixel text-[7px] bg-pixel-green text-retro-black px-2 py-1 border-2 border-retro-black" style={{ animationDelay: "0.3s" }}>
+                      PARTY FORMED!
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* TEKS KANAN: judul + deskripsi informasi */}
+            <div className="flex-1 text-left flex flex-col gap-4">
+              <span className="font-pixel text-[9px] text-yellow-400 bg-retro-black px-2 py-1 w-fit border border-retro-black">
+                // PROGRESSION SYSTEM
+              </span>
+              <h2 className="font-pixel text-lg md:text-2xl text-white leading-relaxed">
+                Level up your team
+              </h2>
+              <p className="font-sans text-xs md:text-sm text-gray-300 leading-relaxed max-w-lg">
+                Bentuk party-mu, kumpulkan XP dari tiap quest yang diselesaikan, dan koleksi lencana pencapaian saat kamu berkolaborasi lintas role. Sistem matchmaking kami bikin cari tim impian buat GEMASTIK &amp; INVENTION 2026 jadi semenyenangkan menyelesaikan quest berikutnya.
+              </p>
+            </div>
           </div>
         </section>
 
