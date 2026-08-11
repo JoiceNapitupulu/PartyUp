@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import PixelButton from "@/components/PixelButton";
 import usersData from "@/data/users.json";
 import projectsData from "@/data/projects.json";
+import PixelAvatar from "@/components/PixelAvatar";
 
 export default function Showcase() {
   const [search, setSearch] = useState("");
@@ -134,8 +135,8 @@ export default function Showcase() {
                 {/* Developer Profile Info & Recruit Button */}
                 <div className="border-t-2 border-gray-700/60 pt-4 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-2 text-left">
-                    <div className="w-8 h-8 bg-retro-black border border-yellow-400 text-yellow-300 flex items-center justify-center font-pixel text-xs font-bold shadow-sm">
-                      {item.user.name[0]}
+                    <div className="w-8 h-8 bg-retro-black border border-yellow-400 flex items-center justify-center rounded-full shrink-0 overflow-hidden shadow-sm">
+                      <PixelAvatar role={item.user.role} size="w-full h-full" />
                     </div>
                     <div>
                       <p className="font-pixel text-[8px] text-white leading-none mb-1 font-bold">

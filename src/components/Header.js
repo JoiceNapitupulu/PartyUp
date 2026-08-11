@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import usersData from "@/data/users.json";
 import { translations } from "@/utils/lang";
+import PixelAvatar from "@/components/PixelAvatar";
 
 export default function Header() {
   const pathname = usePathname();
@@ -215,11 +216,9 @@ export default function Header() {
                       : "border-retro-black/30 bg-white/10 hover:bg-white/20"
                     }`}
                 >
-                  <div className={`w-7 h-7 flex items-center justify-center font-pixel text-xs font-bold border rounded-full ${isLightMode
-                      ? "bg-white text-retro-black border-slate-300"
-                      : "bg-retro-black text-white border-white/10"
-                    }`}>
-                    {user.name ? user.name[0].toUpperCase() : "P"}
+                  {/* Avatar Karakter Anime Pixel Sesuai Role User */}
+                  <div className="w-7 h-7 flex items-center justify-center bg-retro-black border border-yellow-400 rounded-full shrink-0 overflow-hidden shadow-sm">
+                    <PixelAvatar role={user.role} size="w-full h-full" />
                   </div>
                   <div className="text-left pr-1 leading-tight">
                     <p className={`font-pixel text-[9px] ${isLightMode ? "text-retro-black font-bold" : "text-white"}`}>

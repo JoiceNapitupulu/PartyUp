@@ -6,6 +6,7 @@ import Image from "next/image";
 import usersData from "@/data/users.json";
 import PixelButton from "./PixelButton";
 import PixelTechIcon from "./PixelTechIcon";
+import PixelAvatar from "@/components/PixelAvatar";
 
 const roleNames = [
   "Product Manager (PM)",
@@ -216,18 +217,21 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
         {/* C. FOOTER KARTU */}
         <div className="p-4 pt-0">
           <div className="border-t border-gray-700/60 pt-3 flex items-center justify-between gap-3">
-            {showAuthor && author && (
+            {showAuthor && author ? (
               <div className="flex items-center gap-2 text-left">
-                <div className="w-7 h-7 bg-retro-black border border-yellow-400 flex items-center justify-center font-pixel text-[9px] text-yellow-300 font-bold">
-                  {author.name[0]}
+                {/* Avatar Karakter Anime Pixel Asli Pembuat Quest */}
+                <div className="w-7 h-7 bg-retro-black border border-yellow-400 flex items-center justify-center rounded-full shrink-0 overflow-hidden shadow-sm">
+                  <PixelAvatar role={author.role} size="w-full h-full" />
                 </div>
                 <div>
-                  <p className="font-pixel text-[8px] text-white leading-tight">{author.name}</p>
+                  <p className="font-pixel text-[8px] text-white leading-tight font-bold">{author.name}</p>
                   <p className="font-sans text-[9px] text-gray-400 leading-none mt-0.5">
                     {author.major}
                   </p>
                 </div>
               </div>
+            ) : (
+              <div />
             )}
 
             <PixelButton

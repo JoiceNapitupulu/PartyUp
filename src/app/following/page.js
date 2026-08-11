@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PixelButton from "@/components/PixelButton";
 import usersData from "@/data/users.json";
+import PixelAvatar from "@/components/PixelAvatar";
 
 export default function Following() {
   const [user, setUser] = useState(null);
@@ -218,8 +219,8 @@ export default function Following() {
                   {/* Header Author Info */}
                   <div className="flex justify-between items-start border-b border-gray-700/60 pb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-retro-black border-2 border-yellow-400 text-yellow-300 flex items-center justify-center font-pixel text-xs font-bold shadow-sm">
-                        {author.name[0]}
+                      <div className="w-9 h-9 bg-retro-black border-2 border-yellow-400 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                        <PixelAvatar role={author.role} size="w-full h-full" />
                       </div>
                       <div>
                         <p className="font-pixel text-[10px] text-white leading-tight font-bold">
