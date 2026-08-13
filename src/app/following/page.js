@@ -46,7 +46,7 @@ export default function Following() {
     {
       id: "post-4",
       author_id: "USR-004", // Kevin
-      content: "Integrated real-time Bluetooth telemetry in MediLink. Testing mobile native responsiveness across Android & iOS devices. Ready for GEMASTIK 2026! 📱 #MobileDev",
+      content: "Integrated real-time Bluetooth telemetry in MediLink. Testing mobile native responsiveness across Android & iOS devices. Ready for GEMASTIK 2026! 📱 #MobileDev #GEMASTIK",
       likes: 18,
       isLiked: false,
       timestamp: "1 day ago",
@@ -54,10 +54,11 @@ export default function Following() {
     }
   ]);
 
-  // State Posting Baru
+  // State & Filter
   const [newPostContent, setNewPostContent] = useState("");
   const [activeReplyId, setActiveReplyId] = useState(null);
   const [replyText, setReplyText] = useState("");
+  const [selectedTag, setSelectedTag] = useState("ALL");
 
   // Load User & Local Storage Sync
   useEffect(() => {
@@ -138,18 +139,40 @@ export default function Following() {
     setNewPostContent("");
   };
 
+  // Daftar Tag Populer untuk Filter
+  const availableTags = ["ALL", "#INVENTION2026", "#GEMASTIK", "#Frontend", "#Figma", "#MobileDev", "#ProductManagement"];
+
+  // Filter Postingan berdasarkan Tag aktif
+  const filteredPosts = selectedTag === "ALL"
+    ? posts
+    : posts.filter(post => post.content.toLowerCase().includes(selectedTag.toLowerCase()));
+
+  // Fungsi helper untuk mewarnai hashtag di dalam teks
+  const renderContentWithHashtags = (text) => {
+    const parts = text.split(/(#[a-zA-Z0-9_]+)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith("#")) {
+        return (
+          <span key={i} className="text-yellow-400 font-bold hover:underline cursor-pointer">
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
     <div className="bg-[#0c1322] min-h-screen text-white flex flex-col font-sans overflow-x-hidden selection:bg-yellow-400 selection:text-black">
       <Header />
 
+      {/* Hero Banner Halaman Timeline */}
       <section
         className="relative w-full min-h-[450px] md:min-h-[550px] bg-cover bg-center bg-no-repeat overflow-hidden border-b-4 border-retro-black flex items-center justify-center pt-28 md:pt-32"
         style={{ backgroundImage: "url('/bg5.gif')" }}
       >
-        {/* Layer Overlay Dark Vignette untuk transisi sangat halus */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1322]/80 via-black/50 to-[#0c1322] pointer-events-none z-0" />
 
-        {/* Konten Hero Banner di Tengah — Dibuat Lebih Panjang & Gagah */}
         <div className="relative z-10 max-w-4xl mx-auto px-6 py-16 md:py-20 text-center flex flex-col items-center justify-center gap-4">
           <span className="font-pixel text-[9px] md:text-[11px] text-yellow-300 tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
             ✦ REAL-TIME COMMUNITY FEEDS ✦
@@ -201,109 +224,133 @@ export default function Following() {
           </div>
         </form>
 
-        {/* 2. Grid 2 Kolom Kartu Postingan Rapi & Modern */}
+        {/* 2. Bar Filter Hashtag / Kompetisi */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+          <span className="font-pixel text-[8px] text-gray-400 shrink-0 mr-1">FILTER TOPIC:</span>
+          {availableTags.map((tag) => (
+            <button
+              key={tag}
+              onClick={() => setSelectedTag(tag)}
+              className={`font-pixel text-[8px] px-3 py-1.5 border-2 transition-all shrink-0 cursor-pointer ${selectedTag === tag
+                  ? "bg-yellow-400 text-retro-black border-retro-black font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                  : "bg-[#131f37] text-gray-300 border-retro-black hover:border-yellow-400"
+                }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+
+        {/* 3. Grid 2 Kolom Kartu Postingan Rapi & Modern */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {posts.map((post) => {
-            const author = usersData.find((u) => u.user_id === post.author_id) || {
-              name: post.author_id === user?.user_id ? user.name : "Unknown Adventurer",
-              role: post.author_id === user?.user_id ? user.role : "Full-stack Developer",
-              major: "Informatics",
-            };
+          {filteredPosts.length === 0 ? (
+            <div className="col-span-full bg-[#121b2d] border-4 border-retro-black p-8 text-center flex flex-col items-center gap-3">
+              <p className="font-pixel text-xs text-yellow-400">NO POSTS FOUND FOR {selectedTag}</p>
+              <p className="font-sans text-xs text-gray-400">Try selecting another filter or dispatch the first update!</p>
+            </div>
+          ) : (
+            filteredPosts.map((post) => {
+              const author = usersData.find((u) => u.user_id === post.author_id) || {
+                name: post.author_id === user?.user_id ? user.name : "Unknown Adventurer",
+                role: post.author_id === user?.user_id ? user.role : "Full-stack Developer",
+                major: "Informatics",
+              };
 
-            return (
-              <div
-                key={post.id}
-                className="bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 p-6 flex flex-col justify-between gap-4 transition-all duration-200 text-left"
-              >
-                <div className="flex flex-col gap-3">
-                  {/* Header Author Info */}
-                  <div className="flex justify-between items-start border-b border-gray-700/60 pb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-retro-black border-2 border-yellow-400 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
-                        <PixelAvatar role={author.role} size="w-full h-full" />
-                      </div>
-                      <div>
-                        <p className="font-pixel text-[10px] text-white leading-tight font-bold">
-                          {author.name}
-                        </p>
-                        <p className="font-sans text-[10px] text-gray-400 leading-tight mt-0.5">
-                          {author.role} • {author.major || "IT"}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="font-pixel text-[8px] text-yellow-400/80">{post.timestamp}</span>
-                  </div>
-
-                  {/* Body Content */}
-                  <p className="font-sans text-xs text-gray-200 leading-relaxed whitespace-pre-line">
-                    {post.content}
-                  </p>
-                </div>
-
-                {/* Bottom Actions & Replies */}
-                <div className="flex flex-col gap-3 pt-2">
-                  {/* Action Toolbar */}
-                  <div className="border-t border-b border-gray-700/60 py-2 flex items-center gap-4">
-                    {/* Like Button */}
-                    <button
-                      onClick={() => handleLike(post.id)}
-                      className={`font-pixel text-[8px] px-2.5 py-1 border-2 select-none cursor-pointer transition-all ${post.isLiked
-                          ? "bg-pixel-green text-retro-black border-retro-black font-bold"
-                          : "bg-[#1c2a4a] text-white border-retro-black hover:border-yellow-400"
-                        }`}
-                    >
-                      {post.isLiked ? "♥ LIKED!" : "♡ LIKE"} ({post.likes})
-                    </button>
-
-                    {/* Comment Toggle Button */}
-                    <button
-                      onClick={() => {
-                        setActiveReplyId(activeReplyId === post.id ? null : post.id);
-                        setReplyText("");
-                      }}
-                      className="font-pixel text-[8px] px-2.5 py-1 border-2 border-retro-black bg-[#1c2a4a] text-white hover:border-yellow-400 select-none cursor-pointer transition-all"
-                    >
-                      💬 REPLY ({post.comments.length})
-                    </button>
-                  </div>
-
-                  {/* Comment Logs */}
-                  {post.comments.length > 0 && (
-                    <div className="bg-[#1a253b] p-3 border-2 border-retro-black flex flex-col gap-2">
-                      {post.comments.map((comment, index) => (
-                        <div key={index} className="font-sans text-[11px] leading-tight">
-                          <span className="font-pixel text-[8px] text-yellow-400 mr-2">
-                            [{comment.author}]
-                          </span>
-                          <span className="text-gray-200">{comment.text}</span>
+              return (
+                <div
+                  key={post.id}
+                  className="bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 p-6 flex flex-col justify-between gap-4 transition-all duration-200 text-left"
+                >
+                  <div className="flex flex-col gap-3">
+                    {/* Header Author Info */}
+                    <div className="flex justify-between items-start border-b border-gray-700/60 pb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-retro-black border-2 border-yellow-400 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                          <PixelAvatar role={author.role} size="w-full h-full" />
                         </div>
-                      ))}
+                        <div>
+                          <p className="font-pixel text-[10px] text-white leading-tight font-bold">
+                            {author.name}
+                          </p>
+                          <p className="font-sans text-[10px] text-gray-400 leading-tight mt-0.5">
+                            {author.role} • {author.major || "IT"}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="font-pixel text-[8px] text-yellow-400/80">{post.timestamp}</span>
                     </div>
-                  )}
 
-                  {/* Reply Input Drawer */}
-                  {activeReplyId === post.id && (
-                    <div className="flex gap-2 items-center border-t border-gray-700/60 pt-3">
-                      <input
-                        type="text"
-                        placeholder="Type reply..."
-                        value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        className="flex-1 font-sans text-xs p-2 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none placeholder-gray-400"
-                      />
-                      <PixelButton
-                        variant="navy"
-                        onClick={() => handleSendReply(post.id)}
-                        className="py-1 px-3 text-[8px] border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                    {/* Body Content dengan Highlight Hashtag */}
+                    <p className="font-sans text-xs text-gray-200 leading-relaxed whitespace-pre-line">
+                      {renderContentWithHashtags(post.content)}
+                    </p>
+                  </div>
+
+                  {/* Bottom Actions & Replies */}
+                  <div className="flex flex-col gap-3 pt-2">
+                    {/* Action Toolbar */}
+                    <div className="border-t border-b border-gray-700/60 py-2 flex items-center gap-4">
+                      {/* Like Button */}
+                      <button
+                        onClick={() => handleLike(post.id)}
+                        className={`font-pixel text-[8px] px-2.5 py-1 border-2 select-none cursor-pointer transition-all ${post.isLiked
+                            ? "bg-pixel-green text-retro-black border-retro-black font-bold"
+                            : "bg-[#1c2a4a] text-white border-retro-black hover:border-yellow-400"
+                          }`}
                       >
-                        SEND
-                      </PixelButton>
+                        {post.isLiked ? "♥ LIKED!" : "♡ LIKE"} ({post.likes})
+                      </button>
+
+                      {/* Comment Toggle Button */}
+                      <button
+                        onClick={() => {
+                          setActiveReplyId(activeReplyId === post.id ? null : post.id);
+                          setReplyText("");
+                        }}
+                        className="font-pixel text-[8px] px-2.5 py-1 border-2 border-retro-black bg-[#1c2a4a] text-white hover:border-yellow-400 select-none cursor-pointer transition-all"
+                      >
+                        💬 REPLY ({post.comments.length})
+                      </button>
                     </div>
-                  )}
+
+                    {/* Comment Logs */}
+                    {post.comments.length > 0 && (
+                      <div className="bg-[#1a253b] p-3 border-2 border-retro-black flex flex-col gap-2">
+                        {post.comments.map((comment, index) => (
+                          <div key={index} className="font-sans text-[11px] leading-tight">
+                            <span className="font-pixel text-[8px] text-yellow-400 mr-2">
+                              [{comment.author}]
+                            </span>
+                            <span className="text-gray-200">{comment.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Reply Input Drawer */}
+                    {activeReplyId === post.id && (
+                      <div className="flex gap-2 items-center border-t border-gray-700/60 pt-3">
+                        <input
+                          type="text"
+                          placeholder="Type reply..."
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          className="flex-1 font-sans text-xs p-2 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none placeholder-gray-400"
+                        />
+                        <PixelButton
+                          variant="navy"
+                          onClick={() => handleSendReply(post.id)}
+                          className="py-1 px-3 text-[8px] border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                        >
+                          SEND
+                        </PixelButton>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </section>
       </main>
 

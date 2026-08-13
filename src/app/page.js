@@ -359,58 +359,101 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="max-w-6xl w-full mx-auto px-4 md:px-6 my-16 flex flex-col gap-8">
-          <div className="bg-[#13222e] border-4 border-retro-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10 flex flex-col lg:flex-row items-center gap-10">
+        <section className="max-w-6xl w-full mx-auto px-4 md:px-6 my-16 flex flex-col lg:flex-row items-center gap-12">
 
-            {/* MOCKUP PANEL KIRI: gaya jendela "quest log" pixel */}
-            <div className="w-full lg:w-[380px] shrink-0">
-              <div className="border-4 border-retro-black bg-[#0f1c26] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+          {/* TEKS SEBELAH KIRI */}
+          <div className="flex-1 text-left flex flex-col gap-4">
+            <span className="font-pixel text-[10px] text-yellow-400 bg-retro-black px-3 py-1.5 w-fit border border-retro-black">
+              // PROGRESSION SYSTEM
+            </span>
+            <h2 className="font-pixel text-xl md:text-3xl text-white leading-relaxed">
+              Level up your team
+            </h2>
+            <p className="font-sans text-sm md:text-base text-gray-300 leading-relaxed max-w-lg">
+              Bentuk party-mu, kumpulkan XP dari tiap quest yang diselesaikan, dan koleksi lencana pencapaian saat kamu berkolaborasi lintas role. Sistem matchmaking kami bikin cari tim impian buat GEMASTIK &amp; INVENTION 2026 jadi semenyenangkan menyelesaikan quest berikutnya.
+            </p>
+          </div>
 
-                {/* Title bar ala jendela retro */}
-                <div className="flex items-center gap-1.5 bg-retro-black px-3 py-2 border-b-4 border-retro-black">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-400 inline-block" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-300 inline-block" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-pixel-green inline-block" />
-                  <span className="font-pixel text-[7px] text-gray-300 ml-2">party_log.exe</span>
-                </div>
+          {/* SEBELAH KANAN: TEAM.GIF LEBIH NYATA & IKON LEBIH BESAR */}
+          <div className="w-full lg:w-[460px] relative pt-16">
 
-                {/* Isi mockup: ikon party + XP badge yang "pop in" */}
-                <div className="p-6 flex flex-col items-center gap-4 bg-[#0f1c26]">
-                  <div className="relative w-28 h-28 border-4 border-retro-black bg-[#1a2f3b] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]">
-                    <Image
-                      src="/cursors/team.gif"
-                      alt="Party Team Sprite"
-                      fill
-                      unoptimized
-                      className="object-contain p-2"
-                    />
-                  </div>
-
-                  <div className="flex gap-2">
-                    <span className="animate-pop-in font-pixel text-[7px] bg-yellow-400 text-retro-black px-2 py-1 border-2 border-retro-black" style={{ animationDelay: "0.1s" }}>
-                      +10 XP
-                    </span>
-                    <span className="animate-pop-in font-pixel text-[7px] bg-pixel-green text-retro-black px-2 py-1 border-2 border-retro-black" style={{ animationDelay: "0.3s" }}>
-                      PARTY FORMED!
-                    </span>
-                  </div>
-                </div>
+            {/* Karakter Pixel Diperbesar di Atas */}
+            <div className="absolute top-2 left-6 flex items-center gap-4 z-10 animate-float-gentle">
+              <div className="w-24 h-24 relative">
+                <Image
+                  src="/cursors/2pc.gif"
+                  alt="Character 1"
+                  fill
+                  unoptimized
+                  className="object-contain drop-shadow-[3px_3px_0px_rgba(0,0,0,0.8)]"
+                />
               </div>
             </div>
 
-            {/* TEKS KANAN: judul + deskripsi informasi */}
-            <div className="flex-1 text-left flex flex-col gap-4">
-              <span className="font-pixel text-[9px] text-yellow-400 bg-retro-black px-2 py-1 w-fit border border-retro-black">
-                // PROGRESSION SYSTEM
-              </span>
-              <h2 className="font-pixel text-lg md:text-2xl text-white leading-relaxed">
-                Level up your team
-              </h2>
-              <p className="font-sans text-xs md:text-sm text-gray-300 leading-relaxed max-w-lg">
-                Bentuk party-mu, kumpulkan XP dari tiap quest yang diselesaikan, dan koleksi lencana pencapaian saat kamu berkolaborasi lintas role. Sistem matchmaking kami bikin cari tim impian buat GEMASTIK &amp; INVENTION 2026 jadi semenyenangkan menyelesaikan quest berikutnya.
-              </p>
+            {/* Container Gambar Lebih Bersih & Nyata (Tanpa kotak hitam kaku) */}
+            <div className="bg-[#111e28] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 p-3.5 relative flex flex-col gap-3">
+
+              <div className="w-full aspect-video relative rounded-xl overflow-hidden shadow-inner bg-black">
+                <Image
+                  src="/cursors/team.gif"
+                  alt="Team Campfire"
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
+              </div>
+
+              <div className="flex justify-between w-full items-center px-2 pb-1">
+                <span className="font-pixel text-[10px] text-yellow-300 tracking-wider">PARTY_CAMPFIRE.GIF</span>
+                <span className="font-pixel text-[8px] bg-emerald-500 text-black px-2.5 py-0.5 rounded-full font-bold">ONLINE</span>
+              </div>
+
             </div>
           </div>
+        </section>
+
+        <section className="max-w-6xl w-full mx-auto px-4 md:px-6 my-24 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
+
+          {/* SEBELAH KIRI: 2 IKON GIF LEBIH BESAR & BERDAMPINGAN */}
+          <div className="w-full lg:w-auto flex items-center justify-center gap-6 md:gap-8 shrink-0">
+
+            {/* Ikon Pertama */}
+            <div className="w-36 h-36 md:w-44 md:h-44 relative animate-float-gentle">
+              <Image
+                src="/cursors/pc3.gif"
+                alt="Character 1"
+                fill
+                unoptimized
+                className="object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.7)]"
+              />
+            </div>
+
+            {/* Ikon Kedua */}
+            <div className="w-36 h-36 md:w-44 md:h-44 relative animate-float-gentle" style={{ animationDelay: "1s" }}>
+              <Image
+                src="/cursors/1.gif"
+                alt="Character 2"
+                fill
+                unoptimized
+                className="object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.7)]"
+              />
+            </div>
+
+          </div>
+
+          {/* SEBELAH KANAN: TEKS LEBIH PROPOSIONAL & NYAMAN DIBACA */}
+          <div className="flex-1 text-left flex flex-col gap-4 max-w-xl">
+            <span className="font-pixel text-[10px] text-pixel-green bg-retro-black px-3 py-1.5 w-fit border border-retro-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              // INSTANT MATCHMAKING
+            </span>
+            <h2 className="font-pixel text-xl md:text-2xl lg:text-3xl text-white leading-tight tracking-wide">
+              Conquer Leaderboards Together
+            </h2>
+            <p className="font-sans text-sm md:text-base text-gray-300 leading-relaxed">
+              Tinjau portofolio mahasiswa, filter berdasarkan *tech stack* atau target kompetisi, dan kirim undangan tim secara instan. Bentuk tim impian Anda dan raih posisi puncak di papan peringkat GEMASTIK & INVENTION 2026!
+            </p>
+          </div>
+
         </section>
 
         {/* ========================================================= */}
