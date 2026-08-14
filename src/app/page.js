@@ -3,11 +3,11 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import PixelButton from "@/components/PixelButton";
-import ProjectCard from "@/components/ProjectCard";
-import projectsData from "@/data/projects.json";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import PixelButton from "../components/PixelButton";
+import ProjectCard from "../components/ProjectCard";
+import projectsData from "../data/projects.json";
 
 export default function Home() {
   // 1. EFEK TEKS KETIK SATU PER SATU (WORKSTATION TITLE)

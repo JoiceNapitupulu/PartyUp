@@ -9,7 +9,7 @@ export default function Chatbot() {
     const [messages, setMessages] = useState([
         {
             sender: "bot",
-            text: "Greetings, Adventurer! 🎮 I am Pikachu, your Guild Receptionist. Need help finding a Party or checking your Quest stats?"
+            text: "Pika pika! ⚡ Greetings, Adventurer! I am Pikachu, your Guild Receptionist. Need help finding a Party or checking your Quest stats?"
         }
     ]);
     const [inputValue, setInputValue] = useState("");
@@ -21,46 +21,62 @@ export default function Chatbot() {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages, isTyping]);
 
-    const processCommand = (userInput) => {
-        const text = userInput.toLowerCase();
-        let botResponse = "Pika pika! ⚡ Adventure awaits! Try asking about 'quest', 'class', or 'admin'.";
+    // Fungsi Kirim Pesan Menembak API Route Groq AI (/api/chat)
+    const handleSendMessage = async (e, customText = null) => {
+        if (e) e.preventDefault();
+        const textToSend = customText || inputValue;
+        if (!textToSend.trim() || isTyping) return;
 
-        if (text.includes("quest") || text.includes("board") || text.includes("misi") || text.includes("party")) {
-            botResponse = "Check out the [QUEST BOARD] tab above to inspect dispatched guild missions and join active parties!";
-        } else if (text.includes("gemastik") || text.includes("invention") || text.includes("2026")) {
-            botResponse = "GEMASTIK & INVENTION 2026 are premier nationwide IT competitions! Form your 3-member student parties on the Quest Board now.";
-        } else if (text.includes("class") || text.includes("role") || text.includes("kelas")) {
-            botResponse = "IT Guild members are split into 10 Roles: Full-stack, UI/UX, PM, Mobile Dev, QA, DevOps, and more!";
-        } else if (text.includes("admin") || text.includes("dashboard")) {
-            botResponse = "Log in as 'Admin' on the Guild Gatekeeper screen to unlock the Master System Admin Panel!";
+        const userMessage = { sender: "user", text: textToSend.trim() };
+        const updatedMessages = [...messages, userMessage];
+
+        setMessages(updatedMessages);
+        if (!customText) setInputValue("");
+        setIsTyping(true);
+
+        try {
+            // Format riwayat pesan untuk API Groq
+            const apiPayload = updatedMessages.map((m) => ({
+                role: m.sender === "user" ? "user" : "assistant",
+                content: m.text,
+            }));
+
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ messages: apiPayload }),
+            });
+
+            const data = await res.json();
+            const botReply = data.text || "Pika pika! ⚡ Something went wrong.";
+
+            // Matikan indikator "thinking" sebelum mulai mengetik
+            setIsTyping(false);
+
+            // Efek mengetik huruf demi huruf secara modern
+            setMessages((prev) => [...prev, { sender: "bot", text: "" }]);
+            let i = 0;
+            const typingInterval = setInterval(() => {
+                if (i < botReply.length) {
+                    setMessages((prev) => {
+                        const lastMsg = prev[prev.length - 1];
+                        const updatedLastMsg = { ...lastMsg, text: botReply.slice(0, i + 1) };
+                        return [...prev.slice(0, prev.length - 1), updatedLastMsg];
+                    });
+                    i++;
+                } else {
+                    clearInterval(typingInterval);
+                }
+            }, 18); // Kecepatan ketik (18ms)
+
+        } catch (error) {
+            console.error("Chat error:", error);
+            setIsTyping(false);
+            setMessages((prev) => [
+                ...prev,
+                { sender: "bot", text: "Pika pika! ⚡ Connection to Groq AI lost." }
+            ]);
         }
-
-        setMessages((prev) => [...prev, { sender: "bot", text: botResponse }]);
-        setIsTyping(false);
-    };
-
-    const handleSendMessage = (e) => {
-        e.preventDefault();
-        if (!inputValue.trim()) return;
-
-        const userMessage = { sender: "user", text: inputValue.trim() };
-        setMessages((prev) => [...prev, userMessage]);
-        setInputValue("");
-        setIsTyping(true);
-
-        setTimeout(() => {
-            processCommand(userMessage.text);
-        }, 800);
-    };
-
-    const handleQuickPrompt = (questionText) => {
-        const userMessage = { sender: "user", text: questionText };
-        setMessages((prev) => [...prev, userMessage]);
-        setIsTyping(true);
-
-        setTimeout(() => {
-            processCommand(questionText);
-        }, 800);
     };
 
     const handleCopyText = async (text, idx) => {
@@ -74,17 +90,16 @@ export default function Chatbot() {
     };
 
     return (
-        /* PEMBUNGKUS LUAR DIBERI pointer-events-none AGAR TIDAK PERNAH MENUTUPI KLIK MOUSE DI WEB */
         <div className="fixed bottom-6 right-6 z-40 font-sans flex flex-col items-end pointer-events-none selection:bg-yellow-400 selection:text-black">
 
-            {/* 1. Jendela Chatbot (Diberi pointer-events-auto saat terbuka) */}
+            {/* 1. Jendela Chatbot */}
             <div
                 className={`transition-all duration-300 ease-in-out origin-bottom-right ${isOpen
                         ? "scale-100 opacity-100 translate-y-0 pointer-events-auto"
                         : "scale-90 opacity-0 translate-y-10 pointer-events-none"
-                    } mb-2 w-[92vw] sm:w-[480px] md:w-[520px] h-[520px] max-h-[80vh] bg-[#121b2d] text-white border-4 border-retro-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between overflow-hidden rounded-xl`}
+                    } mb-2 w-[360px] sm:w-[430px] h-[520px] max-h-[80vh] bg-[#121b2d] text-white border-4 border-retro-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between overflow-hidden rounded-xl`}
             >
-                {/* Header Chatbot - Receptionist Desk */}
+                {/* Header Chatbot */}
                 <div className="bg-retro-black p-3 flex justify-between items-center border-b-2 border-retro-black shrink-0">
                     <div className="flex items-center gap-2">
                         <div className="relative w-7 h-7 shrink-0">
@@ -98,10 +113,10 @@ export default function Chatbot() {
                         </div>
                         <div className="flex flex-col text-left">
                             <span className="font-pixel text-[9px] text-yellow-300 font-bold tracking-wider">
-                                PIKACHU RECEPTIONIST
+                                PIKACHUAI
                             </span>
                             <span className="font-pixel text-[7px] text-pixel-green">
-                                ● GUILD_GUIDE.EXE ONLINE
+                                ● GROQ_AI_LLAMA3
                             </span>
                         </div>
                     </div>
@@ -112,7 +127,7 @@ export default function Chatbot() {
                         className="font-pixel text-[10px] text-red-400 hover:text-red-500 select-none cursor-pointer bg-transparent border-none px-2"
                         suppressHydrationWarning
                     >
-                        [X]
+                        [X] CLOSE
                     </button>
                 </div>
 
@@ -125,28 +140,28 @@ export default function Chatbot() {
                         <div className="grid grid-cols-2 gap-1.5">
                             <button
                                 type="button"
-                                onClick={() => handleQuickPrompt("How to join a party?")}
+                                onClick={() => handleSendMessage(null, "How to join a party?")}
                                 className="font-pixel text-[7px] p-1.5 bg-[#1c2a4a] text-yellow-300 border border-yellow-400/40 hover:border-yellow-400 text-left rounded cursor-pointer"
                             >
                                 ⚔️ Join Party? ▶
                             </button>
                             <button
                                 type="button"
-                                onClick={() => handleQuickPrompt("What is Gemastik 2026?")}
+                                onClick={() => handleSendMessage(null, "What is Gemastik 2026?")}
                                 className="font-pixel text-[7px] p-1.5 bg-[#1c2a4a] text-sky-300 border border-sky-400/40 hover:border-sky-400 text-left rounded cursor-pointer"
                             >
                                 📜 Gemastik 2026? ▶
                             </button>
                             <button
                                 type="button"
-                                onClick={() => handleQuickPrompt("Explain 10 Class Roles")}
+                                onClick={() => handleSendMessage(null, "Explain 10 Class Roles")}
                                 className="font-pixel text-[7px] p-1.5 bg-[#1c2a4a] text-pixel-green border border-pixel-green/40 hover:border-pixel-green text-left rounded cursor-pointer"
                             >
                                 🛡️ 10 Roles Info ▶
                             </button>
                             <button
                                 type="button"
-                                onClick={() => handleQuickPrompt("How to access Admin?")}
+                                onClick={() => handleSendMessage(null, "How to access Admin?")}
                                 className="font-pixel text-[7px] p-1.5 bg-[#1c2a4a] text-red-300 border border-red-400/40 hover:border-red-400 text-left rounded cursor-pointer"
                             >
                                 👑 Admin Panel ▶
@@ -201,6 +216,7 @@ export default function Chatbot() {
                         </div>
                     ))}
 
+                    {/* Animasi Mengetik Groq AI */}
                     {isTyping && (
                         <div className="mr-auto flex items-end gap-2 max-w-[85%]">
                             <div className="relative w-7 h-7 shrink-0 mb-0.5">
@@ -213,7 +229,7 @@ export default function Chatbot() {
                                 />
                             </div>
                             <div className="p-2 border-2 border-dashed border-yellow-400 bg-[#1c2a4a] text-white rounded-2xl rounded-bl-none font-pixel text-[8px] text-yellow-300 animate-pulse">
-                                [PIKACHU IS TYPING...]
+                                [PIKACHU IS THINKING...]
                             </div>
                         </div>
                     )}
@@ -252,7 +268,7 @@ export default function Chatbot() {
                 </form>
             </div>
 
-            {/* 2. Tombol Pemicu Melayang - Pikachu GIF (Diberi pointer-events-auto) */}
+            {/* 2. Tombol Pemicu Melayang - Pikachu GIF */}
             {!isOpen && (
                 <button
                     type="button"

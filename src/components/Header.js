@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import usersData from "@/data/users.json";
-import { translations } from "@/utils/lang";
-import PixelAvatar from "@/components/PixelAvatar";
+import usersData from "../data/users.json";
+import { translations } from "../utils/lang";
+import PixelAvatar from "./PixelAvatar";
 
 export default function Header() {
   const pathname = usePathname();

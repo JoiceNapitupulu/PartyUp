@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import PixelButton from "@/components/PixelButton";
-import usersData from "@/data/users.json";
-import projectsData from "@/data/projects.json";
-import PixelAvatar from "@/components/PixelAvatar";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
+import PixelButton from "../../components/PixelButton";
+import PixelAvatar from "../../components/PixelAvatar";
+import usersData from "../../data/users.json";
+import projectsData from "../../data/projects.json";
 
 export default function Showcase() {
   const [search, setSearch] = useState("");

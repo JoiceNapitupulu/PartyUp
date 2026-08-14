@@ -1,6 +1,6 @@
 import { Press_Start_2P, Inter } from "next/font/google";
 import "./globals.css";
-import Chatbot from "@/components/Chatbot"; // Impor komponen chatbot melayang baru
+import Chatbot from "../components/Chatbot"; // Impor komponen chatbot melayang baru
 
 const pressStart2P = Press_Start_2P({
   weight: "400",

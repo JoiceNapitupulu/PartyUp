@@ -3,10 +3,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import usersData from "@/data/users.json";
+import usersData from "../data/users.json";
 import PixelButton from "./PixelButton";
 import PixelTechIcon from "./PixelTechIcon";
-import PixelAvatar from "@/components/PixelAvatar";
+import PixelAvatar from "./PixelAvatar";
 
 const roleNames = [
   "Product Manager (PM)",
