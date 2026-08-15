@@ -103,6 +103,7 @@ export default function Header() {
     { nameKey: "showcase", path: "/showcase" },
     { nameKey: "timeline", path: "/following" },
     { nameKey: "guide", path: "/guide" },
+    { nameKey: "QUIZ", path: "/quiz" },
   ];
 
   const navItems = user && (user.role?.toLowerCase() === "admin" || user.user_id === "USR-000")

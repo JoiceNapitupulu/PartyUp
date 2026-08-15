@@ -30,7 +30,7 @@
     "**/*.mts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/app/quiz/page.js"  ],
   "exclude": [
     "node_modules"
   ]

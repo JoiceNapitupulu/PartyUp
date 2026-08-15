@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import PixelButton from "@/components/PixelButton";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
+import PixelButton from "../../components/PixelButton";
 import Link from "next/link";
 
 const GROUP_STYLES = {

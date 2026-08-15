@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import PixelButton from "@/components/PixelButton";
-import ProjectCard from "@/components/ProjectCard";
-import PixelAvatar from "@/components/PixelAvatar";
-import PixelTechIcon from "@/components/PixelTechIcon";
-import usersData from "@/data/users.json";
-import projectsData from "@/data/projects.json";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
+import PixelButton from "../../components/PixelButton";
+import ProjectCard from "../../components/ProjectCard";
+import PixelAvatar from "../../components/PixelAvatar";
+import PixelTechIcon from "../../components/PixelTechIcon";
+import usersData from "../../data/users.json";
+import projectsData from "../../data/projects.json";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("overview"); // overview, projects, board, skills

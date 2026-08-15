@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import PixelButton from "@/components/PixelButton";
-import ProjectCard from "@/components/ProjectCard";
-import projectsData from "@/data/projects.json";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
+import PixelButton from "../../components/PixelButton";
+import ProjectCard from "../../components/ProjectCard";
+import projectsData from "../../data/projects.json";
 
 export default function Board() {
   const router = useRouter();

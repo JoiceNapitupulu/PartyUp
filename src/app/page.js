@@ -404,8 +404,7 @@ export default function Home() {
               </div>
 
               <div className="flex justify-between w-full items-center px-2 pb-1">
-                <span className="font-pixel text-[10px] text-yellow-300 tracking-wider">PARTY_CAMPFIRE.GIF</span>
-                <span className="font-pixel text-[8px] bg-emerald-500 text-black px-2.5 py-0.5 rounded-full font-bold">ONLINE</span>
+                <span className="font-pixel text-[10px] text-yellow-300 tracking-wider">PARTYUP!</span>
               </div>
 
             </div>

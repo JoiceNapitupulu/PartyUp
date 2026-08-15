@@ -4,8 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import usersData from "@/data/users.json";
-import PixelAvatar from "@/components/PixelAvatar";
+import usersData from "../../data/users.json";
+import PixelAvatar from "../../components/PixelAvatar";
 
 const ROLE_THEME = {
   hacker: { accent: "#22c55e", ring: "border-emerald-400", label: "Hacker" },
