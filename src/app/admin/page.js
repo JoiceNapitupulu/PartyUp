@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Footer from "@/components/Footer";
-import { usersData, projectsData } from "@/utils/auth";
+import Footer from "../../components/Footer";
+import { usersData, projectsData } from "../../utils/auth";
 
 export default function AdminDashboard() {
     // Inisialisasi metrik secara Lazy untuk menghilangkan error set-state-in-effect

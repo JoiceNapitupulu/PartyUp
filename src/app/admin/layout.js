@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { getCurrentUser, triggerAuthChange } from "@/utils/auth";
-import PixelButton from "@/components/PixelButton";
+import { getCurrentUser, triggerAuthChange } from "../../utils/auth";
+import PixelButton from "../../components/PixelButton";
 
 // Ikon representasi visual sidebar terbuka (untuk aksi menciutkan/collapse)
 const CollapseIcon = () => (

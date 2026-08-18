@@ -1,5 +1,5 @@
-import { usersData } from "@/data/users.js";
-import { projectsData } from "@/data/projects.js";
+import { usersData } from "../data/users.js";
+import { projectsData } from "../data/projects.js";
 
 export { usersData, projectsData };
 
