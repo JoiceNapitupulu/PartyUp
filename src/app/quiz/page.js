@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import PixelButton from "../../components/PixelButton";
@@ -11,11 +12,15 @@ import Link from "next/link";
 // Latar utama luar game (di belakang seluruh halaman/console GameBoy)
 const OUTER_BG = "/kuis/bg1.jpg";
 
+// Efek elemen serangan: Air (hero, kebaikan) vs Api (boss, kejahatan)
+const EFFECT_WATER = "/efek/air.gif"; // dipakai saat hero menyerang boss
+const EFFECT_FIRE = "/efek/api.gif"; // dipakai saat boss menyerang balik hero
+
 const STAGES = [
     {
         id: "design",
         name: "FIGMA FOREST",
-        icon: "🌳",
+        iconImg: "/kuis/uiux.png", // Logo UI/UX piksel asli menggantikan pohon 🌳
         bossName: "BAD UX GOBLIN",
         bossSprite: "👾",
         bgGif: "/kuis/bg2.jpg",
@@ -29,7 +34,7 @@ const STAGES = [
     {
         id: "frontend",
         name: "FRONTEND VALLEY",
-        icon: "💻",
+        iconImg: "/kuis/2.png", // Logo Frontend piksel asli menggantikan 💻
         bossName: "SYNTAX BUG DRAGON",
         bossSprite: "🐉",
         bgGif: "/kuis/bg3.jpg",
@@ -43,7 +48,7 @@ const STAGES = [
     {
         id: "backend",
         name: "BACKEND CASTLE",
-        icon: "🏰",
+        iconImg: "/kuis/3.png", // Logo Backend piksel asli menggantikan 🏰
         bossName: "SQL INJECTION DEMON",
         bossSprite: "👹",
         bgGif: "/kuis/bg4.jpg",
@@ -130,6 +135,7 @@ export default function GameBoyAdventureQuiz() {
     const getHeroLevel = (u) => (u?.skills?.length || 0) + (u?.semester || 1);
     const heroLevel = getHeroLevel(hero);
 
+    // Progress panggung murni turunan dari bossHp (single source of
     // truth), jadi tidak ada lagi 2 kondisi menang yang bisa saling tabrakan.
     const stageProgress = 100 - bossHp;
 
@@ -180,7 +186,7 @@ export default function GameBoyAdventureQuiz() {
         if (isCorrect) {
             sfx.playPowerUp();
             const damage = Math.ceil(100 / activeStage.questions.length);
-            setDialogueText(`💥 CRITICAL HIT! ${hero.name} dealt -${damage} DMG to ${activeStage.bossName}!`);
+            setDialogueText(`💧 SPLASH HIT! ${hero.name} doused ${activeStage.bossName} for -${damage} DMG!`);
 
             setTimeout(() => {
                 setIsPlayerAttacking(true);
@@ -229,7 +235,7 @@ export default function GameBoyAdventureQuiz() {
         } else {
             sfx.playPowerDown();
             const damage = 30;
-            setDialogueText(`🚨 MISSED! ${activeStage.bossName} dealt -${damage} DMG to ${hero.name}!`);
+            setDialogueText(`🔥 SCORCHED! ${activeStage.bossName} burned ${hero.name} for -${damage} DMG!`);
 
             setTimeout(() => {
                 setIsBossAttacking(true);
@@ -303,8 +309,17 @@ export default function GameBoyAdventureQuiz() {
         }
         .animate-sprite-pulse { animation: spritePulse 2.2s ease-in-out infinite; }
 
+        /* Efek elemen (air/api) "pop" masuk lalu menghilang, disinkron dengan
+           durasi lunge serangan (~500ms sebelum HP berkurang) */
+        @keyframes effectPop {
+          0% { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+          35% { transform: scale(1.2) rotate(4deg); opacity: 1; }
+          100% { transform: scale(1) rotate(0deg); opacity: 0; }
+        }
+        .animate-effect-pop { animation: effectPop 0.55s ease-out forwards; }
+
         @media (prefers-reduced-motion: reduce) {
-          .animate-screen-shake, .animate-hp-flash, .animate-sprite-pulse {
+          .animate-screen-shake, .animate-hp-flash, .animate-sprite-pulse, .animate-effect-pop {
             animation: none !important;
           }
         }
@@ -419,7 +434,16 @@ export default function GameBoyAdventureQuiz() {
                                                 onClick={() => startStage(stg)}
                                                 className="bg-[#121b2d]/90 border-2 border-retro-black hover:border-yellow-400 p-4 rounded flex flex-col items-center gap-2 cursor-pointer transition-transform hover:-translate-y-1 shadow-md text-left"
                                             >
-                                                <span className="text-3xl animate-sprite-pulse">{stg.icon}</span>
+                                                {/* Logo tech piksel asli menggantikan emoji pohon/laptop/kastil */}
+                                                <div className="w-14 h-14 relative my-1 animate-sprite-pulse">
+                                                    <Image
+                                                        src={stg.iconImg}
+                                                        alt={stg.name}
+                                                        fill
+                                                        unoptimized
+                                                        className="object-contain drop-shadow-[2px_2px_0px_rgba(0,0,0,0.8)]"
+                                                    />
+                                                </div>
                                                 <span className="font-pixel text-[9px] text-yellow-300 font-bold text-center">{stg.name}</span>
                                                 <span className="font-sans text-[10px] text-gray-300 text-center">Boss: {stg.bossName}</span>
                                             </button>
@@ -436,7 +460,7 @@ export default function GameBoyAdventureQuiz() {
                                 </div>
                             )}
 
-                            {/* STAGE 3: PERTARUNGAN */}
+                            {/* STAGE 3: PERTARUNGAN — Air (hero) vs Api (boss jahat) */}
                             {gameState === "PLAYING_STAGE" && activeStage && (
                                 <div className="relative z-10 h-full flex flex-col justify-between">
 
@@ -451,28 +475,58 @@ export default function GameBoyAdventureQuiz() {
 
                                     {/* Visual Karakter Berjalan di Atas Rumput */}
                                     <div className="flex justify-between items-end px-6 sm:px-12 py-4">
-                                        {/* Hero Sprite */}
+                                        {/* Hero Sprite — kena efek Api (🔥) saat diserang boss */}
                                         <div className={`relative flex flex-col items-center transition-transform ${isPlayerAttacking ? "translate-x-10 scale-110" : "animate-sprite-pulse"}`}>
                                             <div className="w-16 h-16 relative drop-shadow-[2px_4px_0px_rgba(0,0,0,0.8)]">
                                                 <PixelAvatar role={hero.role} size="w-full h-full" />
+
+                                                {/* Angka damage melayang di atas hero */}
                                                 {floatingTexts.filter((f) => f.target === "player").map((f) => (
-                                                    <span key={f.id} className="absolute -top-2 left-1/2 -translate-x-1/2 font-pixel text-[10px] text-red-400 animate-float-damage pointer-events-none">
+                                                    <span key={f.id} className="absolute -top-2 left-1/2 -translate-x-1/2 font-pixel text-[10px] text-red-400 animate-float-damage pointer-events-none z-20">
                                                         {f.text}
                                                     </span>
                                                 ))}
+
+                                                {/* Efek Api 🔥 menerjang hero saat boss menyerang */}
+                                                {isBossAttacking && (
+                                                    <div className="absolute -inset-3 animate-effect-pop pointer-events-none z-10">
+                                                        <Image
+                                                            src={EFFECT_FIRE}
+                                                            alt="Fire attack effect"
+                                                            fill
+                                                            unoptimized
+                                                            className="object-contain"
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
                                             <span className="font-pixel text-[7px] bg-pixel-green text-retro-black px-1 font-bold">{hero.name}</span>
                                         </div>
 
-                                        {/* Boss Sprite */}
+                                        {/* Boss Sprite — kena efek Air (💧) saat hero menyerang */}
                                         <div className={`relative flex flex-col items-center transition-transform ${isBossAttacking ? "-translate-x-10 animate-screen-shake" : "animate-sprite-pulse"}`}>
-                                            <span className="text-5xl drop-shadow-[2px_4px_0px_rgba(0,0,0,0.8)] relative">
+                                            <span className="text-5xl drop-shadow-[2px_4px_0px_rgba(0,0,0,0.8)] relative inline-block w-16 h-16 leading-[4rem] text-center">
                                                 {activeStage.bossSprite}
+
+                                                {/* Angka damage melayang di atas boss */}
                                                 {floatingTexts.filter((f) => f.target === "boss").map((f) => (
-                                                    <span key={f.id} className="absolute -top-3 left-1/2 -translate-x-1/2 font-pixel text-[11px] text-yellow-300 animate-float-damage pointer-events-none">
+                                                    <span key={f.id} className="absolute -top-3 left-1/2 -translate-x-1/2 font-pixel text-[11px] text-yellow-300 animate-float-damage pointer-events-none z-20">
                                                         {f.text}
                                                     </span>
                                                 ))}
+
+                                                {/* Efek Air 💧 menerjang boss saat hero menyerang */}
+                                                {isPlayerAttacking && (
+                                                    <span className="absolute -inset-3 animate-effect-pop pointer-events-none z-10 block">
+                                                        <Image
+                                                            src={EFFECT_WATER}
+                                                            alt="Water attack effect"
+                                                            fill
+                                                            unoptimized
+                                                            className="object-contain"
+                                                        />
+                                                    </span>
+                                                )}
                                             </span>
                                             <span className="font-pixel text-[7px] bg-red-600 text-white px-1 font-bold">{activeStage.bossName}</span>
                                         </div>
