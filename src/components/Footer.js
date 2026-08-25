@@ -39,7 +39,7 @@ export default function Footer() {
               // GUILD DIRECTORY
             </span>
 
-            <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-center md:text-left">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-center md:text-left">
               <Link
                 href="/board"
                 className="font-pixel text-[9px] text-gray-300 hover:text-pixel-green hover:translate-x-1 transition-all"
@@ -57,6 +57,18 @@ export default function Footer() {
                 className="font-pixel text-[9px] text-gray-300 hover:text-pixel-green hover:translate-x-1 transition-all"
               >
                 ▶ {t("timeline")}
+              </Link>
+              <Link
+                href="/guide"
+                className="font-pixel text-[9px] text-gray-300 hover:text-pixel-green hover:translate-x-1 transition-all"
+              >
+                ▶ {t("guide")}
+              </Link>
+              <Link
+                href="/quiz"
+                className="font-pixel text-[9px] text-gray-300 hover:text-pixel-green hover:translate-x-1 transition-all"
+              >
+                ▶ {t("quiz")}
               </Link>
               <Link
                 href="/admin"

@@ -7,6 +7,7 @@ import usersData from "../data/users.json";
 import PixelButton from "./PixelButton";
 import PixelTechIcon from "./PixelTechIcon";
 import PixelAvatar from "./PixelAvatar";
+import { calculateUserLevel, getStoredUsers } from "../utils/auth";
 
 const roleNames = [
   "Product Manager (PM)",
@@ -43,6 +44,8 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
   const [isDetailVisible, setIsDetailVisible] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
+  const [allUsers, setAllUsers] = useState(usersData);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("currentUser");
@@ -53,10 +56,11 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
           console.error(e);
         }
       }
+      setAllUsers(getStoredUsers());
     }
   }, []);
 
-  const author = usersData.find((u) => u.user_id === project?.author);
+  const author = allUsers.find((u) => u.user_id === project?.author) || usersData.find((u) => u.user_id === project?.author);
 
   const handleApply = (e) => {
     if (e) e.stopPropagation();
@@ -226,7 +230,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                 <div>
                   <p className="font-pixel text-[8px] text-white leading-tight font-bold">{author.name}</p>
                   <p className="font-sans text-[9px] text-gray-400 leading-none mt-0.5">
-                    {author.major}
+                    {author.major} • LV.{calculateUserLevel(author)}
                   </p>
                 </div>
               </div>
@@ -425,7 +429,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                   </div>
                 </div>
                 <span className="font-pixel text-[9px] bg-navy-blue text-white px-3 py-1.5 border border-retro-black">
-                  {author?.role?.toUpperCase() || "HACKER"}
+                  {author?.role?.toUpperCase() || "MEMBER"}
                 </span>
               </div>
 

@@ -4,13 +4,14 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import userData from "@/data/users.json"; // Mengimpor data dummy Anda
-import PixelAvatar from "@/components/PixelAvatar";
-import { usersData } from "@/utils/auth";
+import userData from "../../data/users.json";
+import PixelAvatar from "../../components/PixelAvatar";
+import { usersData } from "../../utils/auth";
 
 export default function Register() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [university, setUniversity] = useState("Universitas Indonesia");
   const [major, setMajor] = useState("Informatics");
   const [selectedRole, setSelectedRole] = useState("Full-stack Developer");
@@ -52,6 +53,7 @@ export default function Register() {
       const newUser = {
         user_id: `USR-${Math.floor(100 + Math.random() * 900)}`,
         name: name.trim(),
+        password: password.trim() || `${name.trim().toLowerCase()}123`,
         semester: 3,
         university,
         major,
@@ -204,6 +206,18 @@ export default function Register() {
                   placeholder="Enter character name..."
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  className="font-sans text-xs p-2.5 bg-slate-50 border-2 border-slate-300 rounded-lg focus:border-retro-black focus:outline-none"
+                />
+              </div>
+
+              {/* Security Key / Password */}
+              <div className="flex flex-col gap-1">
+                <label className="font-pixel text-[8px] text-gray-600">SECURITY KEY (PASSWORD)</label>
+                <input
+                  type="password"
+                  placeholder="e.g. hero123"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="font-sans text-xs p-2.5 bg-slate-50 border-2 border-slate-300 rounded-lg focus:border-retro-black focus:outline-none"
                 />
               </div>

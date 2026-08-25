@@ -1,22 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import PixelButton from "../../components/PixelButton";
 import PixelAvatar from "../../components/PixelAvatar";
 import usersData from "../../data/users.json";
 import projectsData from "../../data/projects.json";
+import { calculateUserLevel, getStoredUsers, getStoredProjects } from "../../utils/auth";
 
 export default function Showcase() {
   const [search, setSearch] = useState("");
+  const [users, setUsers] = useState(usersData);
+  const [projects, setProjects] = useState(projectsData);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedProject, setSelectedProject] = useState(projectsData[0]?.title || "");
   const [invitationStatus, setInvitationStatus] = useState("idle");
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const activeUsers = getStoredUsers();
+      setUsers(activeUsers);
+      const activeProjects = getStoredProjects();
+      setProjects(activeProjects);
+      if (activeProjects[0]) {
+        setSelectedProject(activeProjects[0].title);
+      }
+    }
+  }, []);
+
   // Flat list of all portfolio items across all users
   const allShowcases = [];
-  usersData.forEach((user) => {
+  users.forEach((user) => {
     if (user.portfolio) {
       user.portfolio.forEach((p) => {
         allShowcases.push({
@@ -143,7 +158,7 @@ export default function Showcase() {
                         {item.user.name}
                       </p>
                       <p className="font-sans text-[9px] text-gray-400 leading-none">
-                        {item.user.role} • LV.{(item.user.skills?.length || 0) + (item.user.semester || 1)}
+                        {item.user.role} • LV.{calculateUserLevel(item.user)}
                       </p>
                     </div>
                   </div>
@@ -200,7 +215,7 @@ export default function Showcase() {
                       onChange={(e) => setSelectedProject(e.target.value)}
                       className="font-sans text-xs p-2 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none cursor-pointer"
                     >
-                      {projectsData.map((proj) => (
+                      {projects.map((proj) => (
                         <option key={proj.project_id} value={proj.title} className="bg-[#1c2a4a]">
                           {proj.title}
                         </option>
