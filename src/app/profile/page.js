@@ -9,6 +9,7 @@ import PixelAvatar from "../../components/PixelAvatar";
 import PixelTechIcon from "../../components/PixelTechIcon";
 import usersData from "../../data/users.json";
 import projectsData from "../../data/projects.json";
+import { calculateUserLevel } from "../../utils/auth";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("overview"); // overview, projects, board, skills
@@ -175,7 +176,7 @@ export default function Profile() {
             <div className="w-28 h-28 bg-retro-black border-4 border-yellow-400 flex items-center justify-center relative shadow-lg">
               <PixelAvatar role={user.role} size="w-24 h-24" />
               <div className="absolute -bottom-2.5 right-1 bg-pixel-green text-retro-black font-pixel text-[8px] px-2 py-0.5 border border-retro-black shadow-md font-bold">
-                LV.{(user.skills?.length || 0) + (user.semester || 1)}
+                LV.{calculateUserLevel(user)}
               </div>
             </div>
 

@@ -10,14 +10,16 @@ export const translations = {
         showcase: "SHOWCASE",
         timeline: "TIMELINE",
         guide: "GUIDE",
+        quiz: "QUIZ",
         adminControl: "ADMIN CONTROL",
         exit: "[EXIT]",
         loginBtn: "LOG IN",
         signUpBtn: "SIGN UP",
         sysStatus: "SYSTEM STATUS: ONLINE",
-        version: "VERSION: 1.0.0-PRO",
+        version: "VERSION: 2.0.0-PRO",
         rights: "ALL RIGHTS RESERVED.",
         buildingSmarter: "Building Smarter Communities Through Digital Learning.",
+        announcementPrefix: "👑 GUILD BROADCAST: ",
 
         // 2. LANDING PAGE (HOME)
         heroTitle: "FORM THE ULTIMATE IT PARTY!",
@@ -59,6 +61,7 @@ export const translations = {
         allCategories: "All Categories",
         noActiveQuest: "NO ACTIVE QUESTS MATCH YOUR FILTERS.",
         resetFilter: "RESET FILTERS",
+        verifiedBadge: "★ GUILD VERIFIED",
 
         // 6. QUEST DETAILS MODAL (POP-UP)
         questSpec: "[QUEST SPECIFICATION SHEET]",
@@ -108,7 +111,9 @@ export const translations = {
         banBtn: "BLOKIR",
         unbanBtn: "PULIHKAN",
         guildQuestAudit: "GUILD QUEST AUDIT BOARD",
-        deleteQuestBtn: "[DELETE QUEST]"
+        deleteQuestBtn: "[DELETE QUEST]",
+        verifyQuestBtn: "[★ VERIFY]",
+        unverifyQuestBtn: "[UNVERIFY]"
     },
     ID: {
         // 1. GLOBAL HEADER & FOOTER
@@ -116,14 +121,16 @@ export const translations = {
         showcase: "PAMERAN KARYA",
         timeline: "LINIMASA",
         guide: "PANDUAN",
+        quiz: "KUIS RPG",
         adminControl: "KONTROL ADMIN",
         exit: "[EKSIT]",
         loginBtn: "MASUK",
         signUpBtn: "DAFTAR",
         sysStatus: "STATUS SISTEM: AKTIF",
-        version: "VERSI: 1.0.0-PRO",
+        version: "VERSI: 2.0.0-PRO",
         rights: "HAK CIPTA DILINDUNGI.",
         buildingSmarter: "Membangun Komunitas Cerdas Melalui Pembelajaran Digital.",
+        announcementPrefix: "👑 PENGUMUMAN GUILD: ",
 
         // 2. LANDING PAGE (HOME)
         heroTitle: "BENTUK TIM IT TERKUATMU!",
@@ -165,6 +172,7 @@ export const translations = {
         allCategories: "Semua Kategori",
         noActiveQuest: "TIDAK ADA MISI YANG COCOK DENGAN FILTER SENSOR.",
         resetFilter: "RESET FILTER",
+        verifiedBadge: "★ TERVERIFIKASI GUILD",
 
         // 6. QUEST DETAILS MODAL (POP-UP)
         questSpec: "[LEMBAR SPESIFIKASI MISI]",
@@ -214,7 +222,9 @@ export const translations = {
         banBtn: "BLOKIR",
         unbanBtn: "PULIHKAN",
         guildQuestAudit: "AUDIT PAPAN MISI GUILD",
-        deleteQuestBtn: "[HAPUS MISI]"
+        deleteQuestBtn: "[HAPUS MISI]",
+        verifyQuestBtn: "[★ VERIFIKASI]",
+        unverifyQuestBtn: "[BATALKAN VERIFIKASI]"
     }
 };
 

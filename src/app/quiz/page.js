@@ -7,6 +7,7 @@ import Footer from "../../components/Footer";
 import PixelButton from "../../components/PixelButton";
 import PixelAvatar from "../../components/PixelAvatar";
 import usersData from "../../data/users.json";
+import { calculateUserLevel } from "../../utils/auth";
 import Link from "next/link";
 
 // Latar utama luar game (di belakang seluruh halaman/console GameBoy)
@@ -132,8 +133,7 @@ export default function GameBoyAdventureQuiz() {
     const [floatingTexts, setFloatingTexts] = useState([]); // {id, target, text}
     const floatIdRef = useRef(0);
 
-    const getHeroLevel = (u) => (u?.skills?.length || 0) + (u?.semester || 1);
-    const heroLevel = getHeroLevel(hero);
+    const heroLevel = calculateUserLevel(hero);
 
     // Progress panggung murni turunan dari bossHp (single source of
     // truth), jadi tidak ada lagi 2 kondisi menang yang bisa saling tabrakan.

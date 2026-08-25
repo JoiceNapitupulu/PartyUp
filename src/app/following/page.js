@@ -6,9 +6,11 @@ import Footer from "../../components/Footer";
 import PixelButton from "../../components/PixelButton";
 import PixelAvatar from "../../components/PixelAvatar";
 import usersData from "../../data/users.json";
+import { getStoredUsers } from "../../utils/auth";
 
 export default function Following() {
   const [user, setUser] = useState(null);
+  const [usersList, setUsersList] = useState(usersData);
 
   // Initial Posts State
   const [posts, setPosts] = useState([
@@ -63,6 +65,9 @@ export default function Following() {
   // Load User & Local Storage Sync
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const activeUsers = getStoredUsers();
+      setUsersList(activeUsers);
+
       const storedUser = localStorage.getItem("currentUser");
       if (storedUser) {
         try {
@@ -250,7 +255,7 @@ export default function Following() {
             </div>
           ) : (
             filteredPosts.map((post) => {
-              const author = usersData.find((u) => u.user_id === post.author_id) || {
+              const author = usersList.find((u) => u.user_id === post.author_id) || {
                 name: post.author_id === user?.user_id ? user.name : "Unknown Adventurer",
                 role: post.author_id === user?.user_id ? user.role : "Full-stack Developer",
                 major: "Informatics",

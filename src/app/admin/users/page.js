@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
-import { usersData, triggerAuthChange } from "@/utils/auth";
+import { usersData, triggerAuthChange, OFFICIAL_ROLES } from "@/utils/auth";
 
 export default function AdminUsers() {
     const router = useRouter();
@@ -83,10 +83,14 @@ export default function AdminUsers() {
                                     onChange={(e) => handleChangeRole(item.user_id, item.name, e.target.value)}
                                     className="font-sans text-[10px] p-1 border-2 border-retro-black bg-white cursor-pointer focus:outline-none"
                                 >
-                                    <option value="Hacker">Hacker</option>
-                                    <option value="Hipster">Hipster</option>
-                                    <option value="Hustler">Hustler</option>
-                                    <option value="Admin" disabled>Admin</option>
+                                    {OFFICIAL_ROLES.map((r) => (
+                                        <option key={r} value={r}>
+                                            {r}
+                                        </option>
+                                    ))}
+                                    <option value="Admin" disabled>
+                                        Admin
+                                    </option>
                                 </select>
                             </div>
                             <div className="flex gap-2">
