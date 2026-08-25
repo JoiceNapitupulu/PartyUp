@@ -146,8 +146,8 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
     <>
       {/* 1. KARTU UTAMA GAYA CODÉDEX DARK THEME */}
       <div
-        onClick={openDetail}
-        className={`bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 flex flex-col justify-between overflow-hidden group transition-all duration-200 cursor-pointer select-none ${project?.isVerified ? "ring-2 ring-amber-400/50" : ""
+        onClick={() => setIsDetailOpen(true)}
+        className={`bg-[#121b2d] border-4 border-retro-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 flex flex-col justify-between overflow-hidden group transition-all duration-300 cursor-pointer select-none ${project?.isVerified ? "ring-2 ring-amber-400/50" : ""
           } ${isClosed ? "opacity-70" : ""}`}
       >
         <div>

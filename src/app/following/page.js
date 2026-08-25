@@ -198,7 +198,7 @@ export default function Following() {
         {/* 1. Form Posting Status Baru (Broadcast Status Feed) */}
         <form
           onSubmit={handleCreatePost}
-          className="bg-[#131f37] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-5 flex flex-col gap-3 text-left"
+          className="bg-[#131f37] border-4 border-retro-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-5 flex flex-col gap-3 text-left"
         >
           <div className="flex justify-between items-center border-b border-gray-700/60 pb-2">
             <span className="font-pixel text-[9px] text-yellow-400">// DISPATCH GUILD STATUS UPDATE</span>
@@ -264,7 +264,7 @@ export default function Following() {
               return (
                 <div
                   key={post.id}
-                  className="bg-[#121b2d] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 p-6 flex flex-col justify-between gap-4 transition-all duration-200 text-left"
+                  className="bg-[#121b2d] border-4 border-retro-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 p-6 flex flex-col justify-between gap-4 transition-all duration-300 text-left"
                 >
                   <div className="flex flex-col gap-3">
                     {/* Header Author Info */}
