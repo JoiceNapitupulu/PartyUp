@@ -14,8 +14,8 @@ import Link from "next/link";
 const OUTER_BG = "/kuis/bg1.jpg";
 
 // Efek elemen serangan: Air (hero, kebaikan) vs Api (boss, kejahatan)
-const EFFECT_WATER = "/efek/air.gif"; // dipakai saat hero menyerang boss
-const EFFECT_FIRE = "/efek/api.gif"; // dipakai saat boss menyerang balik hero
+const EFFECT_WATER = "/efek/air.webp"; // dipakai saat hero menyerang boss
+const EFFECT_FIRE = "/efek/api.webp"; // dipakai saat boss menyerang balik hero
 
 const STAGES = [
     {
