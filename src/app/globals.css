@@ -144,3 +144,44 @@ html.light .text-yellow-400 {
   color: #b45309 !important;
   /* Warna Amber/Emas Tua */
 }
+
+/* Untuk browser berbasis Chromium (Chrome, Edge, Brave, Opera) */
+.overscroll-contain::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overscroll-contain::-webkit-scrollbar-track {
+  background: #142036;
+  border-left: 2px solid #000000;
+}
+
+.overscroll-contain::-webkit-scrollbar-thumb {
+  background: #facc15;
+  /* Kuning Pixel Emas */
+  border: 2px solid #000000;
+  border-radius: 4px;
+}
+
+.overscroll-contain::-webkit-scrollbar-thumb:hover {
+  background: #eab308;
+}
+
+/* Dukungan untuk Firefox */
+.overscroll-contain {
+  scrollbar-width: thin;
+  scrollbar-color: #facc15 #142036;
+}
+
+/* Penyesuaian Scrollbar saat Mode Terang (Light Mode) */
+html.light .overscroll-contain::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+html.light .overscroll-contain::-webkit-scrollbar-thumb {
+  background: #b45309;
+  /* Emas Tua / Amber */
+}
+
+html.light .overscroll-contain {
+  scrollbar-color: #b45309 #e2e8f0;
+}

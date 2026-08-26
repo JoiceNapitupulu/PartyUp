@@ -14,8 +14,8 @@ import Link from "next/link";
 const OUTER_BG = "/kuis/bg1.jpg";
 
 // Efek elemen serangan: Air (hero, kebaikan) vs Api (boss, kejahatan)
-const EFFECT_WATER = "/efek/air.webp"; // dipakai saat hero menyerang boss
-const EFFECT_FIRE = "/efek/api.webp"; // dipakai saat boss menyerang balik hero
+const EFFECT_WATER = "/efek/air.webp"; // dilempar dari hero ke boss
+const EFFECT_FIRE = "/efek/api.webp"; // dilempar dari boss ke hero
 
 const STAGES = [
     {
@@ -188,83 +188,93 @@ export default function GameBoyAdventureQuiz() {
             const damage = Math.ceil(100 / activeStage.questions.length);
             setDialogueText(`💧 SPLASH HIT! ${hero.name} doused ${activeStage.bossName} for -${damage} DMG!`);
 
+            // Lempar proyektil Air dulu (isPlayerAttacking=true), baru HP & angka
+            // damage muncul SETELAH proyektil "sampai" — bukan tiba-tiba nempel
+            // di musuh dari awal.
             setTimeout(() => {
                 setIsPlayerAttacking(true);
-                spawnFloatingText("boss", `-${damage}`);
-                triggerShake();
 
-                setBossHp((prev) => {
-                    const next = Math.max(0, prev - damage);
+                setTimeout(() => {
+                    spawnFloatingText("boss", `-${damage}`);
+                    triggerShake();
 
-                    setTimeout(() => {
-                        setIsPlayerAttacking(false);
+                    setBossHp((prev) => {
+                        const next = Math.max(0, prev - damage);
 
-                        if (next <= 0) {
-                            setGameState("CLEAR");
-                            sfx.playLevelUp();
-                            setDialogueText(`🏆 STAGE CLEAR! You conquered ${activeStage.name}!`);
+                        setTimeout(() => {
+                            setIsPlayerAttacking(false);
 
-                            if (typeof window !== "undefined") {
-                                const updatedHero = {
-                                    ...hero,
-                                    skills: Array.from(new Set([...(hero.skills || []), activeStage.roleTrack])),
-                                    semester: (hero.semester || 1) + 1,
-                                };
-                                setHero(updatedHero);
-                                localStorage.setItem("currentUser", JSON.stringify(updatedHero));
-                                const updatedList = allUsers.map((u) => (u.user_id === updatedHero.user_id ? updatedHero : u));
-                                setAllUsers(updatedList);
-                                localStorage.setItem("usersList", JSON.stringify(updatedList));
-                                window.dispatchEvent(new Event("auth-change"));
+                            if (next <= 0) {
+                                setGameState("CLEAR");
+                                sfx.playLevelUp();
+                                setDialogueText(`🏆 STAGE CLEAR! You conquered ${activeStage.name}!`);
+
+                                if (typeof window !== "undefined") {
+                                    const updatedHero = {
+                                        ...hero,
+                                        skills: Array.from(new Set([...(hero.skills || []), activeStage.roleTrack])),
+                                        semester: (hero.semester || 1) + 1,
+                                    };
+                                    setHero(updatedHero);
+                                    localStorage.setItem("currentUser", JSON.stringify(updatedHero));
+                                    const updatedList = allUsers.map((u) => (u.user_id === updatedHero.user_id ? updatedHero : u));
+                                    setAllUsers(updatedList);
+                                    localStorage.setItem("usersList", JSON.stringify(updatedList));
+                                    window.dispatchEvent(new Event("auth-change"));
+                                }
+                            } else if (currentQIdx + 1 < activeStage.questions.length) {
+                                setCurrentQIdx((i) => i + 1);
+                                setPickedIdx(null);
+                                setIsLocked(false);
+                            } else {
+                                setCurrentQIdx(0);
+                                setPickedIdx(null);
+                                setIsLocked(false);
+                                setDialogueText(`${activeStage.bossName} is still standing! Keep attacking!`);
                             }
-                        } else if (currentQIdx + 1 < activeStage.questions.length) {
-                            setCurrentQIdx((i) => i + 1);
-                            setPickedIdx(null);
-                            setIsLocked(false);
-                        } else {
-                            setCurrentQIdx(0);
-                            setPickedIdx(null);
-                            setIsLocked(false);
-                            setDialogueText(`${activeStage.bossName} is still standing! Keep attacking!`);
-                        }
-                    }, 420);
+                        }, 220);
 
-                    return next;
-                });
+                        return next;
+                    });
+                }, 320); // waktu tempuh proyektil sebelum "mendarat"
             }, 500);
         } else {
             sfx.playPowerDown();
             const damage = 30;
             setDialogueText(`🔥 SCORCHED! ${activeStage.bossName} burned ${hero.name} for -${damage} DMG!`);
 
+            // Sama: proyektil Api dilempar dulu, HP & damage baru muncul saat mendarat.
             setTimeout(() => {
                 setIsBossAttacking(true);
-                spawnFloatingText("player", `-${damage}`);
-                triggerShake();
 
-                setPlayerHp((prev) => {
-                    const next = Math.max(0, prev - damage);
+                setTimeout(() => {
+                    spawnFloatingText("player", `-${damage}`);
+                    triggerShake();
 
-                    setTimeout(() => {
-                        setIsBossAttacking(false);
+                    setPlayerHp((prev) => {
+                        const next = Math.max(0, prev - damage);
 
-                        if (next <= 0) {
-                            setGameState("GAME_OVER");
-                            sfx.playDefeatedJingle();
-                            setDialogueText(`💀 GAME OVER! ${hero.name} fainted. Return to Town to recover.`);
-                        } else if (currentQIdx + 1 < activeStage.questions.length) {
-                            setCurrentQIdx((i) => i + 1);
-                            setPickedIdx(null);
-                            setIsLocked(false);
-                        } else {
-                            setCurrentQIdx(0);
-                            setPickedIdx(null);
-                            setIsLocked(false);
-                        }
-                    }, 420);
+                        setTimeout(() => {
+                            setIsBossAttacking(false);
 
-                    return next;
-                });
+                            if (next <= 0) {
+                                setGameState("GAME_OVER");
+                                sfx.playDefeatedJingle();
+                                setDialogueText(`💀 GAME OVER! ${hero.name} fainted. Return to Town to recover.`);
+                            } else if (currentQIdx + 1 < activeStage.questions.length) {
+                                setCurrentQIdx((i) => i + 1);
+                                setPickedIdx(null);
+                                setIsLocked(false);
+                            } else {
+                                setCurrentQIdx(0);
+                                setPickedIdx(null);
+                                setIsLocked(false);
+                            }
+                        }, 220);
+
+                        return next;
+                    });
+                }, 320);
             }, 500);
         }
     };
@@ -309,17 +319,29 @@ export default function GameBoyAdventureQuiz() {
         }
         .animate-sprite-pulse { animation: spritePulse 2.2s ease-in-out infinite; }
 
-        /* Efek elemen (air/api) "pop" masuk lalu menghilang, disinkron dengan
-           durasi lunge serangan (~500ms sebelum HP berkurang) */
-        @keyframes effectPop {
-          0% { transform: scale(0.3) rotate(-8deg); opacity: 0; }
-          35% { transform: scale(1.2) rotate(4deg); opacity: 1; }
-          100% { transform: scale(1) rotate(0deg); opacity: 0; }
+        /* PROYEKTIL AIR: benar-benar terbang dari posisi hero (kiri) menuju
+           posisi boss (kanan) di sepanjang baris pertarungan, baru "meledak"
+           & memudar setelah sampai — bukan muncul tiba-tiba di atas musuh. */
+        @keyframes throwWater {
+          0%   { left: 12%; opacity: 0;   transform: translateY(-50%) scale(0.5)  rotate(0deg); }
+          15%  { opacity: 1;              transform: translateY(-50%) scale(0.9)  rotate(70deg); }
+          70%  { left: 74%; opacity: 1;   transform: translateY(-50%) scale(1.15) rotate(230deg); }
+          100% { left: 74%; opacity: 0;   transform: translateY(-50%) scale(1.5)  rotate(260deg); }
         }
-        .animate-effect-pop { animation: effectPop 0.55s ease-out forwards; }
+        .animate-throw-water { animation: throwWater 0.42s cubic-bezier(0.25,0.1,0.6,1) forwards; }
+
+        /* PROYEKTIL API: kebalikannya, terbang dari boss (kanan) ke hero (kiri) */
+        @keyframes throwFire {
+          0%   { right: 12%; opacity: 0;  transform: translateY(-50%) scale(0.5)  rotate(0deg); }
+          15%  { opacity: 1;              transform: translateY(-50%) scale(0.9)  rotate(-70deg); }
+          70%  { right: 74%; opacity: 1;  transform: translateY(-50%) scale(1.15) rotate(-230deg); }
+          100% { right: 74%; opacity: 0;  transform: translateY(-50%) scale(1.5)  rotate(-260deg); }
+        }
+        .animate-throw-fire { animation: throwFire 0.42s cubic-bezier(0.25,0.1,0.6,1) forwards; }
 
         @media (prefers-reduced-motion: reduce) {
-          .animate-screen-shake, .animate-hp-flash, .animate-sprite-pulse, .animate-effect-pop {
+          .animate-screen-shake, .animate-hp-flash, .animate-sprite-pulse,
+          .animate-throw-water, .animate-throw-fire {
             animation: none !important;
           }
         }
@@ -473,63 +495,64 @@ export default function GameBoyAdventureQuiz() {
                                         <span className="font-pixel text-[7px] text-white w-10 text-right">{bossHp}%</span>
                                     </div>
 
-                                    {/* Visual Karakter Berjalan di Atas Rumput */}
-                                    <div className="flex justify-between items-end px-6 sm:px-12 py-4">
-                                        {/* Hero Sprite — kena efek Api (🔥) saat diserang boss */}
-                                        <div className={`relative flex flex-col items-center transition-transform ${isPlayerAttacking ? "translate-x-10 scale-110" : "animate-sprite-pulse"}`}>
+                                    {/* Visual Karakter Berjalan di Atas Rumput — sekarang jadi ARENA
+                                        proyektil: air/api benar-benar melintas di baris ini */}
+                                    <div className="relative flex justify-between items-end px-6 sm:px-12 py-4 min-h-[120px]">
+                                        {/* Hero Sprite */}
+                                        <div className={`relative flex flex-col items-center transition-transform z-10 ${isPlayerAttacking ? "translate-x-4" : "animate-sprite-pulse"}`}>
                                             <div className="w-16 h-16 relative drop-shadow-[2px_4px_0px_rgba(0,0,0,0.8)]">
                                                 <PixelAvatar role={hero.role} size="w-full h-full" />
 
-                                                {/* Angka damage melayang di atas hero */}
+                                                {/* Angka damage melayang di atas hero — cuma muncul saat proyektil api sudah mendarat */}
                                                 {floatingTexts.filter((f) => f.target === "player").map((f) => (
                                                     <span key={f.id} className="absolute -top-2 left-1/2 -translate-x-1/2 font-pixel text-[10px] text-red-400 animate-float-damage pointer-events-none z-20">
                                                         {f.text}
                                                     </span>
                                                 ))}
-
-                                                {/* Efek Api 🔥 menerjang hero saat boss menyerang */}
-                                                {isBossAttacking && (
-                                                    <div className="absolute -inset-3 animate-effect-pop pointer-events-none z-10">
-                                                        <Image
-                                                            src={EFFECT_FIRE}
-                                                            alt="Fire attack effect"
-                                                            fill
-                                                            unoptimized
-                                                            className="object-contain"
-                                                        />
-                                                    </div>
-                                                )}
                                             </div>
                                             <span className="font-pixel text-[7px] bg-pixel-green text-retro-black px-1 font-bold">{hero.name}</span>
                                         </div>
 
-                                        {/* Boss Sprite — kena efek Air (💧) saat hero menyerang */}
-                                        <div className={`relative flex flex-col items-center transition-transform ${isBossAttacking ? "-translate-x-10 animate-screen-shake" : "animate-sprite-pulse"}`}>
+                                        {/* Boss Sprite */}
+                                        <div className={`relative flex flex-col items-center transition-transform z-10 ${isBossAttacking ? "-translate-x-4 animate-screen-shake" : "animate-sprite-pulse"}`}>
                                             <span className="text-5xl drop-shadow-[2px_4px_0px_rgba(0,0,0,0.8)] relative inline-block w-16 h-16 leading-[4rem] text-center">
                                                 {activeStage.bossSprite}
 
-                                                {/* Angka damage melayang di atas boss */}
+                                                {/* Angka damage melayang di atas boss — cuma muncul saat proyektil air sudah mendarat */}
                                                 {floatingTexts.filter((f) => f.target === "boss").map((f) => (
                                                     <span key={f.id} className="absolute -top-3 left-1/2 -translate-x-1/2 font-pixel text-[11px] text-yellow-300 animate-float-damage pointer-events-none z-20">
                                                         {f.text}
                                                     </span>
                                                 ))}
-
-                                                {/* Efek Air 💧 menerjang boss saat hero menyerang */}
-                                                {isPlayerAttacking && (
-                                                    <span className="absolute -inset-3 animate-effect-pop pointer-events-none z-10 block">
-                                                        <Image
-                                                            src={EFFECT_WATER}
-                                                            alt="Water attack effect"
-                                                            fill
-                                                            unoptimized
-                                                            className="object-contain"
-                                                        />
-                                                    </span>
-                                                )}
                                             </span>
                                             <span className="font-pixel text-[7px] bg-red-600 text-white px-1 font-bold">{activeStage.bossName}</span>
                                         </div>
+
+                                        {/* PROYEKTIL AIR — benar-benar terbang dari hero menuju boss */}
+                                        {isPlayerAttacking && (
+                                            <div className="absolute top-1/2 w-12 h-12 pointer-events-none z-30 animate-throw-water">
+                                                <Image
+                                                    src={EFFECT_WATER}
+                                                    alt="Water projectile"
+                                                    fill
+                                                    unoptimized
+                                                    className="object-contain drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]"
+                                                />
+                                            </div>
+                                        )}
+
+                                        {/* PROYEKTIL API — benar-benar terbang dari boss menuju hero */}
+                                        {isBossAttacking && (
+                                            <div className="absolute top-1/2 w-12 h-12 pointer-events-none z-30 animate-throw-fire">
+                                                <Image
+                                                    src={EFFECT_FIRE}
+                                                    alt="Fire projectile"
+                                                    fill
+                                                    unoptimized
+                                                    className="object-contain drop-shadow-[0_0_8px_rgba(251,146,60,0.8)]"
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
