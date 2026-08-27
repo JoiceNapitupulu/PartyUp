@@ -4,25 +4,47 @@ import React, { useState, useEffect, useMemo } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import PixelButton from "../../components/PixelButton";
-import PixelAvatar from "../../components/PixelAvatar";
+import ConfirmModal from "../../components/ConfirmModal";
+import TimelineCard from "../../components/timeline/TimelineCard";
+import ArticleDetailView from "../../components/timeline/ArticleDetailView";
 import usersData from "../../data/users.json";
-import ConfirmModal  from "../../components/ConfirmModal";
 import { getStoredUsers, calculateUserLevel } from "../../utils/auth";
-import { useLanguage, translations } from "../../utils/lang";
+import { useLanguage } from "../../utils/lang";
 
-// Data awal umpan timeline jika local storage masih kosong
+// Helper Banner Gambar Default
+const getDefaultPostBanner = (content = "") => {
+  const c = content.toLowerCase();
+  if (c.includes("figma") || c.includes("design") || c.includes("ui") || c.includes("accessibility")) return "/bg.png";
+  if (c.includes("engine") || c.includes("backend") || c.includes("python") || c.includes("sql") || c.includes("golang") || c.includes("docker")) return "/computer.png";
+  if (c.includes("mobile") || c.includes("bluetooth") || c.includes("flutter")) return "/bg3.gif";
+  if (c.includes("game") || c.includes("canvas") || c.includes("tilemap")) return "/bg2.gif";
+  return "/bg4.gif";
+};
+
+// =========================================================================
+// DATASET 9 ARTIKEL PROYEK LENGKAP (3 BARIS X 3 KOLOM)
+// =========================================================================
 const INITIAL_POSTS = [
   {
     id: "post-1",
     author_id: "USR-002", // Alex
-    content: "EcoSphere carbon-calculator engine is fully optimized! 1,000 computation nodes execute in under 3ms with zero latency drift. Still looking for a UI/UX Designer teammate to finalize the presentation slides. Check my open quests on the board! #INVENTION2026 #Frontend #FullStack",
-    likes: 16,
+    title: "Building a High-Throughput Carbon Engine with Python & Go",
+    category: "BACKEND",
+    level: "INTERMEDIATE",
+    readTime: "8 min read",
+    content: "The EcoSphere carbon-calculator engine is fully optimized! 1,000 computation nodes execute in under 3ms with zero latency drift. Still looking for a UI/UX Designer teammate to finalize the competition presentation slides. Check my open quests on the board!",
+    prerequisites: "Python 3.11, Docker, REST API Fundamentals",
+    codeSnippet: "def calculate_carbon_footprint(nodes, energy_factor):\n    # Optimized 3ms vector calculation\n    return [node.emission * energy_factor for node in nodes]",
+    image: "/computer.png",
+    likes: 24,
     isLiked: false,
-    timestamp: "2 hours ago",
+    timestamp: "Aug 24, 2026",
+    tags: ["#INVENTION2026", "#FullStack", "#Python"],
     comments: [
       {
         author: "Joice",
         role: "UI/UX Designer",
+        timestamp: "2 hours ago",
         text: "That computation throughput is insane! I can assist with polishing the Figma slides if you still have an open slot."
       }
     ]
@@ -30,23 +52,40 @@ const INITIAL_POSTS = [
   {
     id: "post-2",
     author_id: "USR-001", // Joice
-    content: "Just published the complete design system and hi-fi mobile prototype for ScholarSave. Handcrafted 48 custom retro pixelated icons and responsive typography tokens. Inspect the case study in my Showcase portfolio! #Figma #UIUX #DesignSystem",
-    likes: 28,
+    title: "Crafting Pixel-Perfect Retro Design Systems in Figma",
+    category: "UI / UX",
+    level: "BEGINNER",
+    readTime: "6 min read",
+    content: "Just published the complete design system and hi-fi mobile prototype for ScholarSave. Handcrafted 48 custom retro pixelated icons and responsive typography tokens. Inspect the case study in my Showcase portfolio!",
+    prerequisites: "Figma Variables, Auto-layout v5, Design Tokens",
+    codeSnippet: ":root {\n  --color-pixel-green: #00FF00;\n  --shadow-retro: 4px 4px 0px #000000;\n}",
+    image: "/bg.png",
+    likes: 42,
     isLiked: false,
-    timestamp: "4 hours ago",
+    timestamp: "Aug 22, 2026",
+    tags: ["#Figma", "#UIUX", "#DesignSystem"],
     comments: []
   },
   {
     id: "post-3",
     author_id: "USR-003", // Sarah
-    content: "Drafted the Business Model Canvas & Sprint Roadmap for the EduQuest flashcard ecosystem. Next sprint milestone: finalizing backend SQL schemas and automated unit tests. Let's aim for the championship! 🚀 #ProductManagement #GEMASTIK",
-    likes: 12,
+    title: "Agile Sprint Roadmaps & Lean Business Canvas for Hackathons",
+    category: "MANAGEMENT",
+    level: "ADVANCED",
+    readTime: "12 min read",
+    content: "Drafted the Business Model Canvas & Sprint Roadmap for the EduQuest flashcard ecosystem. Next sprint milestone: finalizing backend SQL schemas and automated unit tests. Let's aim for the championship! 🚀",
+    prerequisites: "Scrum Methodology, Product Backlog Management",
+    codeSnippet: "// Sprint Milestone 02\n- [x] Database Schema Verification\n- [ ] Automated Unit Testing Suite\n- [ ] Pitch Deck Finalization",
+    image: "/bg2.gif",
+    likes: 19,
     isLiked: false,
-    timestamp: "1 day ago",
+    timestamp: "Aug 20, 2026",
+    tags: ["#ProductManagement", "#GEMASTIK"],
     comments: [
       {
         author: "Kevin",
         role: "Backend Developer",
+        timestamp: "1 day ago",
         text: "Schemas look solid! Let me know if you need help stress-testing the PostgreSQL queries."
       }
     ]
@@ -54,15 +93,140 @@ const INITIAL_POSTS = [
   {
     id: "post-4",
     author_id: "USR-004", // Kevin
-    content: "Integrated real-time Bluetooth telemetry in MediLink. Testing cross-platform hardware responsiveness across Android & iOS devices. Ready for GEMASTIK 2026 deployment! 📱 #MobileDev #GEMASTIK #Flutter",
-    likes: 21,
+    title: "Real-time Telemetry & Native Bluetooth Integration in Flutter",
+    category: "MOBILE",
+    level: "INTERMEDIATE",
+    readTime: "10 min read",
+    content: "Integrated real-time Bluetooth telemetry in MediLink. Testing cross-platform hardware responsiveness across Android & iOS devices. Ready for GEMASTIK 2026 deployment! 📱",
+    prerequisites: "Flutter SDK 3.x, Flutter Blue Plus, BLE Protocols",
+    codeSnippet: "FlutterBluePlus.scanResults.listen((results) {\n  for (ScanResult r in results) {\n    print('${r.device.remoteId}: ${r.rssi}');\n  }\n});",
+    image: "/bg3.gif",
+    likes: 31,
     isLiked: false,
-    timestamp: "1 day ago",
+    timestamp: "Aug 18, 2026",
+    tags: ["#MobileDev", "#GEMASTIK", "#Flutter"],
     comments: []
+  },
+  // KARTU BARU 1: UI/UX Accessibility
+  {
+    id: "post-5",
+    author_id: "USR-001", // Joice
+    title: "Designing Accessible Dark Mode Micro-Interactions with Tailwind",
+    category: "UI / UX",
+    level: "INTERMEDIATE",
+    readTime: "7 min read",
+    content: "Published an open-source accessibility design guideline for student web designers. Features WCAG AAA high-contrast ratios, smooth focus rings, and zero motion sickness triggers for 8-bit retro interfaces.",
+    prerequisites: "Tailwind CSS v4, WCAG 2.1 Guidelines, Figma Tokens",
+    codeSnippet: "@utility focus-ring {\n  outline: 2px solid #00FF00;\n  outline-offset: 2px;\n  transition: outline-offset 0.15s ease;\n}",
+    image: "/bg.png",
+    likes: 37,
+    isLiked: false,
+    timestamp: "Aug 16, 2026",
+    tags: ["#UIUX", "#Frontend", "#Figma"],
+    comments: [
+      {
+        author: "Sarah",
+        role: "Product Manager",
+        timestamp: "Yesterday",
+        text: "The high-contrast toggle really improves accessibility score during judging presentations!"
+      }
+    ]
+  },
+  // KARTU BARU 2: DevOps CI/CD
+  {
+    id: "post-6",
+    author_id: "USR-002", // Alex
+    title: "Zero-Downtime Automated CI/CD Pipelines with Docker & Actions",
+    category: "DEVOPS",
+    level: "ADVANCED",
+    readTime: "11 min read",
+    content: "Architected an automated testing and deployment workflow for our hackathon prototype. Every push to main runs linting, integration suites, and deploys production containers in 45 seconds.",
+    prerequisites: "Docker Compose, GitHub Actions, Linux Shell Scripting",
+    codeSnippet: "name: Guild CI/CD\non: [push]\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: docker compose up -d --build",
+    image: "/computer.png",
+    likes: 53,
+    isLiked: false,
+    timestamp: "Aug 14, 2026",
+    tags: ["#INVENTION2026", "#FullStack"],
+    comments: [
+      {
+        author: "Kevin",
+        role: "Backend Developer",
+        timestamp: "3 days ago",
+        text: "Deploying under 1 minute makes hackathon sprint iterations so much faster."
+      }
+    ]
+  },
+  // KARTU BARU 3: UX Research & SUS Scoring
+  {
+    id: "post-7",
+    author_id: "USR-003", // Sarah
+    title: "User Persona Segmentation & Usability Testing (SUS) for EdTech",
+    category: "RESEARCH",
+    level: "BEGINNER",
+    readTime: "9 min read",
+    content: "Conducted usability testing across 25 IT college students for the EduQuest flashcard project. Achieved a System Usability Scale (SUS) score of 88.5/100. Check the full report and heuristic analysis!",
+    prerequisites: "User Research Basics, Google Forms, SUS Calculator",
+    codeSnippet: "// SUS Calculation Formula\nconst susScore = (oddSum - 5 + (25 - evenSum)) * 2.5;\nconsole.log(`Usability Grade: A+ (${susScore}/100)`);",
+    image: "/bg4.gif",
+    likes: 29,
+    isLiked: false,
+    timestamp: "Aug 12, 2026",
+    tags: ["#ProductManagement", "#GEMASTIK"],
+    comments: []
+  },
+  // KARTU BARU 4: High-Performance Go WebSockets
+  {
+    id: "post-8",
+    author_id: "USR-004", // Kevin
+    title: "Building Low-Latency WebSocket Chat & Telemetry with Golang",
+    category: "BACKEND",
+    level: "ADVANCED",
+    readTime: "14 min read",
+    content: "Engineered a concurrent WebSocket server in Go handling 50,000 active real-time socket connections with only 35MB memory footprint. Perfect for multiplayer hackathon games and live team chats!",
+    prerequisites: "Golang 1.22, Goroutines, WebSocket RFC 6455",
+    codeSnippet: "func handleConnections(w http.ResponseWriter, r *http.Request) {\n    ws, err := upgrader.Upgrade(w, r, nil)\n    defer ws.Close()\n    clients[ws] = true\n}",
+    image: "/computer.png",
+    likes: 48,
+    isLiked: false,
+    timestamp: "Aug 10, 2026",
+    tags: ["#FullStack", "#GEMASTIK"],
+    comments: [
+      {
+        author: "Alex",
+        role: "Full-stack Developer",
+        timestamp: "5 days ago",
+        text: "The memory efficiency of Go channels is unmatched for real-time telemetry."
+      }
+    ]
+  },
+  // KARTU BARU 5: Retro Game Dev Canvas
+  {
+    id: "post-9",
+    author_id: "USR-002", // Alex
+    title: "Creating 8-Bit Retro Tilemap Engines in HTML5 Canvas & TypeScript",
+    category: "GAME DEV",
+    level: "INTERMEDIATE",
+    readTime: "12 min read",
+    content: "Built a lightweight 2D grid-based dungeon crawler engine from scratch without external dependencies. 60 FPS smooth collision handling, A* pathfinding, and custom pixel-art sprite rendering.",
+    prerequisites: "TypeScript, HTML5 Canvas API, Vector Math",
+    codeSnippet: "class TileMap {\n  draw(ctx: CanvasRenderingContext2D) {\n    this.tiles.forEach(t => ctx.drawImage(t.sprite, t.x, t.y));\n  }\n}",
+    image: "/bg2.gif",
+    likes: 64,
+    isLiked: false,
+    timestamp: "Aug 08, 2026",
+    tags: ["#Frontend", "#INVENTION2026"],
+    comments: [
+      {
+        author: "Joice",
+        role: "UI/UX Designer",
+        timestamp: "1 week ago",
+        text: "I can contribute some 16x16 dungeon tilesets if you plan to release a playable web demo!"
+      }
+    ]
   }
 ];
 
-// Daftar Tagar Populer untuk Quick Insert & Filter
 const AVAILABLE_TAGS = [
   "ALL",
   "#INVENTION2026",
@@ -79,16 +243,27 @@ export default function Following() {
   const [user, setUser] = useState(null);
   const [usersList, setUsersList] = useState(usersData);
   const [posts, setPosts] = useState(INITIAL_POSTS);
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [mounted, setMounted] = useState(false);
 
-  // Form State
+  // Form States
+  const [newPostTitle, setNewPostTitle] = useState("");
   const [newPostContent, setNewPostContent] = useState("");
+  const [newPostCategory, setNewPostCategory] = useState("FRONTEND");
   const [selectedTag, setSelectedTag] = useState("ALL");
-  const [activeReplyId, setActiveReplyId] = useState(null);
   const [replyText, setReplyText] = useState("");
   const [copiedId, setCopiedId] = useState(null);
 
-  // Inisialisasi Sinkronisasi Data dari Local Storage
+  // Modal Konfirmasi Hapus
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
+
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== "undefined") {
       const activeUsers = getStoredUsers();
       setUsersList(activeUsers && activeUsers.length > 0 ? activeUsers : usersData);
@@ -105,15 +280,23 @@ export default function Following() {
       const localPosts = localStorage.getItem("timelinePosts");
       if (localPosts) {
         try {
-          setPosts(JSON.parse(localPosts));
+          const parsed = JSON.parse(localPosts);
+          // Jika data di local storage kurang dari 9, gabungkan agar lengkap
+          if (Array.isArray(parsed) && parsed.length >= INITIAL_POSTS.length) {
+            setPosts(parsed);
+          } else {
+            setPosts(INITIAL_POSTS);
+            localStorage.setItem("timelinePosts", JSON.stringify(INITIAL_POSTS));
+          }
         } catch (e) {
           console.error(e);
         }
+      } else {
+        localStorage.setItem("timelinePosts", JSON.stringify(INITIAL_POSTS));
       }
     }
   }, []);
 
-  // Simpan data postingan ke state dan LocalStorage
   const savePosts = (updatedPosts) => {
     setPosts(updatedPosts);
     if (typeof window !== "undefined") {
@@ -121,41 +304,89 @@ export default function Following() {
     }
   };
 
-  // State untuk mengontrol Modal Konfirmasi Retro
-  const [confirmModal, setConfirmModal] = useState({
-    isOpen: false,
-    title: "",
-    message: "",
-    onConfirm: null,
-  });
+  // Like Handlers
+  const handleLike = (postId, e) => {
+    if (e) e.stopPropagation();
+    if (!user) {
+      alert("⚠️ ACCESS DENIED: Please login or create a student character to like broadcasts!");
+      return;
+    }
 
-  // 1. Fungsi Hapus Postingan (Menggunakan Modal Retro)
-  const handleDeletePost = (postId) => {
+    const updated = posts.map((post) => {
+      if (post.id === postId) {
+        const newPost = {
+          ...post,
+          likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+          isLiked: !post.isLiked,
+        };
+        if (selectedPost?.id === postId) setSelectedPost(newPost);
+        return newPost;
+      }
+      return post;
+    });
+    savePosts(updated);
+  };
+
+  // Comment Handler
+  const handleSendReply = (postId) => {
+    if (!user) {
+      alert("⚠️ ACCESS DENIED: Please login or register to participate in the discussion!");
+      return;
+    }
+    if (!replyText.trim()) return;
+
+    const newComment = {
+      author: user.name,
+      role: user.role,
+      timestamp: "Just now",
+      text: replyText.trim(),
+    };
+
+    const updated = posts.map((post) => {
+      if (post.id === postId) {
+        const newPostObj = {
+          ...post,
+          comments: [...post.comments, newComment],
+        };
+        if (selectedPost?.id === postId) setSelectedPost(newPostObj);
+        return newPostObj;
+      }
+      return post;
+    });
+
+    savePosts(updated);
+    setReplyText("");
+  };
+
+  // Delete Post Handler
+  const handleDeletePost = (postId, e) => {
+    if (e) e.stopPropagation();
     setConfirmModal({
       isOpen: true,
       title: "DELETE BROADCAST",
-      message: "Are you sure you want to permanently delete this broadcast post from the guild timeline?",
+      message: "Are you sure you want to permanently delete this broadcast post?",
       onConfirm: () => {
         const updated = posts.filter((post) => post.id !== postId);
         savePosts(updated);
+        if (selectedPost?.id === postId) setSelectedPost(null);
         setConfirmModal((prev) => ({ ...prev, isOpen: false }));
       },
     });
   };
 
-  // 2. Fungsi Hapus Komentar (Menggunakan Modal Retro)
+  // Delete Comment Handler
   const handleDeleteComment = (postId, commentIndex) => {
     setConfirmModal({
       isOpen: true,
       title: "DELETE COMMENT",
-      message: "Are you sure you want to remove this reply from the broadcast feed?",
+      message: "Are you sure you want to remove this reply from the discussion thread?",
       onConfirm: () => {
         const updated = posts.map((post) => {
           if (post.id === postId) {
-            return {
-              ...post,
-              comments: post.comments.filter((_, idx) => idx !== commentIndex),
-            };
+            const updatedComments = post.comments.filter((_, idx) => idx !== commentIndex);
+            const newPostObj = { ...post, comments: updatedComments };
+            if (selectedPost?.id === postId) setSelectedPost(newPostObj);
+            return newPostObj;
           }
           return post;
         });
@@ -165,77 +396,42 @@ export default function Following() {
     });
   };
 
-  // Toggle Suka / Like
-  const handleLike = (postId) => {
-    const updated = posts.map((post) => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-          isLiked: !post.isLiked,
-        };
-      }
-      return post;
-    });
-    savePosts(updated);
-  };
-
-  // Kirim Komentar / Reply
-  const handleSendReply = (postId) => {
-    if (!replyText.trim()) return;
-    const authorName = user ? user.name : "Guest Adventurer";
-    const authorRole = user ? user.role : "Core Contributor";
-
-    const updated = posts.map((post) => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          comments: [
-            ...post.comments,
-            {
-              author: authorName,
-              role: authorRole,
-              text: replyText.trim(),
-            },
-          ],
-        };
-      }
-      return post;
-    });
-
-    savePosts(updated);
-    setReplyText("");
-    setActiveReplyId(null);
-  };
-
-  // Buat Postingan Baru
+  // Publish Post Handler
   const handleCreatePost = (e) => {
     e.preventDefault();
+    if (!user) {
+      alert("⚠️ ACCESS DENIED: Please login to publish articles!");
+      return;
+    }
     if (!newPostContent.trim()) return;
 
     const newPost = {
       id: `post-${Date.now()}`,
-      author_id: user ? user.user_id : "USR-001",
+      author_id: user.user_id || "USR-001",
+      title: newPostTitle.trim() || `${newPostCategory} Sprint Broadcast`,
+      category: newPostCategory,
+      level: "INTERMEDIATE",
+      readTime: "5 min read",
       content: newPostContent.trim(),
+      prerequisites: "Verified Guild Student Account, Git Workflow",
+      codeSnippet: "// Project Architecture Snippet\nconsole.log('Guild quest milestone reached!');",
+      image: getDefaultPostBanner(newPostContent),
       likes: 0,
       isLiked: false,
       timestamp: "Just now",
+      tags: ["#INVENTION2026", `#${newPostCategory}`],
       comments: [],
     };
 
     const updated = [newPost, ...posts];
     savePosts(updated);
+    setNewPostTitle("");
     setNewPostContent("");
   };
 
-  // Sisipkan Tagar Cepat ke Textarea
-  const insertTag = (tag) => {
-    if (tag === "ALL") return;
-    setNewPostContent((prev) => (prev ? `${prev} ${tag}` : tag));
-  };
-
-  // Salin Tautan Postingan
-  const handleCopyPostLink = (id) => {
+  // Copy Link Handler
+  const handleCopyPostLink = (id, e) => {
+    if (e) e.stopPropagation();
     if (typeof window !== "undefined") {
       navigator.clipboard?.writeText(`${window.location.origin}/following#${id}`);
       setCopiedId(id);
@@ -243,55 +439,75 @@ export default function Following() {
     }
   };
 
-  // Filter Postingan berdasarkan Tag Aktif
   const filteredPosts = useMemo(() => {
     if (selectedTag === "ALL") return posts;
-    return posts.filter((post) =>
-      post.content.toLowerCase().includes(selectedTag.toLowerCase())
-    );
+    return posts.filter((post) => {
+      const combined = `${post.content} ${post.title} ${(post.tags || []).join(" ")}`.toLowerCase();
+      return combined.includes(selectedTag.toLowerCase());
+    });
   }, [posts, selectedTag]);
 
-  // Render teks dengan tagar berwarna emas dan dapat diklik
-  const renderContentWithHashtags = (text) => {
-    const parts = text.split(/(#[a-zA-Z0-9_]+)/g);
-    return parts.map((part, i) => {
-      if (part.startsWith("#")) {
-        return (
-          <span
-            key={i}
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedTag(part);
-            }}
-            className="text-yellow-400 font-bold hover:text-yellow-300 hover:underline cursor-pointer transition-colors"
-          >
-            {part}
-          </span>
-        );
+  const getAuthor = (authorId) => {
+    return (
+      usersList.find((u) => u.user_id === authorId) || {
+        name: user?.name || "Guild Adventurer",
+        role: user?.role || "Full-stack Developer",
+        bio: "Active student engineer participating in university hackathons.",
+        major: "Informatics",
       }
-      return part;
-    });
+    );
   };
 
+  // =========================================================
+  // VIEW 1: DEDICATED FULL ARTICLE VIEW (TANPA NAVBAR UTAMA)
+  // =========================================================
+  if (selectedPost) {
+    const author = getAuthor(selectedPost.author_id);
+    const authorLevel = calculateUserLevel(author);
+    const otherPostsByAuthor = posts.filter(
+      (p) => p.author_id === selectedPost.author_id && p.id !== selectedPost.id
+    );
+
+    return (
+      <ArticleDetailView
+        post={selectedPost}
+        author={author}
+        authorLevel={authorLevel}
+        user={user}
+        otherPostsByAuthor={otherPostsByAuthor}
+        onBack={() => setSelectedPost(null)}
+        onSelectOtherPost={(otherPost) => setSelectedPost(otherPost)}
+        onLike={handleLike}
+        onSendReply={handleSendReply}
+        onDeleteComment={handleDeleteComment}
+        onCopyLink={handleCopyPostLink}
+        copiedId={copiedId}
+        replyText={replyText}
+        setReplyText={setReplyText}
+        getDefaultBanner={getDefaultPostBanner}
+      />
+    );
+  }
+
+  // =========================================================
+  // VIEW 2: FEED GRID 3-KOLOM (DENGAN HEADER & FOOTER)
+  // =========================================================
   return (
     <div className="bg-[#0c1322] min-h-screen text-white flex flex-col font-sans overflow-x-hidden selection:bg-yellow-400 selection:text-black">
       <Header />
 
-      {/* ========================================================= */}
-      {/* 1. TOP HERO BANNER (Full-Bleed /bg5.gif / min-h-[560px])  */}
-      {/* ========================================================= */}
+      {/* Hero Banner */}
       <section
         className="relative w-full min-h-[480px] md:min-h-[560px] bg-cover bg-center bg-no-repeat overflow-hidden border-b-4 border-retro-black flex items-center justify-center pt-28 md:pt-32"
         style={{ backgroundImage: "url('/bg5.gif')" }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1322]/85 via-black/60 to-[#0c1322] pointer-events-none z-0" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.3)_50%)] bg-[length:100%_4px] pointer-events-none opacity-35 z-0" />
 
         <div className="relative z-10 max-w-4xl mx-auto px-6 py-16 md:py-20 text-center flex flex-col items-center justify-center gap-4">
           <div className="inline-flex items-center gap-2 bg-[#121b2d]/90 border-2 border-yellow-400 px-3.5 py-1 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] rounded-md">
             <span className="w-2 h-2 rounded-full bg-pixel-green animate-ping" />
             <span className="font-pixel text-[8.5px] md:text-[10px] text-yellow-300 tracking-widest uppercase">
-              ✦ GUILD TAVERN &amp; LIVE BROADCASTS ✦
+              ✦ GUILD TAVERN &amp; LIVE CODEX ✦
             </span>
           </div>
 
@@ -300,136 +516,103 @@ export default function Following() {
           </h1>
 
           <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
-            Real-time community feeds, daily sprint updates, technical achievements, and party recruitment broadcasts from active student adventurers across Indonesia.
+            Explore software engineering articles, sprint logs, and technical project tutorials. Click any article card to inspect full specifications and join the discussion.
           </p>
 
-          {/* Quick Metrics Ticker */}
           <div className="grid grid-cols-3 gap-3 pt-2 w-full max-w-md text-center">
             <div className="bg-[#121b2d]/80 border-2 border-retro-black p-2.5 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-pixel text-xs md:text-sm text-yellow-400">{posts.length}</p>
-              <p className="font-pixel text-[7px] text-gray-300 uppercase">Live Feeds</p>
+              <p className="font-pixel text-[7px] text-gray-300 uppercase">Articles</p>
             </div>
             <div className="bg-[#121b2d]/80 border-2 border-retro-black p-2.5 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-pixel text-xs md:text-sm text-pixel-green">{usersList.length}</p>
-              <p className="font-pixel text-[7px] text-gray-300 uppercase">Adventurers</p>
+              <p className="font-pixel text-[7px] text-gray-300 uppercase">Authors</p>
             </div>
             <div className="bg-[#121b2d]/80 border-2 border-retro-black p-2.5 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-pixel text-xs md:text-sm text-cyan-300">REALTIME</p>
-              <p className="font-pixel text-[7px] text-gray-300 uppercase">Sync State</p>
+              <p className="font-pixel text-[7px] text-gray-300 uppercase">Synced</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ========================================================= */}
-      {/* 2. MAIN CONTENT (DISPATCH CONSOLE & FEED CARDS)           */}
-      {/* ========================================================= */}
+      {/* Main Container */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-8 pb-16 flex flex-col gap-8">
 
-        {/* --------------------------------------------------------- */}
-        {/* A. DISPATCH STATUS UPDATE FORM (TERMINAL HUD CONSOLE)     */}
-        {/* --------------------------------------------------------- */}
+        {/* Form Dispatch Broadcast */}
         <form
           onSubmit={handleCreatePost}
           className="bg-[#121b2d] border-4 border-retro-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-5 md:p-6 flex flex-col gap-4 text-left"
         >
-          {/* Header Terminal */}
           <div className="flex justify-between items-center border-b-2 border-gray-700/80 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 bg-pixel-green rounded-full animate-pulse" />
-              <span className="font-pixel text-[8.5px] md:text-[9.5px] text-yellow-300 tracking-wider">
-                // DISPATCH GUILD STATUS BROADCAST
-              </span>
-            </div>
-            <span className="font-pixel text-[7.5px] bg-[#1a253b] text-pixel-green border border-pixel-green/40 px-2 py-0.5 rounded">
-              BROADCAST PROTOCOL
+            <span className="font-pixel text-[9px] text-pixel-green tracking-wider uppercase">
+              // DISPATCH NEW ARTICLE OR SPRINT UPDATE
+            </span>
+            <span className="font-pixel text-[7.5px] bg-[#1a253b] text-yellow-300 border border-retro-black px-2 py-0.5 rounded">
+              CODEX PUBLISHER
             </span>
           </div>
 
-          {/* User Status Bar Preview */}
-          <div className="flex items-center justify-between gap-3 bg-[#18233a] p-2.5 border-2 border-retro-black rounded-xl">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 bg-retro-black border border-yellow-400 rounded-full flex items-center justify-center overflow-hidden shrink-0">
-                <PixelAvatar role={user?.role || "Coder"} size="w-full h-full" />
-              </div>
-              <p className="font-sans text-xs text-gray-200 truncate">
-                {user ? (
-                  <>
-                    Posting as <strong className="text-white">{user.name}</strong> (
-                    <span className="text-yellow-300 font-pixel text-[8px]">{user.role} • LV.{calculateUserLevel(user)}</span>)
-                  </>
-                ) : (
-                  <span className="text-gray-400">Viewing as Guest. Sign in or register to dispatch broadcasts.</span>
-                )}
-              </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <input
+              type="text"
+              placeholder="Article / Sprint Title..."
+              value={newPostTitle}
+              onChange={(e) => setNewPostTitle(e.target.value)}
+              disabled={!mounted || !user}
+              className="sm:col-span-2 font-sans text-xs p-3 bg-[#18233a] text-white border-2 border-retro-black focus:outline-none focus:border-yellow-400 rounded-xl"
+            />
+            <select
+              value={newPostCategory}
+              onChange={(e) => setNewPostCategory(e.target.value)}
+              disabled={!mounted || !user}
+              className="font-sans text-xs p-3 bg-[#18233a] text-white border-2 border-retro-black focus:outline-none rounded-xl"
+            >
+              <option value="FRONTEND">FRONTEND / WEB</option>
+              <option value="BACKEND">BACKEND / CLOUD</option>
+              <option value="UI / UX">UI / UX DESIGN</option>
+              <option value="MOBILE">MOBILE APPS</option>
+              <option value="DEVOPS">DEVOPS &amp; CI/CD</option>
+              <option value="GAME DEV">GAME DEVELOPMENT</option>
+              <option value="RESEARCH">UX RESEARCH</option>
+              <option value="MANAGEMENT">PROJECT MANAGEMENT</option>
+            </select>
             </div>
-            {!user && (
-              <a
-                href="/register"
-                className="font-pixel text-[8px] text-yellow-400 hover:underline shrink-0"
-              >
-                REGISTER ➔
-              </a>
-            )}
-          </div>
-
-          {/* Textarea Input */}
-          <div className="flex flex-col gap-2">
+            
             <textarea
               rows={3}
               value={newPostContent}
               onChange={(e) => setNewPostContent(e.target.value)}
               placeholder={
-                user
-                  ? `What's your latest sprint progress, ${user.name}? Share code breakthroughs, design drops, or open party recruitment...`
-                  : "Log in to transmit a status broadcast to the guild timeline..."
+                mounted && user
+                  ? `Write your sprint breakdown or tech tutorial, ${user.name}...`
+                  : "Please log in to publish articles or updates to the guild timeline..."
               }
-              disabled={!user}
-              className="font-sans text-xs p-3.5 bg-[#18233a] text-white border-2 border-retro-black focus:outline-none focus:border-yellow-400 resize-none placeholder-gray-400 rounded-xl leading-relaxed"
+              disabled={!mounted || !user}
+              className="font-sans text-xs p-3.5 bg-[#18233a] text-white border-2 border-retro-black focus:outline-none focus:border-yellow-400 rounded-xl resize-none"
             />
 
-            {/* Quick Hashtag Insertion Chips */}
-            <div className="flex flex-wrap items-center gap-1.5 pt-1">
-              <span className="font-pixel text-[7.5px] text-gray-400 mr-1">// QUICK TAGS:</span>
-              {AVAILABLE_TAGS.filter((t) => t !== "ALL").map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => insertTag(tag)}
-                  disabled={!user}
-                  className="font-pixel text-[7.5px] bg-[#142036] hover:bg-yellow-400/20 hover:text-yellow-300 text-gray-300 border border-gray-700 px-2 py-0.5 rounded transition-colors cursor-pointer disabled:opacity-50"
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Action Row */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-1 border-t border-gray-700/60">
-            <p className="font-sans text-[11px] text-gray-400 text-left">
-              Tip: Mention keywords like <span className="text-yellow-300 font-mono">#GEMASTIK</span> or <span className="text-yellow-300 font-mono">#INVENTION2026</span> for team discovery.
+            <p className="font-sans text-[11px] text-gray-400">
+              {user ? `Publishing as ${user.name} (${user.role})` : "Guest mode: Login required to publish."}
             </p>
-
             <PixelButton
               variant="green"
               type="submit"
               disabled={!user || !newPostContent.trim()}
               className="py-2 px-6 text-[9px] w-full sm:w-auto"
             >
-              TRANSMIT POST ✦
+              PUBLISH ARTICLE ✦
             </PixelButton>
           </div>
         </form>
 
-        {/* --------------------------------------------------------- */}
-        {/* B. HASHTAG TOPIC FILTER PILLS                             */}
-        {/* --------------------------------------------------------- */}
+        {/* Filter Pills Tagar */}
         <section className="flex flex-col gap-2 text-left">
           <div className="flex items-center justify-between">
-            <span className="font-pixel text-[8px] text-gray-400 uppercase">// FILTER BY TOPIC &amp; COMPETITION:</span>
+            <span className="font-pixel text-[8px] text-gray-400 uppercase">// FILTER CODEX BY TOPIC:</span>
             <span className="font-pixel text-[8px] bg-[#121b2d] border border-retro-black px-2.5 py-1 text-yellow-300 rounded">
-              {filteredPosts.length} BROADCASTS
+              {filteredPosts.length} POSTS
             </span>
           </div>
 
@@ -453,200 +636,30 @@ export default function Following() {
           </div>
         </section>
 
-        {/* --------------------------------------------------------- */}
-        {/* C. 2-COLUMN TIMELINE POST CARDS GRID (OPTIMAL ERGONOMICS) */}
-        {/* --------------------------------------------------------- */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          {filteredPosts.length === 0 ? (
-            <div className="col-span-full bg-[#121b2d] border-4 border-retro-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-12 text-center flex flex-col items-center gap-3">
-              <span className="font-pixel text-2xl text-yellow-400">? ? ?</span>
-              <p className="font-pixel text-xs text-white">NO BROADCASTS MATCHING "{selectedTag}"</p>
-              <p className="font-sans text-xs text-gray-400 max-w-md">
-                Try selecting another topic filter or be the first adventurer to transmit a status update!
-              </p>
-              <PixelButton variant="secondary" onClick={() => setSelectedTag("ALL")}>
-                RESET FILTER TO ALL
-              </PixelButton>
-            </div>
-          ) : (
-            filteredPosts.map((post) => {
-              const author = usersList.find((u) => u.user_id === post.author_id) || {
-                name: post.author_id === user?.user_id ? user.name : "Guild Contributor",
-                role: post.author_id === user?.user_id ? user.role : "Full-stack Developer",
-                major: "Informatics",
-              };
-              const authorLevel = calculateUserLevel(author);
+        {/* 3-KOLOM TIMELINE CARDS GRID */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+          {filteredPosts.map((post) => {
+            const author = getAuthor(post.author_id);
+            const authorLevel = calculateUserLevel(author);
 
-              return (
-                <div
-                  key={post.id}
-                  id={post.id}
-                  className="bg-[#121b2d] border-4 border-retro-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 p-5 md:p-6 flex flex-col justify-between gap-4 transition-all duration-200 text-left relative"
-                >
-                  <div className="flex flex-col gap-3.5">
-
-                    {/* 1. Author Header Info + Tombol Hapus Postingan */}
-                    <div className="flex justify-between items-start border-b-2 border-gray-700/60 pb-3.5 gap-2">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 bg-retro-black border-2 border-yellow-400 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
-                          <PixelAvatar role={author.role} size="w-full h-full" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-pixel text-[9.5px] md:text-[10px] text-white leading-tight font-bold truncate">
-                            {author.name}
-                          </p>
-                          <p className="font-sans text-[10px] text-gray-400 leading-tight mt-0.5 truncate">
-                            {author.role} • <span className="text-yellow-300 font-pixel text-[7.5px]">LV.{authorLevel}</span>
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Timestamp & Tombol Hapus Postingan */}
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="font-pixel text-[7.5px] bg-[#18233a] text-gray-300 border border-retro-black px-2 py-0.5 rounded">
-                          {post.timestamp}
-                        </span>
-
-                        {/* Tombol Hapus Postingan */}
-                        {(post.author_id === user?.user_id || !user) && (
-                          <button
-                            type="button"
-                            onClick={() => handleDeletePost(post.id)}
-                            className="font-pixel text-[7.5px] bg-red-900/30 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/40 hover:border-red-500 px-1.5 py-0.5 rounded cursor-pointer transition-colors shadow-sm"
-                            title="Delete this broadcast"
-                          >
-                            ✕ DELETED
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* 2. Body Content dengan Clickable Hashtags */}
-                    <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed whitespace-pre-line">
-                      {renderContentWithHashtags(post.content)}
-                    </p>
-                  </div>
-
-                  {/* 3. Actions Toolbar & Comment Thread */}
-                  <div className="flex flex-col gap-3 pt-2">
-
-                    {/* Action Bar */}
-                    <div className="border-t-2 border-gray-700/60 pt-3 flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        {/* Like Button */}
-                        <button
-                          type="button"
-                          onClick={() => handleLike(post.id)}
-                          className={`font-pixel text-[8px] px-3 py-1.5 rounded-lg border-2 select-none cursor-pointer transition-all flex items-center gap-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] ${post.isLiked
-                              ? "bg-pixel-green text-retro-black border-retro-black font-bold"
-                              : "bg-[#18233a] text-gray-200 border-retro-black hover:border-yellow-400 hover:text-white"
-                            }`}
-                        >
-                          <span>{post.isLiked ? "♥" : "♡"}</span>
-                          <span>{post.isLiked ? "LIKED" : "LIKE"}</span>
-                          <span className="opacity-80">({post.likes})</span>
-                        </button>
-
-                        {/* Reply Toggle Button */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setActiveReplyId(activeReplyId === post.id ? null : post.id);
-                            setReplyText("");
-                          }}
-                          className="font-pixel text-[8px] px-3 py-1.5 rounded-lg border-2 border-retro-black bg-[#18233a] text-gray-200 hover:border-yellow-400 hover:text-white select-none cursor-pointer transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] flex items-center gap-1.5"
-                        >
-                          <span>💬</span>
-                          <span>REPLY</span>
-                          <span className="opacity-80">({post.comments.length})</span>
-                        </button>
-                      </div>
-
-                      {/* Copy Share Link */}
-                      <button
-                        type="button"
-                        onClick={() => handleCopyPostLink(post.id)}
-                        className="font-pixel text-[7.5px] text-gray-400 hover:text-yellow-300 transition-colors p-1"
-                        title="Copy post link"
-                      >
-                        {copiedId === post.id ? "✓ COPIED" : "↗ SHARE"}
-                      </button>
-                    </div>
-
-                    {/* Comment Thread Logs (dengan Tombol Hapus Komentar) */}
-                    {post.comments.length > 0 && (
-                      <div className="bg-[#18233a] p-3.5 border-2 border-retro-black rounded-xl flex flex-col gap-2.5 mt-1">
-                        <span className="font-pixel text-[7.5px] text-yellow-400">// REPLIES FEED:</span>
-                        <div className="flex flex-col gap-2">
-                          {post.comments.map((comment, index) => (
-                            <div
-                              key={index}
-                              className="bg-[#101828] p-2.5 border border-gray-700/60 rounded-lg text-left relative group"
-                            >
-                              <div className="flex items-center justify-between gap-2 mb-1">
-                                <span className="font-pixel text-[8px] text-yellow-300 font-bold">
-                                  [{comment.author}]
-                                </span>
-
-                                <div className="flex items-center gap-2">
-                                  {comment.role && (
-                                    <span className="font-sans text-[9px] text-gray-400">
-                                      {comment.role}
-                                    </span>
-                                  )}
-                                  {/* Tombol Hapus Komentar */}
-                                  <button
-                                    type="button"
-                                    onClick={() => handleDeleteComment(post.id, index)}
-                                    className="font-pixel text-[6.5px] text-red-400 hover:text-red-300 opacity-60 group-hover:opacity-100 transition-opacity"
-                                    title="Delete comment"
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              </div>
-
-                              <p className="font-sans text-xs text-gray-200 leading-relaxed">
-                                {comment.text}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Reply Input Drawer */}
-                    {activeReplyId === post.id && (
-                      <div className="flex gap-2 items-center border-t border-gray-700/60 pt-3 animate-in fade-in duration-150">
-                        <input
-                          type="text"
-                          placeholder={user ? `Reply as ${user.name}...` : "Type a reply to this broadcast..."}
-                          value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") handleSendReply(post.id);
-                          }}
-                          className="flex-1 font-sans text-xs p-2.5 bg-[#18233a] text-white border-2 border-retro-black focus:outline-none focus:border-yellow-400 placeholder-gray-400 rounded-lg"
-                        />
-                        <PixelButton
-                          variant="green"
-                          onClick={() => handleSendReply(post.id)}
-                          className="py-2 px-4 text-[8.5px]"
-                        >
-                          SEND ➔
-                        </PixelButton>
-                      </div>
-                    )}
-
-                  </div>
-                </div>
-              );
-            })
-          )}
+            return (
+              <TimelineCard
+                key={post.id}
+                post={post}
+                author={author}
+                authorLevel={authorLevel}
+                currentUser={user}
+                onSelectPost={setSelectedPost}
+                onDeletePost={handleDeletePost}
+                getDefaultBanner={getDefaultPostBanner}
+              />
+            );
+          })}
         </section>
+
       </main>
 
-      {/* Modal Konfirmasi Retro 8-Bit */}
+      {/* Modal Konfirmasi Hapus Retro */}
       <ConfirmModal
         isOpen={confirmModal.isOpen}
         title={confirmModal.title}
@@ -657,6 +670,7 @@ export default function Following() {
         onConfirm={confirmModal.onConfirm}
         onCancel={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
       />
+
       <Footer />
     </div>
   );
