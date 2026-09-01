@@ -6,8 +6,8 @@ import { useState, useEffect } from "react";
 export const translations = {
     EN: {
         // 1. GLOBAL HEADER & FOOTER
-        questBoard: "QUEST BOARD",
-        showcase: "SHOWCASE",
+        questBoard: "ACTIVE QUESTS",
+        showcase: "FINISHED LOGS",
         timeline: "TIMELINE",
         guide: "GUIDE",
         quiz: "QUIZ",
@@ -117,8 +117,8 @@ export const translations = {
     },
     ID: {
         // 1. GLOBAL HEADER & FOOTER
-        questBoard: "PAPAN MISI",
-        showcase: "PAMERAN KARYA",
+        questBoard: "MISI PAPAN AKTIF",
+        showcase: "CATATAN PROYEK SELESAI",
         timeline: "LINIMASA",
         guide: "PANDUAN",
         quiz: "KUIS RPG",

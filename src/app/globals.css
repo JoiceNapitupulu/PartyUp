@@ -185,3 +185,25 @@ html.light .overscroll-contain::-webkit-scrollbar-thumb {
 html.light .overscroll-contain {
   scrollbar-color: #b45309 #e2e8f0;
 }
+
+/* ========================================================================= */
+/* HIDE SCROLLBAR UTILITIES (KEEP SCROLLING FUNCTIONAL, HIDE VISUAL BAR)     */
+/* ========================================================================= */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+header nav::-webkit-scrollbar,
+div.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+.no-scrollbar,
+.scrollbar-none,
+nav,
+header nav {
+  -ms-overflow-style: none !important; /* IE & Edge */
+  scrollbar-width: none !important;    /* Firefox */
+}

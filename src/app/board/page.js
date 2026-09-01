@@ -136,11 +136,11 @@ export default function Board() {
         {/* Konten Hero Banner di Tengah — Teks Proporsional & Rapi */}
         <div className="relative z-10 max-w-4xl mx-auto px-6 py-12 md:py-16 text-center flex flex-col items-center justify-center gap-4">
           <span className="font-pixel text-[9px] md:text-[11px] text-yellow-300 tracking-widest drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
-            ✦ ADVENTURER GUILD BOARD ✦
+            ✦ ADVENTURER GUILD ACTIVE QUESTS ✦
           </span>
 
           <h1 className="font-pixel text-3xl md:text-5xl text-yellow-300 drop-shadow-[0_6px_0px_rgba(0,0,0,1)] leading-tight tracking-wide">
-            [ GUILD QUEST BOARD ]
+            [ GUILD ACTIVE QUESTS ]
           </h1>
 
           <p className="font-sans text-sm md:text-base text-gray-100 leading-relaxed max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
@@ -163,7 +163,7 @@ export default function Board() {
 
         {/* Penjelasan singkat setelah banner */}
         <section className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6 bg-[#0f1b30] border-l-4 border-yellow-400 px-5 py-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <span className="font-pixel text-[9px] text-yellow-400 whitespace-nowrap">// ABOUT THIS BOARD</span>
+          <span className="font-pixel text-[9px] text-yellow-400 whitespace-nowrap">// ABOUT ACTIVE QUESTS</span>
           <p className="font-sans text-xs md:text-sm text-gray-300 leading-relaxed">
             This is the guild's open quest log — every card below is a real project from a fellow IT student looking for party members. Search by skill, filter by class or competition track, then join a quest or dispatch your own to start recruiting comrades.
           </p>

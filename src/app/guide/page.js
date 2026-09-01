@@ -132,8 +132,8 @@ const faqs = [
         tag: "SHOWCASE",
     },
     {
-        q: "What is the difference between Quest Board, Showcase, and Timeline?",
-        a: "QUEST BOARD is for active recruitment of open team slots. SHOWCASE is a historical proof-of-work gallery of completed projects. TIMELINE is a real-time social activity feed for daily progress broadcasts and community chatter.",
+        q: "What is the difference between Quest Board, Showcase, and Profile Tabs?",
+        a: "QUEST BOARD is for active recruitment of open team slots across the guild. In your Profile (/profile), the FINISHED LOGS tab lists your completed historical case studies, while the ACTIVE QUESTS tab displays the open recruitment quests you have dispatched.",
         tag: "FEATURES",
     },
     {
@@ -311,14 +311,14 @@ export default function GuildGuide() {
                                     ⚔️
                                 </div>
                                 <span className="font-pixel text-[10px] text-pixel-green font-bold group-hover:text-yellow-300 transition-colors">
-                                    01. QUEST BOARD
+                                    01. ACTIVE QUESTS
                                 </span>
                                 <p className="font-sans text-xs text-gray-300 leading-relaxed">
                                     Central recruitment marketplace to dispatch competition notices, set class requirements, and accept verified applicants.
                                 </p>
                             </div>
                             <Link href="/board" className="font-pixel text-[8px] text-yellow-400 hover:text-yellow-300 underline underline-offset-4">
-                                EXPLORE BOARD ➔
+                                EXPLORE QUESTS ➔
                             </Link>
                         </div>
 
@@ -329,14 +329,14 @@ export default function GuildGuide() {
                                     📜
                                 </div>
                                 <span className="font-pixel text-[10px] text-yellow-300 font-bold group-hover:text-white transition-colors">
-                                    02. SHOWCASE
+                                    02. FINISHED LOGS
                                 </span>
                                 <p className="font-sans text-xs text-gray-300 leading-relaxed">
                                     Historical archive of finished student works serving as tangible proof of skills with code repositories and live demos.
                                 </p>
                             </div>
                             <Link href="/showcase" className="font-pixel text-[8px] text-yellow-400 hover:text-yellow-300 underline underline-offset-4">
-                                VIEW SHOWCASE ➔
+                                VIEW FINISHED LOGS ➔
                             </Link>
                         </div>
 
@@ -412,7 +412,7 @@ export default function GuildGuide() {
                         <div className="bg-[#18233a] p-4 border-2 border-retro-black rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
                             <div className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed text-left">
                                 <span className="font-pixel text-[8px] text-yellow-400 block mb-1">// SIMULATION: SARAH (PRODUCT MANAGER)</span>
-                                Semester 5 • 6 Mastered Skills • 3 Completed Portfolio Quests:
+                                Semester 5 • 6 Mastered Skills • 3 Finished Logs:
                                 <br />
                                 <span className="font-mono text-yellow-300 text-xs font-bold">
                                     (6 Skills × 2) + (5 Sem × 2) + (3 Quests × 3) = 12 + 10 + 9
@@ -652,7 +652,7 @@ export default function GuildGuide() {
                         READY TO ASSEMBLE YOUR CHAMPIONSHIP PARTY?
                     </h2>
                     <p className="font-sans text-xs md:text-sm text-gray-300 max-w-xl">
-                        Register your student character or browse open competition requests on the Quest Board today.
+                        Register your student character or browse open competition requests on Active Quests today.
                     </p>
                     <div className="flex flex-wrap justify-center gap-4 pt-2">
                         <Link href="/register">
@@ -662,7 +662,7 @@ export default function GuildGuide() {
                         </Link>
                         <Link href="/board">
                             <PixelButton variant="green" className="py-3 px-6 text-xs">
-                                GO TO QUEST BOARD ▶
+                                GO TO ACTIVE QUESTS ▶
                             </PixelButton>
                         </Link>
                     </div>
