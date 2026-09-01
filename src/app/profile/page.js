@@ -7,6 +7,7 @@ import PixelButton from "../../components/PixelButton";
 import ProjectCard from "../../components/ProjectCard";
 import PixelAvatar from "../../components/PixelAvatar";
 import PixelTechIcon from "../../components/PixelTechIcon";
+import PortfolioModal from "../../components/PortfolioModal";
 import usersData from "../../data/users.json";
 import projectsData from "../../data/projects.json";
 import { calculateUserLevel } from "../../utils/auth";
@@ -17,6 +18,7 @@ export default function Profile() {
   const [allUsers, setAllUsers] = useState(usersData);
   const [isEditMode, setIsEditMode] = useState(false);
   const [projects, setProjects] = useState(projectsData);
+  const [selectedPortfolio, setSelectedPortfolio] = useState(null);
 
   useEffect(() => {
     const loadUser = () => {
@@ -299,16 +301,29 @@ export default function Profile() {
                   {user.portfolio && user.portfolio.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {user.portfolio.map((p, index) => (
-                        <div key={index} className="bg-[#18233a] border-2 border-retro-black p-4 flex flex-col gap-2">
-                          <span className="font-pixel text-[8px] text-pixel-green bg-[#121b2d] border border-pixel-green/40 px-2 py-0.5 w-fit font-bold">
-                            {p.role}
-                          </span>
-                          <h4 className="font-pixel text-[10px] text-white mt-1 font-bold">
+                        <div
+                          key={index}
+                          onClick={() => setSelectedPortfolio(p)}
+                          className="bg-[#18233a] border-2 border-retro-black p-4 flex flex-col gap-2 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 hover:-translate-y-1 transition-all cursor-pointer group text-left relative"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-pixel text-[8px] text-pixel-green bg-[#121b2d] border border-pixel-green/40 px-2 py-0.5 w-fit font-bold rounded">
+                              {p.role}
+                            </span>
+                            <span className="font-pixel text-[7.5px] text-yellow-300 group-hover:text-yellow-400 font-bold">
+                              ★ VIEW CASE STUDY ➔
+                            </span>
+                          </div>
+                          <h4 className="font-pixel text-[11px] text-white mt-1 font-bold group-hover:text-yellow-300 transition-colors">
                             {p.project_name}
                           </h4>
-                          <p className="font-sans text-xs text-gray-300 leading-relaxed">
+                          <p className="font-sans text-xs text-gray-300 leading-relaxed line-clamp-2">
                             {p.description}
                           </p>
+                          <div className="mt-2 pt-2 border-t border-gray-700/60 flex items-center justify-between">
+                            <span className="font-pixel text-[7.5px] text-gray-400">STATUS: PRODUCTION READY</span>
+                            <span className="font-pixel text-[7.5px] text-pixel-green">FIGMA PROTOTYPE READY ↗</span>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -380,6 +395,14 @@ export default function Profile() {
           </div>
         </div>
       </main>
+
+      {selectedPortfolio && (
+        <PortfolioModal
+          project={selectedPortfolio}
+          user={user}
+          onClose={() => setSelectedPortfolio(null)}
+        />
+      )}
 
       <Footer />
     </div>

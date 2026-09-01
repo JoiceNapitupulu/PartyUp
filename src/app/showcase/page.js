@@ -7,6 +7,7 @@ import Footer from "../../components/Footer";
 import PixelButton from "../../components/PixelButton";
 import PixelAvatar from "../../components/PixelAvatar";
 import PixelTechIcon from "../../components/PixelTechIcon";
+import PortfolioModal from "../../components/PortfolioModal";
 import usersData from "../../data/users.json";
 import projectsData from "../../data/projects.json";
 import { calculateUserLevel, getStoredUsers, getStoredProjects } from "../../utils/auth";
@@ -423,199 +424,14 @@ export default function Showcase() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 4. BALANCED RETRO RPG MODAL (SIMETRIS, RAPI, & BEBAS TABRAKAN NAVBAR)     */}
+        {/* 4. INTERACTIVE PORTFOLIO & CASE STUDY MODAL                             */}
         {/* ========================================================================= */}
         {activeCaseStudy && (
-          <div
-            onClick={() => setActiveCaseStudy(null)} // Klik luar untuk menutup
-            className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 md:p-6 transition-opacity duration-200"
-          >
-            {/* Kotak Modal Utama di Tengah Layar */}
-            <div
-              onClick={(e) => e.stopPropagation()} // Mencegah tertutup saat isi modal diklik
-              className="bg-[#0f172a] border-4 border-retro-black rounded-2xl w-full max-w-2xl h-[88vh] max-h-[720px] flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative text-white overflow-hidden"
-            >
-
-              {/* A. TITLE BAR RETRO WINDOW */}
-              <div className="bg-[#1e293b] border-b-4 border-retro-black px-4 py-2.5 flex items-center justify-between shrink-0">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 bg-red-500 border border-retro-black inline-block" />
-                  <span className="w-2.5 h-2.5 bg-yellow-400 border border-retro-black inline-block" />
-                  <span className="w-2.5 h-2.5 bg-green-500 border border-retro-black inline-block" />
-                  <span className="font-pixel text-[8.5px] text-yellow-300 ml-2 tracking-wider">
-                    // CASE STUDY SPECIFICATION SHEET
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setActiveCaseStudy(null)}
-                  className="font-pixel text-[8.5px] text-red-400 hover:text-white bg-[#0f172a] hover:bg-red-600 border-2 border-retro-black px-2.5 py-1 cursor-pointer rounded transition-colors"
-                >
-                  ✕ CLOSE [ESC]
-                </button>
-              </div>
-
-              {/* B. COMPACT BANNER (Tinggi Pas & Proporsional) */}
-              <div className="relative h-36 md:h-40 w-full border-b-4 border-retro-black bg-retro-black shrink-0 overflow-hidden">
-                <Image
-                  src={activeCaseStudy.image}
-                  alt={activeCaseStudy.project_name}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-black/40 to-transparent" />
-
-                {/* Badges di Banner */}
-                <div className="absolute top-3 left-3 flex items-center gap-2 z-10">
-                  <span className="font-pixel text-[8px] bg-yellow-400 text-retro-black px-2.5 py-0.5 border border-retro-black font-bold rounded">
-                    ★ {activeCaseStudy.metrics?.rank || "S-RANK"}
-                  </span>
-                  <span className="font-pixel text-[8px] bg-[#1e293b] text-pixel-green px-2.5 py-0.5 border border-pixel-green/40 rounded">
-                    {activeCaseStudy.metrics?.deployStatus || "Verified Quest"}
-                  </span>
-                </div>
-
-                {/* Judul Proyek */}
-                <div className="absolute bottom-2.5 left-4 right-4 z-10 text-left">
-                  <h2 className="font-pixel text-base md:text-lg text-white drop-shadow-[0_2px_4px_rgba(0,0,0,1)] leading-tight">
-                    {activeCaseStudy.project_name}
-                  </h2>
-                </div>
-              </div>
-
-              {/* C. SCROLLABLE BODY (HANYA AREA INI YANG BERGULIR) */}
-              <div className="flex-1 overflow-y-auto p-5 md:p-6 flex flex-col gap-4 text-left overscroll-contain">
-
-                {/* 1. Summary & Objective */}
-                <div className="bg-[#182338] p-4 border-2 border-retro-black rounded-xl">
-                  <span className="font-pixel text-[8px] text-yellow-400 block mb-1.5">// EXECUTIVE SUMMARY & OBJECTIVE</span>
-                  <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed">
-                    {activeCaseStudy.description}
-                  </p>
-                </div>
-
-                {/* 2. Metrics Grid (4 Kolom Rapi) */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
-                  <div className="bg-[#131c2e] p-2.5 border-2 border-retro-black rounded-lg">
-                    <p className="font-pixel text-[7.5px] text-gray-400">QUALITY INDEX</p>
-                    <p className="font-pixel text-xs text-pixel-green mt-1">
-                      {activeCaseStudy.metrics?.qualityScore || 95}/100
-                    </p>
-                  </div>
-                  <div className="bg-[#131c2e] p-2.5 border-2 border-retro-black rounded-lg">
-                    <p className="font-pixel text-[7.5px] text-gray-400">SPRINT DURATION</p>
-                    <p className="font-pixel text-xs text-yellow-300 mt-1">
-                      {activeCaseStudy.metrics?.timeline || "4 Weeks"}
-                    </p>
-                  </div>
-                  <div className="bg-[#131c2e] p-2.5 border-2 border-retro-black rounded-lg">
-                    <p className="font-pixel text-[7.5px] text-gray-400">CONTRIBUTOR ROLE</p>
-                    <p className="font-pixel text-[7.5px] text-cyan-300 mt-1 truncate">
-                      {activeCaseStudy.role}
-                    </p>
-                  </div>
-                  <div className="bg-[#131c2e] p-2.5 border-2 border-retro-black rounded-lg">
-                    <p className="font-pixel text-[7.5px] text-gray-400">MEMBER LEVEL</p>
-                    <p className="font-pixel text-xs text-yellow-400 mt-1">
-                      LV.{calculateUserLevel(activeCaseStudy.user)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* 3. Architectural Highlights */}
-                <div className="bg-[#182338] p-4 border-2 border-retro-black rounded-xl">
-                  <span className="font-pixel text-[8px] text-yellow-400 block mb-2">// KEY ARCHITECTURAL HIGHLIGHTS</span>
-                  <ul className="flex flex-col gap-2 font-sans text-xs text-gray-300">
-                    {(activeCaseStudy.highlights || [
-                      "Engineered responsive high-frequency UI components with zero latency layout shift.",
-                      "Architected secure modular workflows verified by guild peer reviews."
-                    ]).map((point, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-pixel-green font-bold shrink-0">✓</span>
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* 4. Tech Stack Inventory */}
-                <div>
-                  <span className="font-pixel text-[8px] text-gray-400 block mb-2 uppercase">// DEPLOYED TECH STACK:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {activeCaseStudy.tech_stack.map((tech, i) => (
-                      <span
-                        key={i}
-                        className="flex items-center gap-1.5 font-pixel text-[8px] bg-[#1a253b] text-gray-200 px-3 py-1.5 border border-gray-600 rounded-lg"
-                      >
-                        <PixelTechIcon tech={tech} size="w-3.5 h-3.5" />
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Tautan Luar: GitHub Source Repo & Live Demo */}
-                <div className="flex items-center gap-3">
-                  {/* 1. GITHUB SOURCE REPO DENGAN IKON */}
-                  <a
-                    href={activeCaseStudy.source_code}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1.5 font-pixel text-[8.5px] bg-[#1a253b] hover:bg-[#263756] text-yellow-300 hover:text-yellow-200 border-2 border-retro-black px-2.5 py-1.5 rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] transition-all"
-                  >
-                    {/* Icon GitHub SVG Crisp */}
-                    <svg
-                      className="w-3.5 h-3.5 fill-current shrink-0"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-                      />
-                    </svg>
-                    <span>GITHUB REPO</span>
-                    <span className="text-[7.5px] opacity-70">↗</span>
-                  </a>
-
-                  {/* 2. LIVE DEMO LINK */}
-                  <a
-                    href={activeCaseStudy.demo_link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1.5 font-pixel text-[8.5px] bg-[#1a253b] hover:bg-[#263756] text-pixel-green hover:text-green-300 border-2 border-retro-black px-2.5 py-1.5 rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] transition-all"
-                  >
-                    <span className="text-[10px]">⚡</span>
-                    <span>LIVE DEMO</span>
-                    <span className="text-[7.5px] opacity-70">↗</span>
-                  </a>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveCaseStudy(null)}
-                    className="font-pixel text-[8.5px] px-3.5 py-2 bg-[#1c2a4a] hover:bg-[#253860] border-2 border-retro-black text-gray-200 rounded cursor-pointer"
-                  >
-                    BACK
-                  </button>
-                  <PixelButton
-                    variant="green"
-                    onClick={() => {
-                      const targetUser = activeCaseStudy.user;
-                      setActiveCaseStudy(null);
-                      setSelectedUser(targetUser);
-                    }}
-                    className="py-2 px-4 text-[9px]"
-                  >
-                    ⚔️ RECRUIT CREATOR
-                  </PixelButton>
-                </div>
-              </div>
-
-            </div>
-          </div>
+          <PortfolioModal
+            project={activeCaseStudy}
+            user={activeCaseStudy.user}
+            onClose={() => setActiveCaseStudy(null)}
+          />
         )}
 
         {/* ========================================================================= */}
