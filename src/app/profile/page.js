@@ -124,8 +124,8 @@ export default function Profile() {
 
   const tabs = [
     { id: "overview", name: "OVERVIEW" },
-    { id: "projects", name: "PROJECTS" },
-    { id: "board", name: "PROJECT BOARD" },
+    { id: "projects", name: "FINISHED LOGS" },
+    { id: "board", name: "ACTIVE QUESTS" },
     { id: "skills", name: "SKILLS & INVENTORY" },
   ];
 
