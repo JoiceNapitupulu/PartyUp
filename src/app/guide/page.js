@@ -5,6 +5,7 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import PixelButton from "../../components/PixelButton";
 import Link from "next/link";
+import { useLanguage } from "../../utils/lang";
 
 const GROUP_STYLES = {
     manager: {
@@ -152,10 +153,19 @@ const NAV_SECTIONS = [
 ];
 
 export default function GuildGuide() {
+    const { lang, t } = useLanguage();
     const [activeFaq, setActiveFaq] = useState(null);
     const [faqSearch, setFaqSearch] = useState("");
     const [selectedRoleGroup, setSelectedRoleGroup] = useState("ALL");
     const [activeNav, setActiveNav] = useState("overview");
+
+    const navSections = useMemo(() => [
+        { id: "overview", label: lang === "ID" ? "RINGKASAN" : "OVERVIEW", icon: "🌐" },
+        { id: "level-system", label: lang === "ID" ? "SISTEM LEVEL" : "LEVEL SYSTEM", icon: "⭐" },
+        { id: "roles", label: lang === "ID" ? "10 KELAS RPG" : "10 RPG CLASSES", icon: "⚔️" },
+        { id: "walkthrough", label: lang === "ID" ? "DEMO VIDEO" : "VIDEO DEMO", icon: "🎬" },
+        { id: "faq", label: lang === "ID" ? "FAQ & BANTUAN" : "FAQ & HELP", icon: "❓" },
+    ], [lang]);
 
     const toggleFaq = (question) => {
         setActiveFaq(activeFaq === question ? null : question);
@@ -223,31 +233,33 @@ export default function GuildGuide() {
                     <div className="inline-flex items-center gap-2 bg-[#121b2d]/90 border-2 border-yellow-400 px-3.5 py-1 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] rounded-md">
                         <span className="w-2 h-2 rounded-full bg-pixel-green animate-ping" />
                         <span className="font-pixel text-[8.5px] md:text-[10px] text-yellow-300 tracking-widest uppercase">
-                            ✦ OFFICIAL GUILD INSTRUCTION MANUAL ✦
+                            {lang === "ID" ? "✦ BUKU PANDUAN RESMI GUILD ✦" : "✦ OFFICIAL GUILD INSTRUCTION MANUAL ✦"}
                         </span>
                     </div>
 
                     <h1 className="font-pixel text-2xl md:text-5xl text-yellow-300 drop-shadow-[0_6px_0px_rgba(0,0,0,1)] leading-tight tracking-wide">
-                        [ THE ADVENTURER&apos;S CODEX ]
+                        {lang === "ID" ? "[ PANDUAN PETUALANG ]" : "[ THE ADVENTURER'S CODEX ]"}
                     </h1>
 
                     <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
-                        Comprehensive knowledge manual to master the PartyUp! ecosystem, understand the 10 Software Engineering RPG Class Roles, calculate character ratings, and assemble championship hackathon parties for <strong className="text-yellow-300 font-bold">GEMASTIK &amp; INVENTION 2026</strong>.
+                        {lang === "ID"
+                            ? "Buku panduan lengkap untuk memahami ekosistem PartyUp!, mengenal 10 Peran Kelas RPG Rekayasa Perangkat Lunak, menghitung peringkat karakter, dan merakit tim juara hackathon GEMASTIK & INVENTION 2026."
+                            : "Comprehensive knowledge manual to master the PartyUp! ecosystem, understand the 10 Software Engineering RPG Class Roles, calculate character ratings, and assemble championship hackathon parties for GEMASTIK & INVENTION 2026."}
                     </p>
 
                     {/* Quick Metrics Bar */}
                     <div className="grid grid-cols-3 gap-3 pt-3 w-full max-w-lg text-center">
                         <div className="bg-[#121b2d]/80 border-2 border-retro-black p-2.5 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                             <p className="font-pixel text-xs md:text-sm text-yellow-400">10 CLASSES</p>
-                            <p className="font-pixel text-[7px] text-gray-300 uppercase">Specialized Roles</p>
+                            <p className="font-pixel text-[7px] text-gray-300 uppercase">{lang === "ID" ? "Peran Spesialis" : "Specialized Roles"}</p>
                         </div>
                         <div className="bg-[#121b2d]/80 border-2 border-retro-black p-2.5 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                            <p className="font-pixel text-xs md:text-sm text-pixel-green">100% FAIR</p>
-                            <p className="font-pixel text-[7px] text-gray-300 uppercase">Level Formula</p>
+                            <p className="font-pixel text-xs md:text-sm text-pixel-green">100% ADIL</p>
+                            <p className="font-pixel text-[7px] text-gray-300 uppercase">{lang === "ID" ? "Rumus Level" : "Level Formula"}</p>
                         </div>
                         <div className="bg-[#121b2d]/80 border-2 border-retro-black p-2.5 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                            <p className="font-pixel text-xs md:text-sm text-cyan-300">HD VIDEO</p>
-                            <p className="font-pixel text-[7px] text-gray-300 uppercase">Walkthrough</p>
+                            <p className="font-pixel text-xs md:text-sm text-cyan-300">VIDEO HD</p>
+                            <p className="font-pixel text-[7px] text-gray-300 uppercase">{lang === "ID" ? "Walkthrough" : "Walkthrough"}</p>
                         </div>
                     </div>
                 </div>
@@ -258,7 +270,7 @@ export default function GuildGuide() {
             {/* ========================================================= */}
             <nav className="sticky top-0 z-40 bg-[#0c1322]/95 backdrop-blur-md border-b-4 border-retro-black shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
                 <div className="max-w-5xl mx-auto px-4 flex justify-center gap-2 overflow-x-auto no-scrollbar py-2">
-                    {NAV_SECTIONS.map((s) => {
+                    {navSections.map((s) => {
                         const isActive = activeNav === s.id;
                         return (
                             <button
@@ -289,18 +301,22 @@ export default function GuildGuide() {
                 <section id="overview" className="scroll-mt-28 flex flex-col gap-5 text-left">
                     <div className="border-b-2 border-yellow-400/80 pb-3 flex items-center justify-between">
                         <div>
-                            <span className="font-pixel text-[8.5px] text-yellow-400 uppercase block mb-1">// GUILD SYSTEM ARCHITECTURE</span>
+                            <span className="font-pixel text-[8.5px] text-yellow-400 uppercase block mb-1">
+                                {lang === "ID" ? "// ARSITEKTUR SISTEM GUILD" : "// GUILD SYSTEM ARCHITECTURE"}
+                            </span>
                             <h2 className="font-pixel text-sm md:text-lg text-white">
-                                WHAT IS PARTYUP!?
+                                {lang === "ID" ? "APA ITU PARTYUP!?" : "WHAT IS PARTYUP!?"}
                             </h2>
                         </div>
                         <span className="font-pixel text-[7.5px] bg-[#1a253b] text-yellow-300 border border-retro-black px-2.5 py-1 rounded">
-                            MODULAR WORKFLOW
+                            {lang === "ID" ? "ALUR KERJA MODULAR" : "MODULAR WORKFLOW"}
                         </span>
                     </div>
 
                     <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed">
-                        PartyUp! is an 8-bit RPG-themed micro-networking platform built to empower Indonesian IT and Design students to form high-performing hackathon parties. The platform eliminates random team matching by providing proof-of-skill verification across 3 core pillars:
+                        {lang === "ID"
+                            ? "PartyUp! adalah platform pencarian rekan tim & micro-networking bernuansa RPG 8-bit yang dibuat khusus untuk mahasiswa IT & Desain di Indonesia. Platform ini mempermudah pencarian rekan tim hackathon melalui verifikasi keahlian terpadu dalam 3 pilar utama:"
+                            : "PartyUp! is an 8-bit RPG-themed micro-networking platform built to empower Indonesian IT and Design students to form high-performing hackathon parties. The platform eliminates random team matching by providing proof-of-skill verification across 3 core pillars:"}
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-1">
@@ -311,14 +327,16 @@ export default function GuildGuide() {
                                     ⚔️
                                 </div>
                                 <span className="font-pixel text-[10px] text-pixel-green font-bold group-hover:text-yellow-300 transition-colors">
-                                    01. ACTIVE QUESTS
+                                    01. {lang === "ID" ? "MISI PAPAN AKTIF" : "ACTIVE QUESTS"}
                                 </span>
                                 <p className="font-sans text-xs text-gray-300 leading-relaxed">
-                                    Central recruitment marketplace to dispatch competition notices, set class requirements, and accept verified applicants.
+                                    {lang === "ID"
+                                        ? "Pusat rekrutmen terbuka untuk menerbitkan informasi lomba, kriteria peran kelas, dan menerima pelamar tim terverifikasi."
+                                        : "Central recruitment marketplace to dispatch competition notices, set class requirements, and accept verified applicants."}
                                 </p>
                             </div>
                             <Link href="/board" className="font-pixel text-[8px] text-yellow-400 hover:text-yellow-300 underline underline-offset-4">
-                                EXPLORE QUESTS ➔
+                                {lang === "ID" ? "JELAJAHI MISI ➔" : "EXPLORE QUESTS ➔"}
                             </Link>
                         </div>
 
@@ -329,14 +347,16 @@ export default function GuildGuide() {
                                     📜
                                 </div>
                                 <span className="font-pixel text-[10px] text-yellow-300 font-bold group-hover:text-white transition-colors">
-                                    02. FINISHED LOGS
+                                    02. {lang === "ID" ? "CATATAN PROYEK SELESAI" : "FINISHED LOGS"}
                                 </span>
                                 <p className="font-sans text-xs text-gray-300 leading-relaxed">
-                                    Historical archive of finished student works serving as tangible proof of skills with code repositories and live demos.
+                                    {lang === "ID"
+                                        ? "Arsip karya mahasiswa yang telah selesai sebagai bukti otentik kemampuan koding dengan link repository GitHub dan live demo."
+                                        : "Historical archive of finished student works serving as tangible proof of skills with code repositories and live demos."}
                                 </p>
                             </div>
                             <Link href="/showcase" className="font-pixel text-[8px] text-yellow-400 hover:text-yellow-300 underline underline-offset-4">
-                                VIEW FINISHED LOGS ➔
+                                {lang === "ID" ? "LIHAT PROYEK SELESAI ➔" : "VIEW FINISHED LOGS ➔"}
                             </Link>
                         </div>
 
@@ -347,14 +367,16 @@ export default function GuildGuide() {
                                     📡
                                 </div>
                                 <span className="font-pixel text-[10px] text-sky-300 font-bold group-hover:text-yellow-300 transition-colors">
-                                    03. TIMELINE
+                                    03. {lang === "ID" ? "LINIMASA SPRINT" : "TIMELINE"}
                                 </span>
                                 <p className="font-sans text-xs text-gray-300 leading-relaxed">
-                                    Real-time micro-broadcast social feed for daily sprint logs, team progress updates, and community recruitment shoutouts.
+                                    {lang === "ID"
+                                        ? "Feed siaran sosial real-time untuk log kemajuan harian sprint, update progres tim, dan info rekrutmen kilat komunitas."
+                                        : "Real-time micro-broadcast social feed for daily sprint logs, team progress updates, and community recruitment shoutouts."}
                                 </p>
                             </div>
                             <Link href="/timeline" className="font-pixel text-[8px] text-yellow-400 hover:text-yellow-300 underline underline-offset-4">
-                                CHECK TIMELINE ➔
+                                {lang === "ID" ? "CEK LINIMASA ➔" : "CHECK TIMELINE ➔"}
                             </Link>
                         </div>
                     </div>
@@ -646,23 +668,25 @@ export default function GuildGuide() {
                 {/* --------------------------------------------------------- */}
                 <section className="text-center py-8 flex flex-col items-center gap-5 bg-[#121b2d] border-4 border-retro-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-2xl p-6 md:p-8">
                     <span className="font-pixel text-[9px] text-pixel-green tracking-widest uppercase">
-                        ✦ GUILD REGISTRATION OPEN ✦
+                        {lang === "ID" ? "✦ PENDAFTARAN GUILD DIBUKA ✦" : "✦ GUILD REGISTRATION OPEN ✦"}
                     </span>
                     <h2 className="font-pixel text-sm md:text-lg text-yellow-300">
-                        READY TO ASSEMBLE YOUR CHAMPIONSHIP PARTY?
+                        {lang === "ID" ? "SIAP RAKIT TIM JUARA KAMU?" : "READY TO ASSEMBLE YOUR CHAMPIONSHIP PARTY?"}
                     </h2>
                     <p className="font-sans text-xs md:text-sm text-gray-300 max-w-xl">
-                        Register your student character or browse open competition requests on Active Quests today.
+                        {lang === "ID"
+                            ? "Daftarkan karakter mahasiswa kamu atau jelajahi lowongan tim lomba di Misi Aktif sekarang."
+                            : "Register your student character or browse open competition requests on Active Quests today."}
                     </p>
                     <div className="flex flex-wrap justify-center gap-4 pt-2">
                         <Link href="/register">
                             <PixelButton variant="secondary" className="py-3 px-6 text-xs">
-                                CREATE CHARACTER ✦
+                                {lang === "ID" ? "BUAT KARAKTER ✦" : "CREATE CHARACTER ✦"}
                             </PixelButton>
                         </Link>
                         <Link href="/board">
                             <PixelButton variant="green" className="py-3 px-6 text-xs">
-                                GO TO ACTIVE QUESTS ▶
+                                {lang === "ID" ? "KE MISI AKTIF ▶" : "GO TO ACTIVE QUESTS ▶"}
                             </PixelButton>
                         </Link>
                     </div>

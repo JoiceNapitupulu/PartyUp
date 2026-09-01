@@ -11,8 +11,10 @@ import PortfolioModal from "../../components/PortfolioModal";
 import usersData from "../../data/users.json";
 import projectsData from "../../data/projects.json";
 import { calculateUserLevel } from "../../utils/auth";
+import { useLanguage } from "../../utils/lang";
 
 export default function Profile() {
+  const { lang, t } = useLanguage();
   const [activeTab, setActiveTab] = useState("overview"); // overview, projects, board, skills
   const [user, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState(usersData);
@@ -123,10 +125,10 @@ export default function Profile() {
   const activeStats = roleStats[user.role] || { CODE: 50, DESIGN: 50, BUSINESS: 50, CHARISMA: 50 };
 
   const tabs = [
-    { id: "overview", name: "OVERVIEW" },
-    { id: "projects", name: "FINISHED LOGS" },
-    { id: "board", name: "ACTIVE QUESTS" },
-    { id: "skills", name: "SKILLS & INVENTORY" },
+    { id: "overview", name: t("overviewTab") },
+    { id: "projects", name: t("projectsTab") },
+    { id: "board", name: t("boardTab") },
+    { id: "skills", name: t("skillsTab") },
   ];
 
   return (

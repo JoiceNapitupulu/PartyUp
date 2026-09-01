@@ -9,6 +9,7 @@ import PixelAvatar from "../../components/PixelAvatar";
 import usersData from "../../data/users.json";
 import { calculateUserLevel } from "../../utils/auth";
 import Link from "next/link";
+import { useLanguage } from "../../utils/lang";
 
 // Latar utama luar game (di belakang seluruh halaman/console GameBoy)
 const OUTER_BG = "/kuis/bg1.jpg";
@@ -113,6 +114,7 @@ function useGameSfx() {
 }
 
 export default function GameBoyAdventureQuiz() {
+    const { lang, t } = useLanguage();
     const sfx = useGameSfx();
 
     const [hero, setHero] = useState(usersData[0]);
@@ -402,7 +404,7 @@ export default function GameBoyAdventureQuiz() {
                             {gameState === "SELECT_HERO" && (
                                 <div className="relative z-10 h-full flex flex-col justify-between items-center text-center">
                                     <div className="bg-retro-black/80 px-4 py-2 border-2 border-yellow-400 font-pixel text-xs text-yellow-300 rounded shadow-md">
-                                        CHOOSE YOUR GUILD HERO:
+                                        {lang === "ID" ? "PILIH PAHLAWAN GUILD KAMU:" : "CHOOSE YOUR GUILD HERO:"}
                                     </div>
 
                                     <div className="flex items-center justify-center gap-3 flex-wrap px-4">
@@ -436,7 +438,7 @@ export default function GameBoyAdventureQuiz() {
                                         }}
                                         className="font-pixel text-xs py-2.5 px-6 bg-yellow-400 hover:bg-yellow-300 text-retro-black font-bold border-2 border-retro-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] cursor-pointer active:translate-y-[1px]"
                                     >
-                                        START STORY &amp; MAP ▶
+                                        {lang === "ID" ? "MULAI CERITA & PETA ▶" : "START STORY & MAP ▶"}
                                     </button>
                                 </div>
                             )}
@@ -445,7 +447,7 @@ export default function GameBoyAdventureQuiz() {
                             {gameState === "WORLD_MAP" && (
                                 <div className="relative z-10 h-full flex flex-col justify-between items-center text-center">
                                     <div className="bg-retro-black/80 px-4 py-1.5 border-2 border-yellow-400 font-pixel text-[10px] text-yellow-300 rounded">
-                                        SELECT STAGE DUNGEON TO RAID:
+                                        {lang === "ID" ? "PILIH DUNGEON TAHAP UNTUK RAID:" : "SELECT STAGE DUNGEON TO RAID:"}
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">

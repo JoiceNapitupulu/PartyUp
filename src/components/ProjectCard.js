@@ -8,6 +8,7 @@ import PixelButton from "./PixelButton";
 import PixelTechIcon from "./PixelTechIcon";
 import PixelAvatar from "./PixelAvatar";
 import { calculateUserLevel, getStoredUsers } from "../utils/auth";
+import { useLanguage } from "../utils/lang";
 
 const roleNames = [
   "Product Manager (PM)",
@@ -33,6 +34,7 @@ const getDefaultBanner = (category) => {
 export default function ProjectCard({ project, showAuthor = true, onApply }) {
   if (!project) return null;
 
+  const { lang, t } = useLanguage();
   const router = useRouter();
   const [isApplied, setIsApplied] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
@@ -180,7 +182,9 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                   : "bg-pixel-green text-retro-black font-bold animate-pulse"
                   }`}
               >
-                {project?.status === "Open" ? "● OPEN QUEST" : "■ FILLED"}
+                {project?.status === "Open"
+                  ? (lang === "ID" ? "● MISI DIBUKA" : "● OPEN QUEST")
+                  : (lang === "ID" ? "■ TERISI" : "■ FILLED")}
               </span>
             </div>
           </div>
@@ -196,7 +200,9 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
             </p>
 
             <div className="mt-1">
-              <p className="font-pixel text-[8px] text-yellow-400 mb-1.5">// LOOKING FOR:</p>
+              <p className="font-pixel text-[8px] text-yellow-400 mb-1.5">
+                {lang === "ID" ? "// MENCARI PERAN:" : "// LOOKING FOR:"}
+              </p>
               <div className="flex flex-wrap gap-1.5">
                 {lookingForList.map((skill, index) => {
                   const isRole = roleNames.includes(skill);
@@ -244,7 +250,13 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
               onClick={(e) => handleApply(e)}
               className="py-1 px-3 text-[8px] border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
             >
-              {isApplying ? "SENDING..." : isApplied ? "APPLIED ✓" : isClosed ? "FILLED" : "JOIN PARTY"}
+              {isApplying
+                ? (lang === "ID" ? "MENGIRIM..." : "SENDING...")
+                : isApplied
+                  ? (lang === "ID" ? "TERKIRIM ✓" : "APPLIED ✓")
+                  : isClosed
+                    ? (lang === "ID" ? "TERISI" : "FILLED")
+                    : (lang === "ID" ? "GABUNG TIM" : "JOIN PARTY")}
             </PixelButton>
           </div>
         </div>
@@ -303,7 +315,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                   </span>
                   {project?.isVerified && (
                     <span className="font-pixel text-[9px] bg-yellow-400 text-retro-black px-2.5 py-1 border border-retro-black font-bold animate-pulse">
-                      ★ GUILD VERIFIED
+                      {lang === "ID" ? "★ TERVERIFIKASI GUILD" : "★ GUILD VERIFIED"}
                     </span>
                   )}
                   <span
@@ -312,7 +324,9 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                       : "bg-pixel-green text-retro-black font-bold animate-pulse"
                       }`}
                   >
-                    {project?.status === "Open" ? "● OPEN QUEST" : "■ FILLED"}
+                    {project?.status === "Open"
+                      ? (lang === "ID" ? "● MISI DIBUKA" : "● OPEN QUEST")
+                      : (lang === "ID" ? "■ TERISI" : "■ FILLED")}
                   </span>
                 </div>
 
@@ -329,13 +343,13 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                 {/* Meta row — ala "Prerequisite / Time to complete / learners" */}
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-sans text-xs sm:text-sm text-gray-300">
                   <span className="flex items-center gap-1.5">
-                    ⏱️ Duration: <span className="text-white font-semibold">2 - 4 Weeks Sprint</span>
+                    ⏱️ {lang === "ID" ? "Durasi:" : "Duration:"} <span className="text-white font-semibold">{lang === "ID" ? "Sprint 2 - 4 Minggu" : "2 - 4 Weeks Sprint"}</span>
                   </span>
                   <span className="flex items-center gap-1.5">
-                    👥 Party Size: <span className="text-white font-semibold">{rolesRequired.length + 1} Members Max</span>
+                    👥 {lang === "ID" ? "Ukuran Tim:" : "Party Size:"} <span className="text-white font-semibold">{lang === "ID" ? `Maks ${rolesRequired.length + 1} Anggota` : `${rolesRequired.length + 1} Members Max`}</span>
                   </span>
                   <span className="flex items-center gap-1.5">
-                    🎯 Slots Open: <span className="text-white font-semibold">{rolesRequired.length}</span>
+                    🎯 {lang === "ID" ? "Slot Terbuka:" : "Slots Open:"} <span className="text-white font-semibold">{rolesRequired.length}</span>
                   </span>
                 </div>
 
@@ -347,7 +361,13 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                     onClick={(e) => handleApply(e)}
                     className="py-3 px-8 text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer transition-transform duration-150 active:translate-y-[1px] hover:-translate-y-0.5"
                   >
-                    {isApplying ? "SENDING..." : isApplied ? "APPLIED ✓" : isClosed ? "FILLED" : "JOIN PARTY ▶"}
+                    {isApplying
+                      ? (lang === "ID" ? "MENGIRIM..." : "SENDING...")
+                      : isApplied
+                        ? (lang === "ID" ? "TERKIRIM ✓" : "APPLIED ✓")
+                        : isClosed
+                          ? (lang === "ID" ? "TERISI" : "FILLED")
+                          : (lang === "ID" ? "GABUNG TIM ▶" : "JOIN PARTY ▶")}
                   </PixelButton>
                 </div>
               </div>
@@ -360,7 +380,9 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
 
               {/* OVERVIEW */}
               <div className="bg-[#121b2d] p-6 border-2 border-retro-black text-left flex flex-col gap-2">
-                <span className="font-pixel text-[10px] text-yellow-400">// QUEST OVERVIEW &amp; SCOPE:</span>
+                <span className="font-pixel text-[10px] text-yellow-400">
+                  {lang === "ID" ? "// GAMBARAN & CAKUPAN MISI:" : "// QUEST OVERVIEW & SCOPE:"}
+                </span>
                 <p className="font-sans text-sm text-gray-200 leading-relaxed">
                   {project?.description}
                 </p>
@@ -369,7 +391,9 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
               {/* ROLES + ELIGIBILITY */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
                 <div className="bg-[#121b2d] p-6 border-2 border-retro-black flex flex-col gap-3">
-                  <span className="font-pixel text-[10px] text-yellow-400 block mb-1">// ROLES NEEDED (SLOTS):</span>
+                  <span className="font-pixel text-[10px] text-yellow-400 block mb-1">
+                    {lang === "ID" ? "// PERAN DIPERLUKAN (SLOT):" : "// ROLES NEEDED (SLOTS):"}
+                  </span>
                   <div className="flex flex-col gap-2">
                     {rolesRequired.map((role, i) => (
                       <div
@@ -380,19 +404,23 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                           +{role?.toUpperCase()}
                         </span>
                         <span className="font-pixel text-[8px] bg-yellow-400 text-retro-black px-2 py-0.5 font-bold">
-                          1 SLOT OPEN
+                          {lang === "ID" ? "1 SLOT TERBUKA" : "1 SLOT OPEN"}
                         </span>
                       </div>
                     ))}
                     {rolesRequired.length === 0 && (
-                      <span className="font-sans text-xs text-gray-400">Party slots are completely filled!</span>
+                      <span className="font-sans text-xs text-gray-400">
+                        {lang === "ID" ? "Semua slot tim sudah penuh!" : "Party slots are completely filled!"}
+                      </span>
                     )}
                   </div>
                 </div>
 
                 <div className="bg-[#121b2d] p-6 border-2 border-retro-black flex flex-col justify-between">
                   <div>
-                    <span className="font-pixel text-[10px] text-yellow-400 block mb-2">// ELIGIBILITY CRITERIA:</span>
+                    <span className="font-pixel text-[10px] text-yellow-400 block mb-2">
+                      {lang === "ID" ? "// KRITERIA ANGGOTA:" : "// ELIGIBILITY CRITERIA:"}
+                    </span>
                     <p className="font-sans text-xs text-gray-300 leading-relaxed">
                       {getEligibility(project?.category)}
                     </p>
@@ -402,7 +430,9 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
 
               {/* TECH STACK */}
               <div className="text-left bg-[#121b2d] p-6 border-2 border-retro-black">
-                <span className="font-pixel text-[9px] text-gray-400 block mb-3">// REQUIRED TECH STACK INVENTORY:</span>
+                <span className="font-pixel text-[9px] text-gray-400 block mb-3">
+                  {lang === "ID" ? "// INVENTORI TECH STACK WAJIB:" : "// REQUIRED TECH STACK INVENTORY:"}
+                </span>
                 <div className="flex flex-wrap gap-2.5">
                   {skillsRequired.map((tech, i) => (
                     <span
@@ -423,7 +453,9 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                     {author?.name ? author.name[0] : "A"}
                   </div>
                   <div>
-                    <span className="font-pixel text-[8px] text-gray-400 block">QUEST DISPATCHER:</span>
+                    <span className="font-pixel text-[8px] text-gray-400 block">
+                      {lang === "ID" ? "PEMBUAT MISI:" : "QUEST DISPATCHER:"}
+                    </span>
                     <p className="font-pixel text-xs text-white font-bold">{author?.name || "Unknown Adventurer"}</p>
                     <p className="font-sans text-xs text-gray-400">{author?.university} • {author?.major}</p>
                   </div>

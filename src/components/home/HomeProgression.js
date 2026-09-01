@@ -1,21 +1,26 @@
 "use client";
 
 import Image from "next/image";
+import { useLanguage } from "../../utils/lang";
 
 export default function HomeProgression() {
+    const { lang } = useLanguage();
+
     return (
         <section className="max-w-6xl w-full mx-auto px-4 md:px-6 my-16 flex flex-col lg:flex-row items-center gap-12">
 
             {/* TEKS SEBELAH KIRI */}
             <div className="flex-1 text-left flex flex-col gap-4">
                 <span className="font-pixel text-[10px] text-yellow-400 bg-retro-black px-3 py-1.5 w-fit border border-retro-black">
-          // PROGRESSION SYSTEM
+                    {lang === "ID" ? "// SISTEM PROGRESSI" : "// PROGRESSION SYSTEM"}
                 </span>
                 <h2 className="font-pixel text-xl md:text-3xl text-white leading-relaxed">
-                    Level up your team
+                    {lang === "ID" ? "Naikkan Level Tim Kamu" : "Level up your team"}
                 </h2>
                 <p className="font-sans text-sm md:text-base text-gray-300 leading-relaxed max-w-lg">
-                    Bentuk party-mu, kumpulkan XP dari tiap quest yang diselesaikan, dan koleksi lencana pencapaian saat kamu berkolaborasi lintas role. Sistem matchmaking kami bikin cari tim impian buat GEMASTIK &amp; INVENTION 2026 jadi semenyenangkan menyelesaikan quest berikutnya.
+                    {lang === "ID"
+                        ? "Bentuk party-mu, kumpulkan XP dari tiap misi yang diselesaikan, dan koleksi lencana pencapaian saat berkolaborasi lintas role. Sistem matchmaking kami bikin cari tim impian buat GEMASTIK & INVENTION 2026 jadi semenyenangkan menyelesaikan quest game!"
+                        : "Build your party, earn XP from completed quests, and collect milestone achievement badges as you collaborate across roles. Our matchmaking system makes finding your dream team for GEMASTIK & INVENTION 2026 as rewarding as clearing the next game level."}
                 </p>
             </div>
 

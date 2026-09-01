@@ -7,8 +7,10 @@ import Footer from "../../components/Footer";
 import PixelButton from "../../components/PixelButton";
 import ProjectCard from "../../components/ProjectCard";
 import projectsData from "../../data/projects.json";
+import { useLanguage } from "../../utils/lang";
 
 export default function Board() {
+  const { lang, t } = useLanguage();
   const router = useRouter();
   const [projects, setProjects] = useState(projectsData);
   const [search, setSearch] = useState("");
@@ -140,11 +142,11 @@ export default function Board() {
           </span>
 
           <h1 className="font-pixel text-3xl md:text-5xl text-yellow-300 drop-shadow-[0_6px_0px_rgba(0,0,0,1)] leading-tight tracking-wide">
-            [ GUILD ACTIVE QUESTS ]
+            {t("guildQuestBoard")}
           </h1>
 
           <p className="font-sans text-sm md:text-base text-gray-100 leading-relaxed max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
-            Filter through active party quests or dispatch your own request to find comrades for <strong className="text-yellow-300 font-bold">GEMASTIK &amp; INVENTION 2026</strong>.
+            {t("boardDesc")}
           </p>
 
           <div className="pt-2">
@@ -153,7 +155,7 @@ export default function Board() {
               onClick={handleDispatchClick}
               className="py-3 px-8 text-xs md:text-sm shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
             >
-              + DISPATCH QUEST
+              {t("dispatchQuestBtn")}
             </PixelButton>
           </div>
         </div>
@@ -163,9 +165,9 @@ export default function Board() {
 
         {/* Penjelasan singkat setelah banner */}
         <section className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6 bg-[#0f1b30] border-l-4 border-yellow-400 px-5 py-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <span className="font-pixel text-[9px] text-yellow-400 whitespace-nowrap">// ABOUT ACTIVE QUESTS</span>
+          <span className="font-pixel text-[9px] text-yellow-400 whitespace-nowrap">// {t("questBoard")}</span>
           <p className="font-sans text-xs md:text-sm text-gray-300 leading-relaxed">
-            This is the guild's open quest log — every card below is a real project from a fellow IT student looking for party members. Search by skill, filter by class or competition track, then join a quest or dispatch your own to start recruiting comrades.
+            {t("boardDesc")}
           </p>
         </section>
 
@@ -173,7 +175,7 @@ export default function Board() {
         <section className="bg-[#131f37] border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
           {/* Search */}
           <div className="w-full md:w-1/3 flex flex-col gap-1.5">
-            <label className="font-pixel text-[8px] text-yellow-400">// SEARCH KEYWORDS</label>
+            <label className="font-pixel text-[8px] text-yellow-400">// {t("searchLabel")}</label>
             <input
               type="text"
               placeholder="e.g. Next.js, Figma..."

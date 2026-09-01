@@ -187,18 +187,20 @@ export default function Showcase() {
           <div className="inline-flex items-center gap-2 bg-[#121b2d]/90 border-2 border-yellow-400 px-3.5 py-1 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] rounded-md">
             <span className="w-2 h-2 rounded-full bg-pixel-green animate-ping" />
             <span className="font-pixel text-[8.5px] md:text-[10px] text-yellow-300 tracking-widest">
-              ✦ GUILD ARCHIVES & PROOF OF WORK ✦
+              {lang === "ID" ? "✦ ARSIP GUILD & PORTOFOLIO SELESAI ✦" : "✦ GUILD ARCHIVES & PROOF OF WORK ✦"}
             </span>
           </div>
 
           {/* Main Title */}
           <h1 className="font-pixel text-2xl md:text-4xl text-yellow-300 drop-shadow-[0_5px_0px_rgba(0,0,0,1)] leading-tight tracking-wide">
-            [ {translations[lang]?.showcase || "ADVENTURER SHOWCASE GALLERY"} ]
+            [ {translations[lang]?.showcase || "FINISHED LOGS"} ]
           </h1>
 
           {/* Description */}
           <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed max-w-2xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
-            Explore authentic historical quest logs, enterprise-grade prototypes, and certified digital products forged by student guild members. Inspect technical specifications or directly recruit top talent into your party.
+            {lang === "ID"
+              ? "Jelajahi riwayat log misi, prototipe aplikasi lomba, dan portofolio digital yang dibuat oleh mahasiswa anggota guild. Cek spesifikasi teknis atau rekrut kreator langsung ke tim kamu!"
+              : "Explore authentic historical quest logs, enterprise-grade prototypes, and certified digital products forged by student guild members. Inspect technical specifications or directly recruit top talent into your party."}
           </p>
 
           {/* Real-time Integrated Search Bar */}
@@ -209,7 +211,7 @@ export default function Showcase() {
               </span>
               <input
                 type="text"
-                placeholder="Search works, keywords, technologies, roles, or authors..."
+                placeholder={lang === "ID" ? "Cari karya, kata kunci, teknologi, peran, atau pembuat..." : "Search works, keywords, technologies, roles, or authors..."}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full font-sans text-xs pl-10 pr-4 py-3 bg-[#1c2a4a]/95 text-white border-2 border-yellow-400 focus:outline-none placeholder-gray-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] backdrop-blur-md rounded-lg"
@@ -220,7 +222,7 @@ export default function Showcase() {
                   onClick={() => setSearch("")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 font-pixel text-[8px] text-gray-300 hover:text-red-400 bg-black/40 px-1.5 py-0.5 rounded border border-gray-600"
                 >
-                  CLEAR
+                  {lang === "ID" ? "HAPUS" : "CLEAR"}
                 </button>
               )}
             </div>

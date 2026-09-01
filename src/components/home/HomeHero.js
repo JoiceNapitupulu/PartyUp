@@ -3,8 +3,10 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useLanguage } from "../../utils/lang";
 
 export default function HomeHero() {
+    const { lang, t } = useLanguage();
     const [scrollY, setScrollY] = useState(0);
     const [isAudioOn, setIsAudioOn] = useState(true);
     const videoRef = useRef(null);
@@ -68,21 +70,21 @@ export default function HomeHero() {
             <div className="relative z-20 max-w-4xl mx-auto px-4 text-center flex flex-col items-center gap-5">
 
                 <div className="font-pixel text-[10px] md:text-[11px] text-white tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-                    START YOUR
+                    {lang === "ID" ? "MULAI PETUALANGAN" : "START YOUR"}
                 </div>
 
                 <h1 className="font-pixel text-4xl md:text-6xl lg:text-7xl text-yellow-300 tracking-wide leading-tight animate-title-glow">
-                    Coding Adventure
+                    {lang === "ID" ? "Petualangan Koding" : "Coding Adventure"}
                 </h1>
 
                 <p className="font-pixel text-xs md:text-sm text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] max-w-xl leading-relaxed mt-1">
-                    The most fun and collaborative way for IT students to form team parties for GEMASTIK &amp; INVENTION 2026. ✦°
+                    {t("heroDesc")}
                 </p>
 
                 <div className="pt-2 flex flex-col items-center gap-3">
                     <Link href="/board">
                         <button className="font-pixel text-xs md:text-sm py-3.5 px-10 bg-yellow-400 hover:bg-yellow-300 text-retro-black font-bold border-4 border-retro-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] cursor-pointer active:translate-y-[2px] transition-all rounded-sm">
-                            Get started ▶
+                            {lang === "ID" ? "Mulai Sekarang ▶" : "Get started ▶"}
                         </button>
                     </Link>
 
@@ -93,7 +95,9 @@ export default function HomeHero() {
                         className="font-pixel text-[8px] px-3 py-1 bg-retro-black/90 hover:bg-retro-black text-yellow-300 border-2 border-yellow-400 cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-1.5"
                     >
                         <span>
-                            {isAudioOn ? "🔊 SOUND: ON (CLICK TO MUTE)" : "🔇 SOUND: MUTED (CLICK TO UNMUTE)"}
+                            {isAudioOn
+                                ? (lang === "ID" ? "🔊 SUARA: AKTIF (KLIK UTK BISUKAN)" : "🔊 SOUND: ON (CLICK TO MUTE)")
+                                : (lang === "ID" ? "🔇 SUARA: DIBISUKAN (KLIK UTK SUARA)" : "🔇 SOUND: MUTED (CLICK TO UNMUTE)")}
                         </span>
                     </button>
                 </div>
