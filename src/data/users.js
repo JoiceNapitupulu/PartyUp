@@ -12,11 +12,6 @@ export const usersData = [
     "bio": "Pixel design enthusiast and frontend dabbler. Passionate about building seamless user flows for student communities.",
     "portfolio": [
       {
-        "project_name": "Whoosh",
-        "description": "Tugas praktikum syarat kelulusan mata pelajaran informatika saat SMA.",
-        "role": "UI/UX Designer"
-      },
-      {
         "project_name": "Sora",
         "description": "UI/UX project for a boat rental application.",
         "role": "UI/UX Designer"
