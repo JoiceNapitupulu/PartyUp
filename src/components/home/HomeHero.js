@@ -138,16 +138,22 @@ export default function HomeHero() {
                     </div>
                 </div>
 
-                {/* Baris Logo Mitra Kampus di Bagian Bawah Rumput */}
-                <div className="w-full md:w-auto bg-retro-black/85 backdrop-blur-md border-2 border-retro-black p-2.5 px-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-wrap items-center justify-center gap-6 text-gray-200 font-pixel text-[8px] md:text-[9px] mx-auto md:mx-0">
-                    <span className="text-yellow-400 font-bold">SUPPORTED BY:</span>
-                    <span className="hover:text-white transition-colors">GEMASTIK 2026</span>
+                {/* Baris Informasi Lomba Resmi INVENTION 2026 di Bagian Bawah */}
+                <div className="w-full md:w-auto bg-retro-black/85 backdrop-blur-md border-2 border-retro-black p-2.5 px-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-gray-200 font-pixel text-[8px] md:text-[9px] mx-auto md:mx-0">
+                    <span className="text-yellow-400 font-bold">
+                        {lang === "ID" ? "★ KARYA LOMBA:" : "★ ENTRY SUBMISSION:"}
+                    </span>
+                    <span className="text-pixel-green hover:text-white transition-colors font-bold">
+                        INVENTION 2026
+                    </span>
                     <span>•</span>
-                    <span className="hover:text-white transition-colors">INVENTION 2026</span>
+                    <span className="hover:text-white transition-colors">
+                        {lang === "ID" ? "UNIVERSITAS UDAYANA" : "UDAYANA UNIVERSITY"}
+                    </span>
                     <span>•</span>
-                    <span className="hover:text-white transition-colors">KAMPUS MERDEKA</span>
-                    <span>•</span>
-                    <span className="hover:text-white transition-colors">UI / ITB / UGM / BINUS</span>
+                    <span className="hover:text-yellow-300 transition-colors">
+                        {lang === "ID" ? "SUBTEMA: DIGITAL LEARNING" : "SUBTHEME: DIGITAL LEARNING"}
+                    </span>
                 </div>
 
             </div>
