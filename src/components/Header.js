@@ -16,6 +16,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLightMode, setIsLightMode] = useState(false);
   const [language, setLanguage] = useState("EN");
+  const [pendingInvitesCount, setPendingInvitesCount] = useState(0);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -33,29 +34,51 @@ export default function Header() {
     const loadUser = () => {
       const isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
       const stored = localStorage.getItem("currentUser");
+      let activeUser = null;
 
       if (stored) {
         try {
-          setUser(JSON.parse(stored));
-          return;
+          activeUser = JSON.parse(stored);
+          setUser(activeUser);
         } catch (e) {
           console.error("Failed to parse local user", e);
         }
-      }
-
-      if (isLoggedOut) {
+      } else if (isLoggedOut) {
         setUser(null);
       } else {
         localStorage.setItem("isLoggedOut", "false");
         localStorage.setItem("currentUser", JSON.stringify(usersData[0]));
+        activeUser = usersData[0];
         setUser(usersData[0]);
+      }
+
+      // Check pending invitations for current active user
+      if (activeUser && typeof window !== "undefined") {
+        try {
+          const rawInvites = localStorage.getItem("party_invitations");
+          const invites = rawInvites ? JSON.parse(rawInvites) : [];
+          const myPending = invites.filter((i) => {
+            const receiverId = i.receiver_id || i.to_user_id;
+            const status = (i.status || "").toLowerCase();
+            return receiverId === activeUser.user_id && (status === "pending" || !i.status);
+          });
+          setPendingInvitesCount(myPending.length);
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        setPendingInvitesCount(0);
       }
     };
 
     loadUser();
 
     window.addEventListener("auth-change", loadUser);
-    return () => window.removeEventListener("auth-change", loadUser);
+    window.addEventListener("invitations-change", loadUser);
+    return () => {
+      window.removeEventListener("auth-change", loadUser);
+      window.removeEventListener("invitations-change", loadUser);
+    };
   }, []);
 
   useEffect(() => {
@@ -220,13 +243,25 @@ export default function Header() {
                       }`}
                   >
                     {/* Avatar Karakter Anime Pixel Sesuai Role User */}
-                    <div className="w-7 h-7 flex items-center justify-center bg-retro-black border border-yellow-400 rounded-full shrink-0 overflow-hidden shadow-sm">
+                    <div className="w-7 h-7 flex items-center justify-center bg-retro-black border border-yellow-400 rounded-full shrink-0 overflow-hidden shadow-sm relative">
                       <PixelAvatar role={user.role} size="w-full h-full" />
+                      {pendingInvitesCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 border border-white rounded-full flex items-center justify-center text-[6px] font-pixel text-white font-bold animate-ping">
+                          •
+                        </span>
+                      )}
                     </div>
                     <div className="text-left pr-1 leading-tight">
-                      <p className={`font-pixel text-[9px] ${isLightMode ? "text-retro-black font-bold" : "text-white"}`}>
-                        {user.name}
-                      </p>
+                      <div className="flex items-center gap-1">
+                        <p className={`font-pixel text-[9px] ${isLightMode ? "text-retro-black font-bold" : "text-white"}`}>
+                          {user.name}
+                        </p>
+                        {pendingInvitesCount > 0 && (
+                          <span className="font-pixel text-[6.5px] bg-red-500 text-white px-1 py-0.2 rounded-full font-bold">
+                            {pendingInvitesCount}
+                          </span>
+                        )}
+                      </div>
                       <p className="font-pixel text-[7.5px] text-pixel-green mt-0.5 animate-pulse">
                         LV.{calculateUserLevel(user)}
                       </p>

@@ -2,27 +2,24 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import PixelButton from "../../components/PixelButton";
 import PixelAvatar from "../../components/PixelAvatar";
 import usersData from "../../data/users.json";
 import { calculateUserLevel } from "../../utils/auth";
-import Link from "next/link";
 import { useLanguage } from "../../utils/lang";
 
-// Latar utama luar game (di belakang seluruh halaman/console GameBoy)
 const OUTER_BG = "/kuis/bg1.jpg";
-
-// Efek elemen serangan: Air (hero, kebaikan) vs Api (boss, kejahatan)
-const EFFECT_WATER = "/efek/air.webp"; // dilempar dari hero ke boss
-const EFFECT_FIRE = "/efek/api.webp"; // dilempar dari boss ke hero
+const EFFECT_WATER = "/efek/air.webp"; // Proyektil Hero
+const EFFECT_FIRE = "/efek/api.webp";   // Proyektil Boss
 
 const STAGES = [
     {
         id: "design",
         name: "FIGMA FOREST",
-        iconImg: "/kuis/uiux.png", // Logo UI/UX piksel asli menggantikan pohon 🌳
+        iconImg: "/kuis/uiux.png",
         bossName: "BAD UX GOBLIN",
         bossSprite: "👾",
         bgGif: "/kuis/bg2.jpg",
@@ -36,7 +33,7 @@ const STAGES = [
     {
         id: "frontend",
         name: "FRONTEND VALLEY",
-        iconImg: "/kuis/2.png", // Logo Frontend piksel asli menggantikan 💻
+        iconImg: "/kuis/2.png",
         bossName: "SYNTAX BUG DRAGON",
         bossSprite: "🐉",
         bgGif: "/kuis/bg3.jpg",
@@ -50,7 +47,7 @@ const STAGES = [
     {
         id: "backend",
         name: "BACKEND CASTLE",
-        iconImg: "/kuis/3.png", // Logo Backend piksel asli menggantikan 🏰
+        iconImg: "/kuis/3.png",
         bossName: "SQL INJECTION DEMON",
         bossSprite: "👹",
         bgGif: "/kuis/bg4.jpg",
@@ -62,7 +59,6 @@ const STAGES = [
         ],
     },
 ];
-
 
 function useGameSfx() {
     const ctxRef = useRef(null);
@@ -95,31 +91,27 @@ function useGameSfx() {
             osc.start(t0);
             gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
             osc.stop(t0 + duration + 0.02);
-        } catch (e) {
-            /* autoplay policy or unsupported browser — fail silently */
-        }
+        } catch (e) { }
     }, [muted]);
 
     return {
         muted,
         setMuted,
         playSelect: () => beep(440, 0.05, "square", 0.1),
-        // NAIK — energi/HP boss turun tapi progress hero "naik" (serangan berhasil)
         playPowerUp: () => { beep(660, 0.07); beep(880, 0.07, "square", 0.14, 0.07); beep(1100, 0.09, "square", 0.14, 0.14); },
         playLevelUp: () => [523, 659, 784, 1046].forEach((f, i) => beep(f, 0.16, "square", 0.18, i * 0.13)),
-        // TURUN — HP hero berkurang / kalah
         playPowerDown: () => { beep(220, 0.12, "sawtooth", 0.18); beep(150, 0.18, "sawtooth", 0.18, 0.11); },
         playDefeatedJingle: () => [400, 300, 200, 100].forEach((f, i) => beep(f, 0.22, "sawtooth", 0.2, i * 0.16)),
     };
 }
 
 export default function GameBoyAdventureQuiz() {
-    const { lang, t } = useLanguage();
+    const { lang } = useLanguage();
     const sfx = useGameSfx();
 
     const [hero, setHero] = useState(usersData[0]);
     const [allUsers, setAllUsers] = useState(usersData);
-    const [gameState, setGameState] = useState("SELECT_HERO"); // SELECT_HERO | WORLD_MAP | PLAYING_STAGE | CLEAR | GAME_OVER
+    const [gameState, setGameState] = useState("SELECT_HERO");
 
     const [activeStage, setActiveStage] = useState(null);
     const [currentQIdx, setCurrentQIdx] = useState(0);
@@ -131,14 +123,10 @@ export default function GameBoyAdventureQuiz() {
     const [isLocked, setIsLocked] = useState(false);
     const [pickedIdx, setPickedIdx] = useState(null);
     const [screenShake, setScreenShake] = useState(false);
-    const [itemsCollected] = useState(["🍎", "📜"]);
-    const [floatingTexts, setFloatingTexts] = useState([]); // {id, target, text}
+    const [floatingTexts, setFloatingTexts] = useState([]);
     const floatIdRef = useRef(0);
 
     const heroLevel = calculateUserLevel(hero);
-
-    // Progress panggung murni turunan dari bossHp (single source of
-    // truth), jadi tidak ada lagi 2 kondisi menang yang bisa saling tabrakan.
     const stageProgress = 100 - bossHp;
 
     useEffect(() => {
@@ -190,9 +178,7 @@ export default function GameBoyAdventureQuiz() {
             const damage = Math.ceil(100 / activeStage.questions.length);
             setDialogueText(`💧 SPLASH HIT! ${hero.name} doused ${activeStage.bossName} for -${damage} DMG!`);
 
-            // Lempar proyektil Air dulu (isPlayerAttacking=true), baru HP & angka
-            // damage muncul SETELAH proyektil "sampai" — bukan tiba-tiba nempel
-            // di musuh dari awal.
+            // 450ms Fisika Proyektil Air
             setTimeout(() => {
                 setIsPlayerAttacking(true);
 
@@ -238,14 +224,14 @@ export default function GameBoyAdventureQuiz() {
 
                         return next;
                     });
-                }, 320); // waktu tempuh proyektil sebelum "mendarat"
-            }, 500);
+                }, 340);
+            }, 450);
         } else {
             sfx.playPowerDown();
             const damage = 30;
             setDialogueText(`🔥 SCORCHED! ${activeStage.bossName} burned ${hero.name} for -${damage} DMG!`);
 
-            // Sama: proyektil Api dilempar dulu, HP & damage baru muncul saat mendarat.
+            // 450ms Fisika Proyektil Api
             setTimeout(() => {
                 setIsBossAttacking(true);
 
@@ -276,8 +262,8 @@ export default function GameBoyAdventureQuiz() {
 
                         return next;
                     });
-                }, 320);
-            }, 500);
+                }, 340);
+            }, 450);
         }
     };
 
@@ -288,10 +274,9 @@ export default function GameBoyAdventureQuiz() {
             className="min-h-screen text-white flex flex-col font-sans overflow-x-hidden selection:bg-yellow-400 selection:text-black bg-[#080d1a] bg-cover bg-center bg-fixed relative"
             style={{ backgroundImage: `url('${OUTER_BG}')` }}
         >
-            {/* Overlay gelap di atas latar luar supaya seluruh konten tetap terbaca & kontras */}
             <div className="absolute inset-0 bg-[#080d1a]/80 pointer-events-none z-0" />
 
-            {/* Keyframes animasi pertarungan */}
+            {/* Keyframes Animasi Pertarungan */}
             <style jsx global>{`
         @keyframes screenShake {
           0%, 100% { transform: translate(0, 0); }
@@ -321,9 +306,7 @@ export default function GameBoyAdventureQuiz() {
         }
         .animate-sprite-pulse { animation: spritePulse 2.2s ease-in-out infinite; }
 
-        /* PROYEKTIL AIR: benar-benar terbang dari posisi hero (kiri) menuju
-           posisi boss (kanan) di sepanjang baris pertarungan, baru "meledak"
-           & memudar setelah sampai — bukan muncul tiba-tiba di atas musuh. */
+        /* LINTASAN PARABOLIK PROYEKTIL AIR (HERO KE BOSS) */
         @keyframes throwWater {
           0%   { left: 12%; opacity: 0;   transform: translateY(-50%) scale(0.5)  rotate(0deg); }
           15%  { opacity: 1;              transform: translateY(-50%) scale(0.9)  rotate(70deg); }
@@ -332,7 +315,7 @@ export default function GameBoyAdventureQuiz() {
         }
         .animate-throw-water { animation: throwWater 0.42s cubic-bezier(0.25,0.1,0.6,1) forwards; }
 
-        /* PROYEKTIL API: kebalikannya, terbang dari boss (kanan) ke hero (kiri) */
+        /* LINTASAN PARABOLIK PROYEKTIL API (BOSS KE HERO) */
         @keyframes throwFire {
           0%   { right: 12%; opacity: 0;  transform: translateY(-50%) scale(0.5)  rotate(0deg); }
           15%  { opacity: 1;              transform: translateY(-50%) scale(0.9)  rotate(-70deg); }
@@ -340,22 +323,12 @@ export default function GameBoyAdventureQuiz() {
           100% { right: 74%; opacity: 0;  transform: translateY(-50%) scale(1.5)  rotate(-260deg); }
         }
         .animate-throw-fire { animation: throwFire 0.42s cubic-bezier(0.25,0.1,0.6,1) forwards; }
-
-        @media (prefers-reduced-motion: reduce) {
-          .animate-screen-shake, .animate-hp-flash, .animate-sprite-pulse,
-          .animate-throw-water, .animate-throw-fire {
-            animation: none !important;
-          }
-        }
       `}</style>
 
             <div className="relative z-10 flex flex-col min-h-screen">
                 <Header />
 
-                {/* CONTAINER DIPERLEBAR: max-w-3xl -> max-w-6xl supaya lebih lega & modern */}
                 <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-24 md:pt-28 pb-16 flex flex-col items-center gap-6">
-
-                    {/* TOP TITLE */}
                     <div className="text-center flex flex-col items-center gap-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400 text-yellow-300 font-pixel text-[9px] rounded">
                             ✦ 8-BIT GAMEBOY RPG ADVENTURE ✦
@@ -376,12 +349,12 @@ export default function GameBoyAdventureQuiz() {
                         </button>
                     </div>
 
-                    {/* GAME BOY ADVENTURE QUIZ */}
+                    {/* GAME BOY HOUSING */}
                     <div
                         className={`w-full max-w-5xl bg-[#121b2d] border-4 border-retro-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rounded-2xl overflow-hidden flex flex-col relative ${screenShake ? "animate-screen-shake" : ""
                             }`}
                     >
-                        {/* GAME BOY TOP SCREEN HEADER */}
+                        {/* Top Screen Bar */}
                         <div className="bg-retro-black px-4 py-2 flex justify-between items-center border-b-4 border-retro-black font-pixel text-[8px] text-gray-300">
                             <div className="flex items-center gap-2">
                                 <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
@@ -393,14 +366,14 @@ export default function GameBoyAdventureQuiz() {
                             </div>
                         </div>
 
-                        {/* GAME STAGE VIEWPORT — bg per-stage (bg2/3/4) saat bertarung, bg1 saat di luar stage */}
+                        {/* Viewport */}
                         <div
                             className="relative h-[380px] sm:h-[460px] md:h-[520px] w-full bg-cover bg-center overflow-hidden flex flex-col justify-between p-4 transition-[background-image] duration-500"
                             style={{ backgroundImage: `url('${activeStage ? activeStage.bgGif : OUTER_BG}')` }}
                         >
                             <div className="absolute inset-0 bg-black/25 pointer-events-none z-0" />
 
-                            {/* STAGE 1: SELEKSI KARAKTER HERO */}
+                            {/* SELEKSI PAHLAWAN */}
                             {gameState === "SELECT_HERO" && (
                                 <div className="relative z-10 h-full flex flex-col justify-between items-center text-center">
                                     <div className="bg-retro-black/80 px-4 py-2 border-2 border-yellow-400 font-pixel text-xs text-yellow-300 rounded shadow-md">
@@ -443,7 +416,7 @@ export default function GameBoyAdventureQuiz() {
                                 </div>
                             )}
 
-                            {/* STAGE 2: PETA DUNIA STAGE */}
+                            {/* PETA DUNIA */}
                             {gameState === "WORLD_MAP" && (
                                 <div className="relative z-10 h-full flex flex-col justify-between items-center text-center">
                                     <div className="bg-retro-black/80 px-4 py-1.5 border-2 border-yellow-400 font-pixel text-[10px] text-yellow-300 rounded">
@@ -458,7 +431,6 @@ export default function GameBoyAdventureQuiz() {
                                                 onClick={() => startStage(stg)}
                                                 className="bg-[#121b2d]/90 border-2 border-retro-black hover:border-yellow-400 p-4 rounded flex flex-col items-center gap-2 cursor-pointer transition-transform hover:-translate-y-1 shadow-md text-left"
                                             >
-                                                {/* Logo tech piksel asli menggantikan emoji pohon/laptop/kastil */}
                                                 <div className="w-14 h-14 relative my-1 animate-sprite-pulse">
                                                     <Image
                                                         src={stg.iconImg}
@@ -484,11 +456,9 @@ export default function GameBoyAdventureQuiz() {
                                 </div>
                             )}
 
-                            {/* STAGE 3: PERTARUNGAN — Air (hero) vs Api (boss jahat) */}
+                            {/* PERTARUNGAN RPG */}
                             {gameState === "PLAYING_STAGE" && activeStage && (
                                 <div className="relative z-10 h-full flex flex-col justify-between">
-
-                                    {/* Boss HP Bar Atas — flash saat kena hit */}
                                     <div className={`flex justify-between items-center bg-retro-black/80 px-3 py-1.5 border border-retro-black rounded ${isPlayerAttacking ? "animate-hp-flash" : ""}`}>
                                         <span className="font-pixel text-[8px] text-red-400 font-bold">{activeStage.bossName} {activeStage.bossSprite}</span>
                                         <div className="w-40 h-3 bg-[#18233a] border border-gray-600 rounded overflow-hidden">
@@ -497,15 +467,11 @@ export default function GameBoyAdventureQuiz() {
                                         <span className="font-pixel text-[7px] text-white w-10 text-right">{bossHp}%</span>
                                     </div>
 
-                                    {/* Visual Karakter Berjalan di Atas Rumput — sekarang jadi ARENA
-                                        proyektil: air/api benar-benar melintas di baris ini */}
+                                    {/* ARENA PERTARUNGAN */}
                                     <div className="relative flex justify-between items-end px-6 sm:px-12 py-4 min-h-[120px]">
-                                        {/* Hero Sprite */}
                                         <div className={`relative flex flex-col items-center transition-transform z-10 ${isPlayerAttacking ? "translate-x-4" : "animate-sprite-pulse"}`}>
                                             <div className="w-16 h-16 relative drop-shadow-[2px_4px_0px_rgba(0,0,0,0.8)]">
                                                 <PixelAvatar role={hero.role} size="w-full h-full" />
-
-                                                {/* Angka damage melayang di atas hero — cuma muncul saat proyektil api sudah mendarat */}
                                                 {floatingTexts.filter((f) => f.target === "player").map((f) => (
                                                     <span key={f.id} className="absolute -top-2 left-1/2 -translate-x-1/2 font-pixel text-[10px] text-red-400 animate-float-damage pointer-events-none z-20">
                                                         {f.text}
@@ -515,12 +481,9 @@ export default function GameBoyAdventureQuiz() {
                                             <span className="font-pixel text-[7px] bg-pixel-green text-retro-black px-1 font-bold">{hero.name}</span>
                                         </div>
 
-                                        {/* Boss Sprite */}
                                         <div className={`relative flex flex-col items-center transition-transform z-10 ${isBossAttacking ? "-translate-x-4 animate-screen-shake" : "animate-sprite-pulse"}`}>
                                             <span className="text-5xl drop-shadow-[2px_4px_0px_rgba(0,0,0,0.8)] relative inline-block w-16 h-16 leading-[4rem] text-center">
                                                 {activeStage.bossSprite}
-
-                                                {/* Angka damage melayang di atas boss — cuma muncul saat proyektil air sudah mendarat */}
                                                 {floatingTexts.filter((f) => f.target === "boss").map((f) => (
                                                     <span key={f.id} className="absolute -top-3 left-1/2 -translate-x-1/2 font-pixel text-[11px] text-yellow-300 animate-float-damage pointer-events-none z-20">
                                                         {f.text}
@@ -530,7 +493,7 @@ export default function GameBoyAdventureQuiz() {
                                             <span className="font-pixel text-[7px] bg-red-600 text-white px-1 font-bold">{activeStage.bossName}</span>
                                         </div>
 
-                                        {/* PROYEKTIL AIR — benar-benar terbang dari hero menuju boss */}
+                                        {/* PROYEKTIL AIR (HERO -> BOSS) */}
                                         {isPlayerAttacking && (
                                             <div className="absolute top-1/2 w-12 h-12 pointer-events-none z-30 animate-throw-water">
                                                 <Image
@@ -543,7 +506,7 @@ export default function GameBoyAdventureQuiz() {
                                             </div>
                                         )}
 
-                                        {/* PROYEKTIL API — benar-benar terbang dari boss menuju hero */}
+                                        {/* PROYEKTIL API (BOSS -> HERO) */}
                                         {isBossAttacking && (
                                             <div className="absolute top-1/2 w-12 h-12 pointer-events-none z-30 animate-throw-fire">
                                                 <Image
@@ -559,7 +522,7 @@ export default function GameBoyAdventureQuiz() {
                                 </div>
                             )}
 
-                            {/* STAGE CLEAR / WIN */}
+                            {/* STAGE CLEAR */}
                             {gameState === "CLEAR" && (
                                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center gap-3 bg-retro-black/85 p-4 rounded">
                                     <span className="text-5xl animate-bounce">🏆</span>
@@ -610,21 +573,18 @@ export default function GameBoyAdventureQuiz() {
                             )}
                         </div>
 
+                        {/* COMMAND PANEL BAWAH */}
                         <div className="bg-[#0a0f1d] border-t-4 border-retro-black p-4 flex flex-col gap-4 text-left">
-
                             <div className="bg-retro-black border-2 border-yellow-400/80 p-3 rounded flex items-center gap-3 shadow-inner min-h-[64px]">
                                 <div className="w-10 h-10 bg-[#121b2d] border border-yellow-400 flex items-center justify-center shrink-0 rounded overflow-hidden">
                                     <PixelAvatar role={hero.role} size="w-full h-full" />
                                 </div>
                                 <div className="flex flex-col gap-0.5 text-left flex-1">
                                     <span className="font-pixel text-[9px] text-yellow-300 font-bold">{hero.name.toUpperCase()}</span>
-                                    <p className="font-pixel text-[8.5px] text-gray-200 leading-relaxed">
-                                        {dialogueText}
-                                    </p>
+                                    <p className="font-pixel text-[8.5px] text-gray-200 leading-relaxed">{dialogueText}</p>
                                 </div>
                             </div>
 
-                            {/* COMMAND OPTIONS — sekarang terkunci setelah dipilih & kasih feedback benar/salah */}
                             {gameState === "PLAYING_STAGE" && activeStage && currentQuestion && (
                                 <div className="flex flex-col gap-2">
                                     <span className="font-pixel text-[8px] text-yellow-400">
@@ -650,7 +610,8 @@ export default function GameBoyAdventureQuiz() {
                                                     type="button"
                                                     onClick={() => handleCommandAnswer(idx)}
                                                     disabled={isLocked}
-                                                    className={`font-sans text-xs p-2.5 text-white border-2 text-left transition-all rounded flex items-center justify-between disabled:cursor-not-allowed ${stateClass} ${isLocked ? "" : "cursor-pointer"}`}
+                                                    className={`font-sans text-xs p-2.5 text-white border-2 text-left transition-all rounded flex items-center justify-between disabled:cursor-not-allowed ${stateClass} ${isLocked ? "" : "cursor-pointer"
+                                                        }`}
                                                 >
                                                     <span>
                                                         <span className="font-pixel text-[8px] text-yellow-400 mr-1.5">[{String.fromCharCode(65 + idx)}]</span>
@@ -668,7 +629,7 @@ export default function GameBoyAdventureQuiz() {
                                 </div>
                             )}
 
-                            {/* BOTTOM RPG HUD STATS & ITEM INVENTORY */}
+                            {/* HUD FOOTER */}
                             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-700/60 pt-3 font-pixel text-[8px]">
                                 <div className={`flex items-center gap-2 ${isBossAttacking ? "animate-hp-flash" : ""}`}>
                                     <span className="text-yellow-400">ENERGY</span>
@@ -683,12 +644,6 @@ export default function GameBoyAdventureQuiz() {
                                     {gameState === "PLAYING_STAGE" && (
                                         <span>STAGE PROGRESS: <strong className="text-sky-300">{stageProgress}%</strong></span>
                                     )}
-                                    <div className="flex items-center gap-1 bg-[#121b2d] px-2 py-0.5 border border-gray-700 rounded">
-                                        <span>ITEMS:</span>
-                                        {itemsCollected.map((it, idx) => (
-                                            <span key={idx}>{it}</span>
-                                        ))}
-                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import PixelButton from "../../components/PixelButton";
@@ -13,7 +14,7 @@ import projectsData from "../../data/projects.json";
 import { calculateUserLevel, getStoredUsers, getStoredProjects } from "../../utils/auth";
 import { useLanguage, translations } from "../../utils/lang";
 
-// Helper Banner Default ala Codedex / 8-Bit Retro RPG
+// Helper Banner Default
 const getDefaultBanner = (name) => {
   const title = name?.toLowerCase() || "";
   if (title.includes("whoosh") || title.includes("ecosphere") || title.includes("eco")) return "/bg.png";
@@ -22,7 +23,7 @@ const getDefaultBanner = (name) => {
   return "/bg2.gif";
 };
 
-// Kategori Filter Cepat Portofolio
+// Kategori Filter Cepat
 const CATEGORIES = [
   { id: "ALL", label: "ALL QUESTS", icon: "🌐" },
   { id: "FRONTEND", label: "FRONTEND / WEB", icon: "💻" },
@@ -37,6 +38,7 @@ export default function Showcase() {
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [users, setUsers] = useState(usersData);
   const [projects, setProjects] = useState(projectsData);
+  const [currentUser, setCurrentUser] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedProject, setSelectedProject] = useState("");
   const [recruitmentRole, setRecruitmentRole] = useState("Core Contributor");
@@ -46,7 +48,7 @@ export default function Showcase() {
   // State Modal Detail Case Study
   const [activeCaseStudy, setActiveCaseStudy] = useState(null);
 
-  // 🔒 Kunci scroll halaman belakang saat modal dibuka & aktifkan tombol ESC
+  // 🔒 Kunci scroll halaman belakang saat modal terbuka
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
@@ -56,10 +58,10 @@ export default function Showcase() {
     };
 
     if (activeCaseStudy || selectedUser) {
-      document.body.style.overflow = "hidden"; // Mengunci scroll body utama
+      document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
     } else {
-      document.body.style.overflow = "unset"; // Mengembalikan scroll normal
+      document.body.style.overflow = "unset";
     }
 
     return () => {
@@ -68,29 +70,59 @@ export default function Showcase() {
     };
   }, [activeCaseStudy, selectedUser]);
 
-  // Inisialisasi sinkronisasi data dinamis dari LocalStorage
+  // Inisialisasi sinkronisasi data dari LocalStorage
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const activeUsers = getStoredUsers();
-      setUsers(activeUsers && activeUsers.length > 0 ? activeUsers : usersData);
-      const activeProjects = getStoredProjects();
-      setProjects(activeProjects && activeProjects.length > 0 ? activeProjects : projectsData);
-      if (activeProjects && activeProjects[0]) {
-        setSelectedProject(activeProjects[0].title);
+    const loadData = () => {
+      if (typeof window !== "undefined") {
+        const activeUsers = getStoredUsers();
+        setUsers(activeUsers && activeUsers.length > 0 ? activeUsers : usersData);
+
+        const activeProjects = getStoredProjects();
+        setProjects(activeProjects && activeProjects.length > 0 ? activeProjects : projectsData);
+
+        const storedUser = localStorage.getItem("currentUser");
+        if (storedUser) {
+          try {
+            setCurrentUser(JSON.parse(storedUser));
+          } catch (e) {
+            console.error(e);
+          }
+        }
       }
-    }
+    };
+
+    loadData();
+    window.addEventListener("auth-change", loadData);
+    return () => window.removeEventListener("auth-change", loadData);
   }, []);
 
-  // Normalisasi & Ekstraksi seluruh item portofolio dari data anggota
+  // Filter Quest Terbuka yang DIPIMPIN oleh user yang sedang login
+  const userLedProjects = useMemo(() => {
+    if (!currentUser) return [];
+    return projects.filter(
+      (p) =>
+        (p.author === currentUser.user_id || p.leader_id === currentUser.user_id) &&
+        p.status?.toLowerCase() !== "completed" &&
+        p.status?.toLowerCase() !== "filled"
+    );
+  }, [projects, currentUser]);
+
+  // Set default pilihan proyek saat modal rekrutmen terbuka
+  useEffect(() => {
+    if (userLedProjects.length > 0) {
+      setSelectedProject(userLedProjects[0].title);
+    }
+  }, [userLedProjects]);
+
+  // Normalisasi seluruh item portofolio dari pengguna
   const allShowcases = useMemo(() => {
     const showcases = [];
-    users.forEach((user) => {
-      if (user && user.portfolio && Array.isArray(user.portfolio)) {
-        user.portfolio.forEach((p, idx) => {
-          // Penentuan kategori otomatis berdasarkan role & tech stack
+    users.forEach((u) => {
+      if (u && u.portfolio && Array.isArray(u.portfolio)) {
+        u.portfolio.forEach((p, idx) => {
           let category = "FRONTEND";
           const techStr = (p.tech_stack || []).join(" ").toLowerCase();
-          const roleStr = (p.role || user.role || "").toLowerCase();
+          const roleStr = (p.role || u.role || "").toLowerCase();
 
           if (roleStr.includes("designer") || roleStr.includes("ui") || techStr.includes("figma")) {
             category = "UIUX";
@@ -101,18 +133,17 @@ export default function Showcase() {
           }
 
           showcases.push({
-            id: `${user.user_id || "usr"}-${p.project_name?.toLowerCase().replace(/\s+/g, "-") || idx}`,
+            id: `${u.user_id || "usr"}-${p.project_name?.toLowerCase().replace(/\s+/g, "-") || idx}`,
             project_name: p.project_name || "Untitled Quest",
             description: p.description || "Comprehensive student-built system developed during university guild assignments.",
-            role: p.role || user.role || "Lead Adventurer",
+            role: p.role || u.role || "Lead Adventurer",
             category: category,
             tech_stack: p.tech_stack && p.tech_stack.length > 0 ? p.tech_stack : ["React", "Tailwind CSS", "TypeScript"],
             source_code: p.source_code || "https://github.com",
             demo_link: p.demo_link || "https://vercel.com",
             documentation_link: p.documentation_link || "https://notion.so",
             image: p.image || getDefaultBanner(p.project_name),
-            user: user,
-            // Metrik showcase interaktif untuk web design judging
+            user: u,
             metrics: {
               rank: idx % 3 === 0 ? "S-RANK" : idx % 2 === 0 ? "A-RANK" : "B-RANK",
               qualityScore: 92 + ((idx * 3) % 8),
@@ -132,7 +163,7 @@ export default function Showcase() {
     return showcases;
   }, [users]);
 
-  // Filter showcases berdasarkan query pencarian dan tab kategori aktif
+  // Filter showcases berdasarkan pencarian & tab kategori
   const filteredShowcases = useMemo(() => {
     return allShowcases.filter((item) => {
       const query = search.toLowerCase().trim();
@@ -150,13 +181,46 @@ export default function Showcase() {
     });
   }, [allShowcases, search, selectedCategory]);
 
-  // Handle pengiriman undangan rekrutmen tim
+  // Handle pengiriman undangan rekrutmen tim (Persisten ke LocalStorage)
   const handleSendInvite = (e) => {
     e.preventDefault();
     setInvitationStatus("sending");
+
+    const newInvitation = {
+      id: `inv-${Date.now()}`,
+      sender_id: currentUser?.user_id || "USR-001",
+      sender_name: currentUser?.name || "Guild Leader",
+      receiver_id: selectedUser.user_id,
+      receiver_name: selectedUser.name,
+      // Backward compatibility aliases
+      from_user_id: currentUser?.user_id || "USR-001",
+      from_user: currentUser?.name || "Guild Leader",
+      to_user_id: selectedUser.user_id,
+      to_user: selectedUser.name,
+      project_title: selectedProject,
+      proposed_role: recruitmentRole,
+      assigned_role: recruitmentRole,
+      note: recruitmentNote.trim(),
+      created_at: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
+      status: "Pending"
+    };
+
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("party_invitations");
+        const existingInvites = raw ? JSON.parse(raw) : [];
+        const updated = [...existingInvites, newInvitation];
+        localStorage.setItem("party_invitations", JSON.stringify(updated));
+        window.dispatchEvent(new Event("invitations-change"));
+      } catch (err) {
+        console.error("Failed to save invitation", err);
+      }
+    }
+
     setTimeout(() => {
       setInvitationStatus("success");
-    }, 1200);
+    }, 800);
   };
 
   const closeInviteModal = () => {
@@ -169,21 +233,15 @@ export default function Showcase() {
     <div className="bg-[#0c1322] min-h-screen text-white flex flex-col font-sans overflow-x-hidden selection:bg-yellow-400 selection:text-black">
       <Header />
 
-      {/* ========================================================================= */}
-      {/* 1. TOP HERO BANNER & SEARCH ENGINE (Full-Bleed /bg4.gif / min-h-[560px])   */}
-      {/* ========================================================================= */}
+      {/* 1. TOP HERO BANNER */}
       <section
         className="relative w-full md:min-h-[560px] min-h-[480px] bg-cover bg-center bg-no-repeat overflow-hidden border-b-4 border-retro-black flex items-center justify-center pt-24 md:pt-28"
         style={{ backgroundImage: "url('/bg4.gif')" }}
       >
-        {/* Dark Vignette Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1322]/85 via-black/60 to-[#0c1322] pointer-events-none z-0" />
-
-        {/* Scanlines Effect Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.3)_50%)] bg-[length:100%_4px] pointer-events-none opacity-40 z-0" />
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 py-12 text-center flex flex-col items-center justify-center gap-5">
-          {/* Top Badge */}
           <div className="inline-flex items-center gap-2 bg-[#121b2d]/90 border-2 border-yellow-400 px-3.5 py-1 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] rounded-md">
             <span className="w-2 h-2 rounded-full bg-pixel-green animate-ping" />
             <span className="font-pixel text-[8.5px] md:text-[10px] text-yellow-300 tracking-widest">
@@ -191,19 +249,16 @@ export default function Showcase() {
             </span>
           </div>
 
-          {/* Main Title */}
           <h1 className="font-pixel text-2xl md:text-4xl text-yellow-300 drop-shadow-[0_5px_0px_rgba(0,0,0,1)] leading-tight tracking-wide">
             [ {translations[lang]?.showcase || "FINISHED LOGS"} ]
           </h1>
 
-          {/* Description */}
           <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed max-w-2xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
             {lang === "ID"
               ? "Jelajahi riwayat log misi, prototipe aplikasi lomba, dan portofolio digital yang dibuat oleh mahasiswa anggota guild. Cek spesifikasi teknis atau rekrut kreator langsung ke tim kamu!"
               : "Explore authentic historical quest logs, enterprise-grade prototypes, and certified digital products forged by student guild members. Inspect technical specifications or directly recruit top talent into your party."}
           </p>
 
-          {/* Real-time Integrated Search Bar */}
           <div className="w-full max-w-xl pt-2 flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-pixel text-xs text-yellow-400 select-none">
@@ -228,7 +283,6 @@ export default function Showcase() {
             </div>
           </div>
 
-          {/* Guild Live Status Counter Ticker */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-6 pt-3 text-center">
             <div className="bg-[#121b2d]/80 border-2 border-retro-black px-4 py-2 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-pixel text-xs md:text-sm text-yellow-400">{allShowcases.length}</p>
@@ -246,16 +300,12 @@ export default function Showcase() {
         </div>
       </section>
 
-      {/* ========================================================================= */}
-      {/* 2. MAIN CONTENT WRAPPER & RECRUITMENT HUB NOTICE                          */}
-      {/* ========================================================================= */}
+      {/* 2. RECRUITMENT HUB NOTICE */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-8 pb-16 flex flex-col gap-7">
-
-        {/* Recruitment Hub Notice Card */}
         <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0f1b30] border-l-4 border-yellow-400 px-5 py-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-r-xl">
           <div className="flex flex-col gap-1 text-left">
             <div className="flex items-center gap-2">
-              <span className="font-pixel text-[9px] text-yellow-400">// RECRUITMENT & PORTFOLIO ENGINE</span>
+              <span className="font-pixel text-[9px] text-yellow-400">// RECRUITMENT &amp; PORTFOLIO ENGINE</span>
               <span className="font-pixel text-[7px] bg-pixel-green/20 text-pixel-green px-2 py-0.5 border border-pixel-green/40">ONLINE</span>
             </div>
             <p className="font-sans text-xs md:text-sm text-gray-300 leading-relaxed">
@@ -292,20 +342,19 @@ export default function Showcase() {
           })}
         </section>
 
-        {/* ========================================================================= */}
-        {/* 3. PORTFOLIO CARD GRID (2-Column Responsive / bg-[#121b2d] / rounded-2xl) */}
-        {/* ========================================================================= */}
+        {/* 3. PORTFOLIO CARD GRID */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-7">
           {filteredShowcases.length > 0 ? (
             filteredShowcases.map((item) => {
               const userLevel = calculateUserLevel(item.user);
+              const isSelf = currentUser && item.user?.user_id === currentUser.user_id;
+
               return (
                 <div
                   key={item.id}
                   onClick={() => setActiveCaseStudy(item)}
                   className="bg-[#121b2d] border-4 border-retro-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 overflow-hidden group flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-200 cursor-pointer text-left relative"
                 >
-                  {/* Top Card Section */}
                   <div>
                     {/* A. Pixel Banner Image */}
                     <div className="relative h-48 w-full border-b-4 border-retro-black overflow-hidden bg-retro-black">
@@ -317,7 +366,6 @@ export default function Showcase() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#121b2d] via-transparent to-black/60" />
 
-                      {/* Header Badges Overlay */}
                       <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
                         <span className="font-pixel text-[8px] bg-[#1e2d42]/90 backdrop-blur-sm text-pixel-green border border-pixel-green/40 px-2.5 py-1 font-bold rounded-md shadow-sm">
                           {item.role?.toUpperCase()}
@@ -332,7 +380,6 @@ export default function Showcase() {
                         </div>
                       </div>
 
-                      {/* Bottom Banner Strip */}
                       <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-[8px] font-pixel text-gray-300 z-10">
                         <span className="bg-black/60 px-2 py-0.5 rounded border border-gray-700">
                           QUAL: {item.metrics.qualityScore}%
@@ -343,19 +390,16 @@ export default function Showcase() {
                       </div>
                     </div>
 
-                    {/* B. Project Title, Description & Tech Badges */}
+                    {/* B. Project Title & Description */}
                     <div className="p-5 flex flex-col gap-3">
-                      <div className="flex items-start justify-between gap-2">
-                        <h3 className="font-pixel text-xs md:text-[13px] text-white leading-snug font-bold group-hover:text-yellow-300 transition-colors">
-                          {item.project_name}
-                        </h3>
-                      </div>
+                      <h3 className="font-pixel text-xs md:text-[13px] text-white leading-snug font-bold group-hover:text-yellow-300 transition-colors">
+                        {item.project_name}
+                      </h3>
 
                       <p className="font-sans text-xs text-gray-300 leading-relaxed line-clamp-2">
                         {item.description}
                       </p>
 
-                      {/* Tech Stack Pills with Icons */}
                       <div className="flex flex-wrap gap-1.5 mt-1">
                         {item.tech_stack.map((tech, i) => (
                           <span
@@ -370,10 +414,9 @@ export default function Showcase() {
                     </div>
                   </div>
 
-                  {/* C. Author Avatar, Level & [RECRUIT] Action Button */}
+                  {/* C. Author & Action Button (DENGAN PROTEKSI SELF-RECRUIT) */}
                   <div className="p-5 pt-0 mt-2">
                     <div className="border-t-2 border-gray-700/60 pt-3.5 flex items-center justify-between gap-4">
-                      {/* Author Info */}
                       <div className="flex items-center gap-2.5 min-w-0">
                         <div className="w-9 h-9 bg-retro-black border-2 border-yellow-400 flex items-center justify-center rounded-full shrink-0 overflow-hidden shadow-sm">
                           <PixelAvatar role={item.user?.role || item.role} size="w-full h-full" />
@@ -388,30 +431,36 @@ export default function Showcase() {
                         </div>
                       </div>
 
-                      {/* Recruit Button */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Mencegah trigger modal case study
-                          setSelectedUser(item.user);
-                        }}
-                        className="font-pixel text-[9px] px-4 py-2 bg-pixel-green hover:bg-green-500 border-2 border-retro-black text-retro-black font-bold rounded-xl active:translate-y-[1px] transition-all cursor-pointer shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] shrink-0"
-                      >
-                        ⚔️ RECRUIT
-                      </button>
+                      {/* PROTEKSI REKRUT DIRI SENDIRI */}
+                      {isSelf ? (
+                        <span className="font-pixel text-[8px] bg-yellow-400/20 text-yellow-300 border-2 border-yellow-400/60 px-3 py-1.5 rounded-xl font-bold">
+                          {lang === "ID" ? "★ KARYA ANDA" : "★ YOUR SHOWCASE"}
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!currentUser) {
+                              alert("⚠️ ACCESS DENIED: Please log in to recruit party members!");
+                              return;
+                            }
+                            setSelectedUser(item.user);
+                          }}
+                          className="font-pixel text-[9px] px-4 py-2 bg-pixel-green hover:bg-green-500 border-2 border-retro-black text-retro-black font-bold rounded-xl active:translate-y-[1px] transition-all cursor-pointer shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] shrink-0"
+                        >
+                          ⚔️ RECRUIT
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
               );
             })
           ) : (
-            /* Empty State */
             <div className="col-span-full bg-[#131f37] border-4 border-retro-black rounded-2xl p-12 text-center flex flex-col items-center justify-center gap-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
               <span className="font-pixel text-2xl text-yellow-400">? ? ?</span>
               <p className="font-pixel text-xs text-white">NO QUESTS FOUND MATCHING YOUR CRITERIA</p>
-              <p className="font-sans text-xs text-gray-400 max-w-md">
-                Try searching for different keywords, resetting filters, or clearing the search query.
-              </p>
               <PixelButton
                 variant="secondary"
                 onClick={() => {
@@ -425,9 +474,7 @@ export default function Showcase() {
           )}
         </section>
 
-        {/* ========================================================================= */}
-        {/* 4. INTERACTIVE PORTFOLIO & CASE STUDY MODAL                             */}
-        {/* ========================================================================= */}
+        {/* 4. MODAL DETAIL CASE STUDY */}
         {activeCaseStudy && (
           <PortfolioModal
             project={activeCaseStudy}
@@ -436,9 +483,7 @@ export default function Showcase() {
           />
         )}
 
-        {/* ========================================================================= */}
-        {/* 5. RECRUITMENT MODAL (selectedUser - Interactive Party Invite Flow)       */}
-        {/* ========================================================================= */}
+        {/* 5. MODAL REKRUTMEN TIM (HANYA MEMUAT QUEST MILIK KETUA TIM) */}
         {selectedUser && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-retro-black/85 p-4 backdrop-blur-md">
             <div className="bg-[#121b2d] border-4 border-retro-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-white w-full max-w-md p-6 flex flex-col gap-4 relative animate-in fade-in zoom-in-95 duration-150">
@@ -473,71 +518,85 @@ export default function Showcase() {
                     </div>
                   </div>
 
-                  {/* Select Target Project */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="font-pixel text-[8px] text-yellow-400">ASSIGN TO ACTIVE QUEST / PROJECT</label>
-                    <select
-                      value={selectedProject}
-                      onChange={(e) => setSelectedProject(e.target.value)}
-                      className="font-sans text-xs p-2.5 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none cursor-pointer rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                    >
-                      {projects.map((proj) => (
-                        <option key={proj.project_id || proj.id} value={proj.title} className="bg-[#1c2a4a]">
-                          {proj.title}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {/* KONDISI: MEMILIKI QUEST TERBUKA SENDIRI */}
+                  {userLedProjects.length > 0 ? (
+                    <>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="font-pixel text-[8px] text-yellow-400">ASSIGN TO YOUR OPEN QUEST</label>
+                        <select
+                          value={selectedProject}
+                          onChange={(e) => setSelectedProject(e.target.value)}
+                          className="font-sans text-xs p-2.5 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none cursor-pointer rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                          required
+                        >
+                          {userLedProjects.map((proj) => (
+                            <option key={proj.project_id || proj.id} value={proj.title} className="bg-[#1c2a4a]">
+                              {proj.title} ({proj.category || "Quest"})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                  {/* Select Role Assignment */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="font-pixel text-[8px] text-yellow-400">PROPOSED PARTY ROLE</label>
-                    <select
-                      value={recruitmentRole}
-                      onChange={(e) => setRecruitmentRole(e.target.value)}
-                      className="font-sans text-xs p-2.5 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none cursor-pointer rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                    >
-                      <option value="Lead Architect">Lead Architect / Tech Lead</option>
-                      <option value="UI/UX Specialist">UI/UX Specialist</option>
-                      <option value="Core Contributor">Core Contributor</option>
-                      <option value="Backend Engineer">Backend & Database Specialist</option>
-                    </select>
-                  </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="font-pixel text-[8px] text-yellow-400">PROPOSED PARTY ROLE</label>
+                        <select
+                          value={recruitmentRole}
+                          onChange={(e) => setRecruitmentRole(e.target.value)}
+                          className="font-sans text-xs p-2.5 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none cursor-pointer rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                        >
+                          <option value="Lead Architect">Lead Architect / Tech Lead</option>
+                          <option value="UI/UX Specialist">UI/UX Specialist</option>
+                          <option value="Core Contributor">Core Contributor</option>
+                          <option value="Backend Engineer">Backend &amp; Database Specialist</option>
+                        </select>
+                      </div>
 
-                  {/* Optional Invitation Note */}
-                  <div className="flex flex-col gap-1.5">
-                    <label className="font-pixel text-[8px] text-gray-300">QUEST INVITATION NOTE (OPTIONAL)</label>
-                    <textarea
-                      rows={2}
-                      value={recruitmentNote}
-                      onChange={(e) => setRecruitmentNote(e.target.value)}
-                      placeholder="e.g., We saw your awesome showcase and need your skills for our upcoming sprint!"
-                      className="font-sans text-xs p-2 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none resize-none rounded-lg"
-                    />
-                  </div>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="font-pixel text-[8px] text-gray-300">QUEST INVITATION NOTE (OPTIONAL)</label>
+                        <textarea
+                          rows={2}
+                          value={recruitmentNote}
+                          onChange={(e) => setRecruitmentNote(e.target.value)}
+                          placeholder="e.g., We saw your awesome showcase and need your skills for our upcoming sprint!"
+                          className="font-sans text-xs p-2 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none resize-none rounded-lg"
+                        />
+                      </div>
 
-                  {/* Modal Action Buttons */}
-                  <div className="flex justify-end gap-3 pt-2">
-                    <PixelButton variant="secondary" type="button" onClick={closeInviteModal}>
-                      CANCEL
-                    </PixelButton>
-                    <PixelButton variant="green" type="submit">
-                      SEND INVITATION ➔
-                    </PixelButton>
-                  </div>
+                      <div className="flex justify-end gap-3 pt-2">
+                        <PixelButton variant="secondary" type="button" onClick={closeInviteModal}>
+                          CANCEL
+                        </PixelButton>
+                        <PixelButton variant="green" type="submit">
+                          SEND INVITATION ➔
+                        </PixelButton>
+                      </div>
+                    </>
+                  ) : (
+                    /* KONDISI: BELUM MEMILIKI QUEST SENDIRI */
+                    <div className="bg-[#18233a] border-2 border-yellow-400/60 p-4 rounded-xl text-center flex flex-col items-center gap-3">
+                      <span className="text-xl">⚠️</span>
+                      <p className="font-pixel text-[8.5px] text-yellow-300">NO ACTIVE QUESTS LED BY YOU</p>
+                      <p className="font-sans text-xs text-gray-300 leading-relaxed">
+                        You must lead at least 1 open quest posted on the Quest Board to recruit party members.
+                      </p>
+                      <Link href="/board" className="mt-1">
+                        <PixelButton variant="green" className="py-2 px-5 text-[8px]">
+                          + DISPATCH QUEST ON BOARD ➔
+                        </PixelButton>
+                      </Link>
+                    </div>
+                  )}
+
                 </form>
               )}
 
-              {/* Status: Sending Animation */}
               {invitationStatus === "sending" && (
                 <div className="py-10 text-center flex flex-col items-center justify-center gap-3">
                   <div className="w-10 h-10 border-4 border-dashed border-yellow-400 rounded-full animate-spin" />
                   <p className="font-pixel text-[10px] text-yellow-400">TRANSMITTING QUEST DISPATCH...</p>
-                  <p className="font-sans text-xs text-gray-400">Connecting to member communication frequency...</p>
                 </div>
               )}
 
-              {/* Status: Success State */}
               {invitationStatus === "success" && (
                 <div className="py-6 text-center flex flex-col items-center justify-center gap-4">
                   <div className="w-12 h-12 bg-pixel-green text-retro-black border-4 border-retro-black rounded-2xl flex items-center justify-center text-2xl font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
@@ -559,7 +618,6 @@ export default function Showcase() {
             </div>
           </div>
         )}
-
       </main>
 
       <Footer />

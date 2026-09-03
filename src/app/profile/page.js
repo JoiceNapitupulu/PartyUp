@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import PixelButton from "../../components/PixelButton";
@@ -13,14 +13,65 @@ import projectsData from "../../data/projects.json";
 import { calculateUserLevel } from "../../utils/auth";
 import { useLanguage } from "../../utils/lang";
 
+const INITIAL_PARTY_INVITATIONS = [
+  {
+    id: "inv-init-1",
+    sender_id: "USR-001",
+    sender_name: "Joice",
+    receiver_id: "USR-002",
+    receiver_name: "Alex",
+    project_title: "ScholarSave - Financial Planner",
+    proposed_role: "Frontend Developer",
+    note: "We need your React & full-stack expertise to build the frontend dashboard for ScholarSave!",
+    created_at: "2026-08-25T10:00:00.000Z",
+    status: "Pending",
+  },
+  {
+    id: "inv-init-2",
+    sender_id: "USR-003",
+    sender_name: "Sarah",
+    receiver_id: "USR-001",
+    receiver_name: "Joice",
+    project_title: "EduQuest - Gamified Flashcards",
+    proposed_role: "UI/UX Designer",
+    note: "Your retro design system on Figma is amazing! Would love to have you design EduQuest.",
+    created_at: "2026-08-26T14:30:00.000Z",
+    status: "Pending",
+  },
+];
+
 export default function Profile() {
   const { lang, t } = useLanguage();
-  const [activeTab, setActiveTab] = useState("overview"); // overview, projects, board, skills
+  const [activeTab, setActiveTab] = useState("overview"); // overview, projects, board, skills, invites
   const [user, setUser] = useState(null);
   const [allUsers, setAllUsers] = useState(usersData);
   const [isEditMode, setIsEditMode] = useState(false);
   const [projects, setProjects] = useState(projectsData);
   const [selectedPortfolio, setSelectedPortfolio] = useState(null);
+
+  // States untuk Party Invitations & Quest Applications
+  const [invitations, setInvitations] = useState([]);
+  const [applications, setApplications] = useState([]);
+  const [invitationFilter, setInvitationFilter] = useState("incoming"); // incoming | outgoing | applications
+
+  const loadInvitationsAndApps = () => {
+    if (typeof window !== "undefined") {
+      try {
+        const rawInvites = localStorage.getItem("party_invitations");
+        let parsedInvites = rawInvites ? JSON.parse(rawInvites) : null;
+        if (!parsedInvites || parsedInvites.length === 0) {
+          parsedInvites = INITIAL_PARTY_INVITATIONS;
+          localStorage.setItem("party_invitations", JSON.stringify(INITIAL_PARTY_INVITATIONS));
+        }
+        setInvitations(parsedInvites);
+
+        const rawApps = localStorage.getItem("quest_applications");
+        setApplications(rawApps ? JSON.parse(rawApps) : []);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
 
   useEffect(() => {
     const loadUser = () => {
@@ -63,9 +114,17 @@ export default function Profile() {
     };
 
     loadUser();
+    loadInvitationsAndApps();
 
     window.addEventListener("auth-change", loadUser);
-    return () => window.removeEventListener("auth-change", loadUser);
+    window.addEventListener("invitations-change", loadInvitationsAndApps);
+    window.addEventListener("applications-change", loadInvitationsAndApps);
+
+    return () => {
+      window.removeEventListener("auth-change", loadUser);
+      window.removeEventListener("invitations-change", loadInvitationsAndApps);
+      window.removeEventListener("applications-change", loadInvitationsAndApps);
+    };
   }, []);
 
   // Dropdown handler untuk menukar profile secara instan
@@ -96,6 +155,107 @@ export default function Profile() {
     }
   }, [user]);
 
+  // Handler Accept Recruitment Invite
+  const handleAcceptInvite = (inviteId) => {
+    if (!user) return;
+    const updated = invitations.map((inv) => {
+      if (inv.id === inviteId) {
+        return { ...inv, status: "Accepted" };
+      }
+      return inv;
+    });
+    setInvitations(updated);
+    localStorage.setItem("party_invitations", JSON.stringify(updated));
+
+    // Beri EXP / Level Up Reward untuk user
+    const updatedUser = {
+      ...user,
+      semester: (user.semester || 4) + 1,
+    };
+    setUser(updatedUser);
+    localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+
+    const updatedUsersList = allUsers.map((u) => (u.user_id === updatedUser.user_id ? updatedUser : u));
+    setAllUsers(updatedUsersList);
+    localStorage.setItem("usersList", JSON.stringify(updatedUsersList));
+
+    window.dispatchEvent(new Event("auth-change"));
+    window.dispatchEvent(new Event("invitations-change"));
+    alert("🎉 PARTY FORMED! You accepted the quest invitation. Level increased!");
+  };
+
+  // Handler Decline Recruitment Invite
+  const handleDeclineInvite = (inviteId) => {
+    const updated = invitations.map((inv) => {
+      if (inv.id === inviteId) {
+        return { ...inv, status: "Declined" };
+      }
+      return inv;
+    });
+    setInvitations(updated);
+    localStorage.setItem("party_invitations", JSON.stringify(updated));
+    window.dispatchEvent(new Event("invitations-change"));
+  };
+
+  // Handler Cancel Sent Invite
+  const handleCancelInvite = (inviteId) => {
+    const updated = invitations.filter((inv) => inv.id !== inviteId);
+    setInvitations(updated);
+    localStorage.setItem("party_invitations", JSON.stringify(updated));
+    window.dispatchEvent(new Event("invitations-change"));
+  };
+
+  // Handler Approve Quest Application
+  const handleApproveApplication = (appId) => {
+    const updated = applications.map((app) => {
+      if (app.id === appId) {
+        return { ...app, status: "Approved" };
+      }
+      return app;
+    });
+    setApplications(updated);
+    localStorage.setItem("quest_applications", JSON.stringify(updated));
+    window.dispatchEvent(new Event("applications-change"));
+    alert("✓ APPLICANT RECRUITED INTO YOUR PARTY!");
+  };
+
+  // Handler Reject Quest Application
+  const handleRejectApplication = (appId) => {
+    const updated = applications.map((app) => {
+      if (app.id === appId) {
+        return { ...app, status: "Rejected" };
+      }
+      return app;
+    });
+    setApplications(updated);
+    localStorage.setItem("quest_applications", JSON.stringify(updated));
+    window.dispatchEvent(new Event("applications-change"));
+  };
+
+  // Normalisasi seluruh invitation untuk kompatibilitas nama field
+  const normalizedInvitations = useMemo(() => {
+    return invitations.map((inv) => {
+      const sId = inv.sender_id || inv.from_user_id || "USR-001";
+      const rId = inv.receiver_id || inv.to_user_id || "";
+      const sName = inv.sender_name || inv.from_user || "Guild Leader";
+      const rName = inv.receiver_name || inv.to_user || "Adventurer";
+      const rawStatus = (inv.status || "Pending").toLowerCase();
+      const normStatus = rawStatus === "accepted" ? "Accepted" : rawStatus === "declined" ? "Declined" : "Pending";
+
+      return {
+        ...inv,
+        sender_id: sId,
+        sender_name: sName,
+        receiver_id: rId,
+        receiver_name: rName,
+        proposed_role: inv.proposed_role || inv.assigned_role || "Core Contributor",
+        project_title: inv.project_title || "Active Quest",
+        note: inv.note || "",
+        status: normStatus,
+      };
+    });
+  }, [invitations]);
+
   if (!user) {
     return (
       <div className="min-h-screen bg-[#0c1322] flex items-center justify-center font-pixel text-xs text-yellow-300">
@@ -106,6 +266,12 @@ export default function Profile() {
 
   // Filter project yang diposting oleh user ini
   const userProjects = projects.filter((p) => p.author === user.user_id);
+
+  // Filter invitations untuk user ini
+  const myIncomingInvites = normalizedInvitations.filter((i) => i.receiver_id === user.user_id);
+  const myPendingIncoming = myIncomingInvites.filter((i) => i.status === "Pending");
+  const myOutgoingInvites = normalizedInvitations.filter((i) => i.sender_id === user.user_id);
+  const incomingApplications = applications.filter((a) => a.author_id === user.user_id);
 
   // Statistik kelas RPG
   const roleStats = {
@@ -129,6 +295,19 @@ export default function Profile() {
     { id: "projects", name: t("projectsTab") },
     { id: "board", name: t("boardTab") },
     { id: "skills", name: t("skillsTab") },
+    {
+      id: "invites",
+      name: (
+        <span className="flex items-center gap-1.5">
+          {t("invitesTab") || "PARTY INVITES"}
+          {myPendingIncoming.length > 0 && (
+            <span className="bg-red-500 text-white font-pixel text-[7px] px-1.5 py-0.2 rounded-full animate-pulse">
+              {myPendingIncoming.length}
+            </span>
+          )}
+        </span>
+      ),
+    },
   ];
 
   return (
@@ -390,6 +569,274 @@ export default function Profile() {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Tab 5: Party Invites & Recruitment Management */}
+              {activeTab === "invites" && (
+                <div className="flex flex-col gap-5 text-left">
+                  <div className="flex items-center justify-between border-b border-gray-700 pb-3 flex-wrap gap-2">
+                    <h3 className="font-pixel text-xs text-yellow-300">
+                      [PARTY RECRUITMENT &amp; SQUAD LOGS]
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setInvitationFilter("incoming")}
+                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${
+                          invitationFilter === "incoming"
+                            ? "bg-pixel-green text-retro-black border-retro-black font-bold"
+                            : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
+                        }`}
+                      >
+                        📥 INCOMING ({myIncomingInvites.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setInvitationFilter("outgoing")}
+                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${
+                          invitationFilter === "outgoing"
+                            ? "bg-yellow-400 text-retro-black border-retro-black font-bold"
+                            : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
+                        }`}
+                      >
+                        📤 SENT ({myOutgoingInvites.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setInvitationFilter("applications")}
+                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${
+                          invitationFilter === "applications"
+                            ? "bg-sky-400 text-retro-black border-retro-black font-bold"
+                            : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
+                        }`}
+                      >
+                        ⚔️ APPLICANTS ({incomingApplications.length})
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* VIEW 1: INCOMING INVITATIONS */}
+                  {invitationFilter === "incoming" && (
+                    <div className="flex flex-col gap-3">
+                      {myIncomingInvites.length > 0 ? (
+                        myIncomingInvites.map((inv) => {
+                          const sender = allUsers.find((u) => u.user_id === inv.sender_id);
+                          return (
+                            <div
+                              key={inv.id}
+                              className="bg-[#18233a] border-2 border-retro-black p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md"
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="w-10 h-10 bg-retro-black border border-yellow-400 rounded-full overflow-hidden shrink-0 mt-0.5">
+                                  <PixelAvatar role={sender?.role || "Member"} size="w-full h-full" />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-pixel text-[9px] text-yellow-300 font-bold">
+                                      {inv.sender_name}
+                                    </span>
+                                    <span className="font-sans text-[10px] text-gray-300">
+                                      recruited you for:
+                                    </span>
+                                    <span className="font-pixel text-[8.5px] bg-[#121b2d] text-pixel-green px-2 py-0.5 border border-pixel-green/40 rounded font-bold">
+                                      {inv.project_title}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2 text-xs text-gray-300">
+                                    <span>Proposed Role: <strong className="text-white">{inv.proposed_role}</strong></span>
+                                    <span>•</span>
+                                    <span className="italic text-gray-400">"{inv.note || "No message provided."}"</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2 shrink-0">
+                                {inv.status === "Pending" ? (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleAcceptInvite(inv.id)}
+                                      className="font-pixel text-[8px] py-1.5 px-3 bg-pixel-green text-retro-black font-bold border border-retro-black hover:bg-emerald-400 cursor-pointer rounded shadow-sm"
+                                    >
+                                      ACCEPT ✓
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeclineInvite(inv.id)}
+                                      className="font-pixel text-[8px] py-1.5 px-3 bg-red-600 text-white font-bold border border-retro-black hover:bg-red-500 cursor-pointer rounded shadow-sm"
+                                    >
+                                      DECLINE ✗
+                                    </button>
+                                  </>
+                                ) : (
+                                  <span
+                                    className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${
+                                      inv.status === "Accepted"
+                                        ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
+                                        : "bg-red-500/20 text-red-400 border-red-500"
+                                    }`}
+                                  >
+                                    STATUS: {inv.status?.toUpperCase()}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="py-12 text-center flex flex-col items-center justify-center gap-2">
+                          <span className="text-3xl">📭</span>
+                          <p className="font-pixel text-xs text-gray-400">NO INCOMING PARTY INVITATIONS</p>
+                          <p className="font-sans text-xs text-gray-400 max-w-sm">
+                            Showcase your portfolio in Finished Logs to get invited by other quest leaders!
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* VIEW 2: SENT OUTGOING INVITATIONS */}
+                  {invitationFilter === "outgoing" && (
+                    <div className="flex flex-col gap-3">
+                      {myOutgoingInvites.length > 0 ? (
+                        myOutgoingInvites.map((inv) => {
+                          const receiver = allUsers.find((u) => u.user_id === inv.receiver_id);
+                          return (
+                            <div
+                              key={inv.id}
+                              className="bg-[#18233a] border-2 border-retro-black p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md"
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="w-10 h-10 bg-retro-black border border-yellow-400 rounded-full overflow-hidden shrink-0 mt-0.5">
+                                  <PixelAvatar role={receiver?.role || "Member"} size="w-full h-full" />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="font-sans text-[10px] text-gray-300">You invited:</span>
+                                    <span className="font-pixel text-[9px] text-yellow-300 font-bold">
+                                      {inv.receiver_name}
+                                    </span>
+                                    <span className="font-sans text-[10px] text-gray-300">to join</span>
+                                    <span className="font-pixel text-[8.5px] bg-[#121b2d] text-pixel-green px-2 py-0.5 border border-pixel-green/40 rounded font-bold">
+                                      {inv.project_title}
+                                    </span>
+                                  </div>
+                                  <p className="font-sans text-xs text-gray-400">
+                                    Assigned Role: <strong className="text-gray-200">{inv.proposed_role}</strong>
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2 shrink-0">
+                                <span
+                                  className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${
+                                    inv.status === "Accepted"
+                                      ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
+                                      : inv.status === "Declined"
+                                      ? "bg-red-500/20 text-red-400 border-red-500"
+                                      : "bg-yellow-400/20 text-yellow-300 border-yellow-400 animate-pulse"
+                                  }`}
+                                >
+                                  {inv.status === "Pending" ? "PENDING RESPONSE ⏳" : `STATUS: ${inv.status?.toUpperCase()}`}
+                                </span>
+                                {inv.status === "Pending" && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleCancelInvite(inv.id)}
+                                    className="font-pixel text-[7.5px] py-1 px-2.5 bg-gray-700 hover:bg-gray-600 text-gray-300 border border-retro-black cursor-pointer rounded"
+                                  >
+                                    CANCEL
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <div className="py-12 text-center flex flex-col items-center justify-center gap-2">
+                          <span className="text-3xl">⚔️</span>
+                          <p className="font-pixel text-xs text-gray-400">NO SENT INVITATIONS</p>
+                          <p className="font-sans text-xs text-gray-400 max-w-sm">
+                            Head over to Finished Logs (Showcase) to scout talented students and recruit them into your active quests.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* VIEW 3: INCOMING QUEST APPLICATIONS */}
+                  {invitationFilter === "applications" && (
+                    <div className="flex flex-col gap-3">
+                      {incomingApplications.length > 0 ? (
+                        incomingApplications.map((app) => (
+                          <div
+                            key={app.id}
+                            className="bg-[#18233a] border-2 border-retro-black p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md"
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 bg-retro-black border border-yellow-400 rounded-full overflow-hidden shrink-0 mt-0.5">
+                                <PixelAvatar role={app.applicant_role || "Member"} size="w-full h-full" />
+                              </div>
+                              <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="font-pixel text-[9px] text-white font-bold">
+                                    {app.applicant_name}
+                                  </span>
+                                  <span className="font-sans text-[10px] text-gray-300">applied to join:</span>
+                                  <span className="font-pixel text-[8.5px] bg-[#121b2d] text-yellow-300 px-2 py-0.5 border border-yellow-400/40 rounded font-bold">
+                                    {app.project_title}
+                                  </span>
+                                </div>
+                                <p className="font-sans text-xs text-gray-400">
+                                  Applicant Class: <strong className="text-pixel-green">{app.applicant_role}</strong>
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 shrink-0">
+                              {app.status === "Pending" ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleApproveApplication(app.id)}
+                                    className="font-pixel text-[8px] py-1.5 px-3 bg-pixel-green text-retro-black font-bold border border-retro-black hover:bg-emerald-400 cursor-pointer rounded shadow-sm"
+                                  >
+                                    APPROVE ✓
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRejectApplication(app.id)}
+                                    className="font-pixel text-[8px] py-1.5 px-3 bg-red-600 text-white font-bold border border-retro-black hover:bg-red-500 cursor-pointer rounded shadow-sm"
+                                  >
+                                    REJECT ✗
+                                  </button>
+                                </>
+                              ) : (
+                                <span
+                                  className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${
+                                    app.status === "Approved"
+                                      ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
+                                      : "bg-red-500/20 text-red-400 border-red-500"
+                                  }`}
+                                >
+                                  STATUS: {app.status?.toUpperCase()}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="py-12 text-center flex flex-col items-center justify-center gap-2">
+                          <span className="text-3xl">🛡️</span>
+                          <p className="font-pixel text-xs text-gray-400">NO PENDING APPLICANTS</p>
+                          <p className="font-sans text-xs text-gray-400 max-w-sm">
+                            When other adventurers click "JOIN PARTY" on your quest board cards, their requests will appear here.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 

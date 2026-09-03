@@ -28,26 +28,37 @@ export default function Board() {
 
   // Jalankan efek sinkronisasi data lokal
   useEffect(() => {
-    const localProjects = localStorage.getItem("projectsList");
-    if (localProjects) {
-      try {
-        setProjects(JSON.parse(localProjects));
-      } catch (e) {
+    const loadBoardData = () => {
+      const localProjects = localStorage.getItem("projectsList");
+      if (localProjects) {
+        try {
+          setProjects(JSON.parse(localProjects));
+        } catch (e) {
+          setProjects(projectsData);
+        }
+      } else {
         setProjects(projectsData);
+        localStorage.setItem("projectsList", JSON.stringify(projectsData));
       }
-    } else {
-      setProjects(projectsData);
-      localStorage.setItem("projectsList", JSON.stringify(projectsData));
-    }
 
-    const storedUser = localStorage.getItem("currentUser");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error(e);
+      const storedUser = localStorage.getItem("currentUser");
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error(e);
+        }
       }
-    }
+    };
+
+    loadBoardData();
+
+    window.addEventListener("projects-change", loadBoardData);
+    window.addEventListener("auth-change", loadBoardData);
+    return () => {
+      window.removeEventListener("projects-change", loadBoardData);
+      window.removeEventListener("auth-change", loadBoardData);
+    };
   }, []);
 
   // Filter logic
@@ -91,6 +102,7 @@ export default function Board() {
     const updatedProjects = [newQuest, ...projects];
     setProjects(updatedProjects);
     localStorage.setItem("projectsList", JSON.stringify(updatedProjects));
+    window.dispatchEvent(new Event("projects-change"));
     setIsModalOpen(false);
 
     // Reset Form
