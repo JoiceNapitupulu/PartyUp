@@ -33,8 +33,8 @@ export default function TimelineCard({
                         </span>
                     </div>
 
-                    {/* Tombol Hapus Postingan */}
-                    {(post.author_id === currentUser?.user_id || !currentUser) && (
+                    {/* Tombol Hapus Postingan (Hanya untuk Pemilik Post yang Sudah Login / Admin) */}
+                    {currentUser && (post.author_id === currentUser.user_id || currentUser.role === "Admin") && (
                         <button
                             type="button"
                             onClick={(e) => onDeletePost(post.id, e)}

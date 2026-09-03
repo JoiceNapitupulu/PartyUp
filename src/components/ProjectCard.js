@@ -129,7 +129,16 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
     !roleNames.includes(item)
   );
 
-  const getEligibility = (category) => {
+  const getEligibility = (category, prj) => {
+    if (prj?.eligibility) {
+      return prj.eligibility;
+    }
+    const title = prj?.title?.toLowerCase() || project?.title?.toLowerCase() || "";
+    if (prj?.project_id === "PRJ-001" || title.includes("scholarsave")) {
+      return lang === "ID"
+        ? "Khusus Mahasiswa Aktif Universitas Indonesia (UI) - S1/Vokasi Semua Jurusan"
+        : "Restricted to Active Students of Universitas Indonesia (UI) - All Majors";
+    }
     const cat = category?.toLowerCase() || "";
     if (
       cat.includes("gemastik") ||
@@ -137,9 +146,13 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
       cat.includes("hackathon") ||
       cat.includes("hackfest")
     ) {
-      return "All IT / Design / Business Students Nationwide (UI, ITB, UGM, Binus, UNAIR, etc.)";
+      return lang === "ID"
+        ? "Terbuka untuk Seluruh Mahasiswa IT / Desain / Bisnis se-Indonesia (Lintas Perguruan Tinggi)"
+        : "All IT / Design / Business Students Nationwide (Cross-University Allowed)";
     }
-    return `Restricted to Internal Students of Author's Guild (${author?.university || "Same University"})`;
+    return lang === "ID"
+      ? `Terbatas untuk Mahasiswa Internal Kampus Pembuat (${author?.university || "Universitas Indonesia"})`
+      : `Restricted to Internal Students of Author's Guild (${author?.university || "Universitas Indonesia"})`;
   };
 
   const cardBanner = project?.image || getDefaultBanner(project?.category);
@@ -422,7 +435,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                       {lang === "ID" ? "// KRITERIA ANGGOTA:" : "// ELIGIBILITY CRITERIA:"}
                     </span>
                     <p className="font-sans text-xs text-gray-300 leading-relaxed">
-                      {getEligibility(project?.category)}
+                      {getEligibility(project?.category, project)}
                     </p>
                   </div>
                 </div>

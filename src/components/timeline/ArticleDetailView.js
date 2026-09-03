@@ -245,13 +245,15 @@ export default function ArticleDetailView({
                                                 </span>
                                             </div>
 
-                                            <button
-                                                type="button"
-                                                onClick={() => onDeleteComment(post.id, idx)}
-                                                className="font-pixel text-[7px] text-red-400 hover:text-white bg-red-950/40 hover:bg-red-600 border border-red-500/40 px-1.5 py-0.5 rounded cursor-pointer transition-colors"
-                                            >
-                                                ✕ DEL
-                                            </button>
+                                            {user && (comment.author_id === user.user_id || comment.name === user.name || post.author_id === user.user_id || user.role === "Admin") && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => onDeleteComment(post.id, idx)}
+                                                    className="font-pixel text-[7px] text-red-400 hover:text-white bg-red-950/40 hover:bg-red-600 border border-red-500/40 px-1.5 py-0.5 rounded cursor-pointer transition-colors"
+                                                >
+                                                    ✕ DEL
+                                                </button>
+                                            )}
                                         </div>
 
                                         <p className="font-sans text-xs text-gray-200 leading-relaxed pl-1">

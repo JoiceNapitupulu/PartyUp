@@ -361,6 +361,15 @@ export default function Following() {
   // Delete Post Handler
   const handleDeletePost = (postId, e) => {
     if (e) e.stopPropagation();
+    if (!user) {
+      alert("⚠️ ACCESS DENIED: You must log in to delete your broadcasts!");
+      return;
+    }
+    const targetPost = posts.find((p) => p.id === postId);
+    if (targetPost && targetPost.author_id !== user.user_id && user.role !== "Admin") {
+      alert("⚠️ ACCESS DENIED: You can only delete your own broadcasts!");
+      return;
+    }
     setConfirmModal({
       isOpen: true,
       title: "DELETE BROADCAST",
@@ -376,6 +385,10 @@ export default function Following() {
 
   // Delete Comment Handler
   const handleDeleteComment = (postId, commentIndex) => {
+    if (!user) {
+      alert("⚠️ ACCESS DENIED: You must log in to delete comments!");
+      return;
+    }
     setConfirmModal({
       isOpen: true,
       title: "DELETE COMMENT",
@@ -546,10 +559,10 @@ export default function Following() {
         >
           <div className="flex justify-between items-center border-b-2 border-gray-700/80 pb-3">
             <span className="font-pixel text-[9px] text-pixel-green tracking-wider uppercase">
-              // DISPATCH NEW ARTICLE OR SPRINT UPDATE
+              {lang === "ID" ? "// TERBITKAN ARTIKEL ATAU UPDATE SPRINT" : "// DISPATCH NEW ARTICLE OR SPRINT UPDATE"}
             </span>
-            <span className="font-pixel text-[7.5px] bg-[#1a253b] text-yellow-300 border border-retro-black px-2 py-0.5 rounded">
-              CODEX PUBLISHER
+            <span className="font-pixel text-[7.5px] bg-[#1a253b] text-yellow-300 border border-retro-black px-2 py-0.5 rounded font-bold">
+              {lang === "ID" ? "EDITOR SPRINT LOG" : "SPRINT LOG PUBLISHER"}
             </span>
           </div>
 
