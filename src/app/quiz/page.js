@@ -109,9 +109,9 @@ export default function GameBoyAdventureQuiz() {
     const { lang } = useLanguage();
     const sfx = useGameSfx();
 
-    const [hero, setHero] = useState(usersData[0]);
+    const [hero, setHero] = useState(null);
     const [allUsers, setAllUsers] = useState(usersData);
-    const [gameState, setGameState] = useState("SELECT_HERO");
+    const [gameState, setGameState] = useState("LOADING"); // LOADING | AUTH_REQUIRED | WORLD_MAP | PLAYING_STAGE | CLEAR | GAME_OVER
 
     const [activeStage, setActiveStage] = useState(null);
     const [currentQIdx, setCurrentQIdx] = useState(0);
@@ -126,21 +126,33 @@ export default function GameBoyAdventureQuiz() {
     const [floatingTexts, setFloatingTexts] = useState([]);
     const floatIdRef = useRef(0);
 
-    const heroLevel = calculateUserLevel(hero);
-    const stageProgress = 100 - bossHp;
-
+    // Inisialisasi Karakter Pengguna yang Sedang Login
     useEffect(() => {
         if (typeof window !== "undefined") {
+            const isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
+            const storedUser = localStorage.getItem("currentUser");
             const storedUsers = localStorage.getItem("usersList");
+
             if (storedUsers) {
                 try { setAllUsers(JSON.parse(storedUsers)); } catch (e) { console.error(e); }
             }
-            const storedUser = localStorage.getItem("currentUser");
-            if (storedUser) {
-                try { setHero(JSON.parse(storedUser)); } catch (e) { console.error(e); }
+
+            if (storedUser && !isLoggedOut) {
+                try {
+                    const parsed = JSON.parse(storedUser);
+                    setHero(parsed);
+                    setGameState("WORLD_MAP"); // Langsung ke peta dunia
+                } catch (e) {
+                    setGameState("AUTH_REQUIRED");
+                }
+            } else {
+                setGameState("AUTH_REQUIRED"); // Wajib login jika belum ada akun
             }
         }
     }, []);
+
+    const heroLevel = hero ? calculateUserLevel(hero) : 1;
+    const stageProgress = 100 - bossHp;
 
     const spawnFloatingText = (target, text) => {
         const id = ++floatIdRef.current;
@@ -178,7 +190,6 @@ export default function GameBoyAdventureQuiz() {
             const damage = Math.ceil(100 / activeStage.questions.length);
             setDialogueText(`💧 SPLASH HIT! ${hero.name} doused ${activeStage.bossName} for -${damage} DMG!`);
 
-            // 450ms Fisika Proyektil Air
             setTimeout(() => {
                 setIsPlayerAttacking(true);
 
@@ -231,7 +242,6 @@ export default function GameBoyAdventureQuiz() {
             const damage = 30;
             setDialogueText(`🔥 SCORCHED! ${activeStage.bossName} burned ${hero.name} for -${damage} DMG!`);
 
-            // 450ms Fisika Proyektil Api
             setTimeout(() => {
                 setIsBossAttacking(true);
 
@@ -337,7 +347,7 @@ export default function GameBoyAdventureQuiz() {
                             [ TODAY LAND: GUILD QUEST ]
                         </h1>
                         <p className="font-sans text-xs md:text-sm text-gray-300">
-                            Select your student hero, navigate stages, defeat bugs, and level up your character profile!
+                            Navigate stages, defeat software bugs, and level up your character profile rating!
                         </p>
 
                         <button
@@ -361,7 +371,7 @@ export default function GameBoyAdventureQuiz() {
                                 <span className="text-yellow-300">GAME-BOY ADVANCE 8-BIT</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span>HERO: <strong className="text-pixel-green">{hero.name.toUpperCase()}</strong></span>
+                                <span>HERO: <strong className="text-pixel-green">{hero ? hero.name.toUpperCase() : "GUEST"}</strong></span>
                                 <span className="text-sky-300">LV.{heroLevel}</span>
                             </div>
                         </div>
@@ -373,54 +383,44 @@ export default function GameBoyAdventureQuiz() {
                         >
                             <div className="absolute inset-0 bg-black/25 pointer-events-none z-0" />
 
-                            {/* SELEKSI PAHLAWAN */}
-                            {gameState === "SELECT_HERO" && (
-                                <div className="relative z-10 h-full flex flex-col justify-between items-center text-center">
-                                    <div className="bg-retro-black/80 px-4 py-2 border-2 border-yellow-400 font-pixel text-xs text-yellow-300 rounded shadow-md">
-                                        {lang === "ID" ? "PILIH PAHLAWAN GUILD KAMU:" : "CHOOSE YOUR GUILD HERO:"}
+                            {/* ========================================================= */}
+                            {/* TAHAP 1: PROTEKSI WAJIB LOGIN (JIKA BELUM MASUK AKUN)    */}
+                            {/* ========================================================= */}
+                            {gameState === "AUTH_REQUIRED" && (
+                                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center gap-4 bg-retro-black/85 p-6 rounded-xl">
+                                    <span className="text-4xl animate-bounce">🔒</span>
+                                    <div className="flex flex-col gap-1.5">
+                                        <h2 className="font-pixel text-sm md:text-base text-yellow-300">
+                                            [ AUTHENTICATION REQUIRED ]
+                                        </h2>
+                                        <p className="font-sans text-xs text-gray-200 max-w-sm leading-relaxed">
+                                            {lang === "ID"
+                                                ? "Kamu harus masuk atau membuat karakter pahlawan terlebih dahulu untuk bertarung di arena kuis RPG!"
+                                                : "You must log in or create a student character first to raid the RPG quiz dungeons!"}
+                                        </p>
                                     </div>
-
-                                    <div className="flex items-center justify-center gap-3 flex-wrap px-4">
-                                        {allUsers.map((u) => {
-                                            const isSelected = hero.user_id === u.user_id;
-                                            return (
-                                                <button
-                                                    key={u.user_id}
-                                                    type="button"
-                                                    onClick={() => {
-                                                        sfx.playSelect();
-                                                        setHero(u);
-                                                    }}
-                                                    className={`flex flex-col items-center gap-1 p-2 bg-retro-black/80 border-2 rounded transition-all cursor-pointer ${isSelected ? "border-yellow-400 scale-110 shadow-lg" : "border-gray-600 hover:border-white"
-                                                        }`}
-                                                >
-                                                    <div className="w-12 h-12 relative">
-                                                        <PixelAvatar role={u.role} size="w-full h-full" />
-                                                    </div>
-                                                    <span className="font-pixel text-[7px] text-white">{u.name}</span>
-                                                </button>
-                                            );
-                                        })}
+                                    <div className="flex flex-wrap gap-3 pt-2">
+                                        <Link href="/login">
+                                            <PixelButton variant="green" className="py-2.5 px-6 text-[9px]">
+                                                {lang === "ID" ? "MASUK SEKARANG ➔" : "LOGIN NOW ➔"}
+                                            </PixelButton>
+                                        </Link>
+                                        <Link href="/register">
+                                            <PixelButton variant="secondary" className="py-2.5 px-6 text-[9px]">
+                                                {lang === "ID" ? "BUAT KARAKTER ✦" : "CREATE CHARACTER ✦"}
+                                            </PixelButton>
+                                        </Link>
                                     </div>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            sfx.playSelect();
-                                            setGameState("WORLD_MAP");
-                                        }}
-                                        className="font-pixel text-xs py-2.5 px-6 bg-yellow-400 hover:bg-yellow-300 text-retro-black font-bold border-2 border-retro-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] cursor-pointer active:translate-y-[1px]"
-                                    >
-                                        {lang === "ID" ? "MULAI CERITA & PETA ▶" : "START STORY & MAP ▶"}
-                                    </button>
                                 </div>
                             )}
 
-                            {/* PETA DUNIA */}
+                            {/* ========================================================= */}
+                            {/* TAHAP 2: PETA DUNIA STAGE (LANGSUNG AKTIF UNTUK USER)     */}
+                            {/* ========================================================= */}
                             {gameState === "WORLD_MAP" && (
                                 <div className="relative z-10 h-full flex flex-col justify-between items-center text-center">
                                     <div className="bg-retro-black/80 px-4 py-1.5 border-2 border-yellow-400 font-pixel text-[10px] text-yellow-300 rounded">
-                                        {lang === "ID" ? "PILIH DUNGEON TAHAP UNTUK RAID:" : "SELECT STAGE DUNGEON TO RAID:"}
+                                        {lang === "ID" ? `PAHLAWAN: ${hero?.name.toUpperCase()} — PILIH DUNGEON UNTUK RAID:` : `HERO: ${hero?.name.toUpperCase()} — SELECT DUNGEON TO RAID:`}
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
@@ -446,17 +446,15 @@ export default function GameBoyAdventureQuiz() {
                                         ))}
                                     </div>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => setGameState("SELECT_HERO")}
-                                        className="font-pixel text-[8px] text-gray-300 hover:underline bg-retro-black/80 px-3 py-1 border border-gray-600 cursor-pointer"
-                                    >
-                                        [CHANGE HERO]
-                                    </button>
+                                    <span className="font-pixel text-[8px] text-pixel-green bg-retro-black/80 px-3 py-1 border border-pixel-green/40 rounded">
+                                        HERO READY: {hero?.role} • LV.{heroLevel}
+                                    </span>
                                 </div>
                             )}
 
-                            {/* PERTARUNGAN RPG */}
+                            {/* ========================================================= */}
+                            {/* TAHAP 3: PERTARUNGAN RPG (AIR VS API)                     */}
+                            {/* ========================================================= */}
                             {gameState === "PLAYING_STAGE" && activeStage && (
                                 <div className="relative z-10 h-full flex flex-col justify-between">
                                     <div className={`flex justify-between items-center bg-retro-black/80 px-3 py-1.5 border border-retro-black rounded ${isPlayerAttacking ? "animate-hp-flash" : ""}`}>
@@ -467,20 +465,22 @@ export default function GameBoyAdventureQuiz() {
                                         <span className="font-pixel text-[7px] text-white w-10 text-right">{bossHp}%</span>
                                     </div>
 
-                                    {/* ARENA PERTARUNGAN */}
+                                    {/* Arena Pertarungan */}
                                     <div className="relative flex justify-between items-end px-6 sm:px-12 py-4 min-h-[120px]">
+                                        {/* Hero Sprite */}
                                         <div className={`relative flex flex-col items-center transition-transform z-10 ${isPlayerAttacking ? "translate-x-4" : "animate-sprite-pulse"}`}>
                                             <div className="w-16 h-16 relative drop-shadow-[2px_4px_0px_rgba(0,0,0,0.8)]">
-                                                <PixelAvatar role={hero.role} size="w-full h-full" />
+                                                <PixelAvatar role={hero?.role || "Coder"} size="w-full h-full" />
                                                 {floatingTexts.filter((f) => f.target === "player").map((f) => (
                                                     <span key={f.id} className="absolute -top-2 left-1/2 -translate-x-1/2 font-pixel text-[10px] text-red-400 animate-float-damage pointer-events-none z-20">
                                                         {f.text}
                                                     </span>
                                                 ))}
                                             </div>
-                                            <span className="font-pixel text-[7px] bg-pixel-green text-retro-black px-1 font-bold">{hero.name}</span>
+                                            <span className="font-pixel text-[7px] bg-pixel-green text-retro-black px-1 font-bold">{hero?.name}</span>
                                         </div>
 
+                                        {/* Boss Sprite */}
                                         <div className={`relative flex flex-col items-center transition-transform z-10 ${isBossAttacking ? "-translate-x-4 animate-screen-shake" : "animate-sprite-pulse"}`}>
                                             <span className="text-5xl drop-shadow-[2px_4px_0px_rgba(0,0,0,0.8)] relative inline-block w-16 h-16 leading-[4rem] text-center">
                                                 {activeStage.bossSprite}
@@ -493,7 +493,7 @@ export default function GameBoyAdventureQuiz() {
                                             <span className="font-pixel text-[7px] bg-red-600 text-white px-1 font-bold">{activeStage.bossName}</span>
                                         </div>
 
-                                        {/* PROYEKTIL AIR (HERO -> BOSS) */}
+                                        {/* Proyektil Air */}
                                         {isPlayerAttacking && (
                                             <div className="absolute top-1/2 w-12 h-12 pointer-events-none z-30 animate-throw-water">
                                                 <Image
@@ -506,7 +506,7 @@ export default function GameBoyAdventureQuiz() {
                                             </div>
                                         )}
 
-                                        {/* PROYEKTIL API (BOSS -> HERO) */}
+                                        {/* Proyektil Api */}
                                         {isBossAttacking && (
                                             <div className="absolute top-1/2 w-12 h-12 pointer-events-none z-30 animate-throw-fire">
                                                 <Image
@@ -522,13 +522,13 @@ export default function GameBoyAdventureQuiz() {
                                 </div>
                             )}
 
-                            {/* STAGE CLEAR */}
+                            {/* TAHAP 4: STAGE CLEAR */}
                             {gameState === "CLEAR" && (
                                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center gap-3 bg-retro-black/85 p-4 rounded">
                                     <span className="text-5xl animate-bounce">🏆</span>
                                     <h2 className="font-pixel text-base text-yellow-300">[ STAGE CLEAR! ]</h2>
                                     <p className="font-sans text-xs text-gray-200">
-                                        {hero.name} defeated the Boss! Level Up to <strong className="text-pixel-green">LV.{heroLevel}</strong>!
+                                        {hero?.name} defeated the Boss! Level Up to <strong className="text-pixel-green">LV.{heroLevel}</strong>!
                                     </p>
                                     <div className="flex gap-3 pt-2">
                                         <button
@@ -547,12 +547,12 @@ export default function GameBoyAdventureQuiz() {
                                 </div>
                             )}
 
-                            {/* GAME OVER */}
+                            {/* TAHAP 5: GAME OVER */}
                             {gameState === "GAME_OVER" && (
                                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center gap-3 bg-retro-black/85 p-4 rounded">
                                     <span className="text-5xl">💀</span>
                                     <h2 className="font-pixel text-base text-red-400">[ GAME OVER! ]</h2>
-                                    <p className="font-sans text-xs text-gray-200">{hero.name} fainted. Try again!</p>
+                                    <p className="font-sans text-xs text-gray-200">{hero?.name} fainted. Try again!</p>
                                     <div className="flex gap-3">
                                         <button
                                             type="button"
@@ -577,11 +577,13 @@ export default function GameBoyAdventureQuiz() {
                         <div className="bg-[#0a0f1d] border-t-4 border-retro-black p-4 flex flex-col gap-4 text-left">
                             <div className="bg-retro-black border-2 border-yellow-400/80 p-3 rounded flex items-center gap-3 shadow-inner min-h-[64px]">
                                 <div className="w-10 h-10 bg-[#121b2d] border border-yellow-400 flex items-center justify-center shrink-0 rounded overflow-hidden">
-                                    <PixelAvatar role={hero.role} size="w-full h-full" />
+                                    <PixelAvatar role={hero?.role || "Coder"} size="w-full h-full" />
                                 </div>
                                 <div className="flex flex-col gap-0.5 text-left flex-1">
-                                    <span className="font-pixel text-[9px] text-yellow-300 font-bold">{hero.name.toUpperCase()}</span>
-                                    <p className="font-pixel text-[8.5px] text-gray-200 leading-relaxed">{dialogueText}</p>
+                                    <span className="font-pixel text-[9px] text-yellow-300 font-bold">{hero ? hero.name.toUpperCase() : "ADVENTURER"}</span>
+                                    <p className="font-pixel text-[8.5px] text-gray-200 leading-relaxed">
+                                        {dialogueText || "Select a stage above to start raiding bugs!"}
+                                    </p>
                                 </div>
                             </div>
 
