@@ -65,6 +65,145 @@
   }
 }
 
+@utility crt-scanlines {
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+}
+
 body {
   image-rendering: pixelated;
 }
+
+body {
+  image-rendering: pixelated;
+
+  /* Cursor kustom pixel-art */
+  cursor: url('/cursors/cursor.png') 4 2, auto;
+}
+
+/* Opsional: cursor beda saat hover elemen yang bisa diklik,
+   pakai gambar yang sama tapi bisa kamu ganti kalau punya versi "pointer" */
+a,
+button,
+[role="button"],
+.cursor-pointer {
+  cursor: url('/cursors/cursor.png') 4 2, pointer;
+}
+
+/* 1. Latar Belakang Seluruh Halaman Mode Terang */
+html.light,
+html.light body,
+html.light div.min-h-screen {
+  background-color: #f1f5f9 !important;
+  /* Warna Terang Slate Soft */
+  color: #0f172a !important;
+  /* Teks Hitam Pekat */
+}
+
+/* 2. Mengubah Latar Kartu & Container dari Gelap ke Terang */
+html.light .bg-\[\#0c1322\],
+html.light .bg-\[\#0e1726\],
+html.light .bg-\[\#0b0717\],
+html.light .bg-\[\#130b24\],
+html.light .bg-\[\#120a21\],
+html.light .bg-\[\#131f37\],
+html.light .bg-\[\#121b2d\],
+html.light .bg-\[\#13222e\],
+html.light .bg-\[\#172a3a\],
+html.light .bg-\[\#1b263b\] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #000000 !important;
+}
+
+/* 3. Mengubah Input Box & Select Dropdown di Mode Terang */
+html.light input,
+html.light select,
+html.light textarea,
+html.light .bg-\[\#1c2a4a\] {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: #000000 !important;
+}
+
+/* 4. Mengubah Warna Teks Gelap */
+html.light .text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-gray-100,
+html.light .text-gray-200,
+html.light .text-gray-300,
+html.light .text-gray-400 {
+  color: #334155 !important;
+}
+
+/* 5. Teks Kuning Emas Dibuat Gelap/Emas Tua di Mode Terang Agar Mudah Dibaca */
+html.light .text-yellow-300,
+html.light .text-yellow-400 {
+  color: #b45309 !important;
+  /* Warna Amber/Emas Tua */
+}
+
+/* Untuk browser berbasis Chromium (Chrome, Edge, Brave, Opera) */
+.overscroll-contain::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overscroll-contain::-webkit-scrollbar-track {
+  background: #142036;
+  border-left: 2px solid #000000;
+}
+
+.overscroll-contain::-webkit-scrollbar-thumb {
+  background: #facc15;
+  /* Kuning Pixel Emas */
+  border: 2px solid #000000;
+  border-radius: 4px;
+}
+
+.overscroll-contain::-webkit-scrollbar-thumb:hover {
+  background: #eab308;
+}
+
+/* Dukungan untuk Firefox */
+.overscroll-contain {
+  scrollbar-width: thin;
+  scrollbar-color: #facc15 #142036;
+}
+
+/* Penyesuaian Scrollbar saat Mode Terang (Light Mode) */
+html.light .overscroll-contain::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+html.light .overscroll-contain::-webkit-scrollbar-thumb {
+  background: #b45309;
+  /* Emas Tua / Amber */
+}
+
+html.light .overscroll-contain {
+  scrollbar-color: #b45309 #e2e8f0;
+}
+
+/* ========================================================================= */
+/* HIDE SCROLLBAR UTILITIES (KEEP SCROLLING FUNCTIONAL, HIDE VISUAL BAR)     */
+/* ========================================================================= */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar,
+nav::-webkit-scrollbar,
+header nav::-webkit-scrollbar,
+div.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+.no-scrollbar,
+.scrollbar-none,
+nav,
+header nav {
+  -ms-overflow-style: none !important; /* IE & Edge */
+  scrollbar-width: none !important;    /* Firefox */
+}

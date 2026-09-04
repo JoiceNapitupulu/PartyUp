@@ -1,0 +1,85 @@
+export const projectsData = [
+  {
+    "project_id": "PRJ-001",
+    "title": "ScholarSave - Financial Planner",
+    "category": "GEMASTIK 2026",
+    "looking_for": [
+      "Next.js",
+      "PostgreSQL",
+      "Backend Developer",
+      "Product Manager (PM)"
+    ],
+    "status": "Open",
+    "isVerified": true,
+    "author": "USR-001",
+    "description": "A comprehensive digital budgeting and scholarship tracking tool designed specifically for Indonesian university students.",
+    "created_at": "2026-07-01T10:00:00Z"
+  },
+  {
+    "project_id": "PRJ-002",
+    "title": "EcoSphere - Campus Carbon Tracker",
+    "category": "INVENTION 2026",
+    "looking_for": [
+      "Figma",
+      "UI/UX Designer",
+      "UX Researcher",
+      "Product Manager (PM)"
+    ],
+    "status": "Open",
+    "isVerified": true,
+    "author": "USR-002",
+    "description": "A gamified campus application tracking personal carbon footprint and enabling rewards matching for sustainable activities.",
+    "created_at": "2026-07-03T14:30:00Z"
+  },
+  {
+    "project_id": "PRJ-003",
+    "title": "EduQuest - Pixel Study Cards",
+    "category": "College Project",
+    "looking_for": [
+      "Flutter",
+      "Firebase",
+      "Mobile App Developer",
+      "UI/UX Designer"
+    ],
+    "status": "Open",
+    "isVerified": false,
+    "author": "USR-003",
+    "description": "An 8-bit themed gamified flashcard app helping engineering students memorize system design patterns and network layers.",
+    "created_at": "2026-07-05T09:15:00Z"
+  },
+  {
+    "project_id": "PRJ-004",
+    "title": "InisiatorKampus - Event Hub",
+    "category": "GEMASTIK 2026",
+    "looking_for": [
+      "Go",
+      "React",
+      "Backend Developer",
+      "Frontend Developer"
+    ],
+    "status": "Open",
+    "isVerified": false,
+    "author": "USR-005",
+    "description": "A localized campus web hub allowing organization leaders to co-manage student-led activities, coordinate venues, and list events.",
+    "created_at": "2026-07-06T18:00:00Z"
+  },
+  {
+    "project_id": "PRJ-005",
+    "title": "MediLink - Remote Health Consultant",
+    "category": "INVENTION 2026",
+    "looking_for": [
+      "Python",
+      "PyTorch",
+      "Backend Developer",
+      "Project / Scrum Master"
+    ],
+    "status": "Filled",
+    "isVerified": true,
+    "author": "USR-004",
+    "description": "AI-driven diagnostics matching rural clinic data with virtual health consultants in real-time.",
+    "created_at": "2026-06-25T11:00:00Z"
+  }
+];
+
+export default projectsData;
+

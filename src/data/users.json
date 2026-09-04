@@ -3,10 +3,11 @@
     "user_id": "USR-001",
     "name": "Joice",
     "avatar": "/avatars/avatar1.png",
+    "password": "joice123",
     "semester": 4,
     "university": "Universitas Indonesia",
     "major": "Information Systems",
-    "role": "Hipster",
+    "role": "UI/UX Designer",
     "skills": [
       "Figma",
       "UI/UX",
@@ -17,14 +18,9 @@
     "bio": "Pixel design enthusiast and frontend dabbler. Passionate about building seamless user flows for student communities.",
     "portfolio": [
       {
-        "project_name": "Whoosh",
-        "description": "Tugas praktikum syarat kelulusan mata pelajaran informatika saat SMA.",
-        "role": "UI/UX Designer"
-      },
-      {
         "project_name": "Sora",
         "description": "UI/UX project for a boat rental application.",
-        "role": "Designer"
+        "role": "UI/UX Designer"
       }
     ]
   },
@@ -32,10 +28,11 @@
     "user_id": "USR-002",
     "name": "Alex",
     "avatar": "/avatars/avatar2.png",
+    "password": "alex123",
     "semester": 6,
     "university": "Institut Teknologi Bandung",
     "major": "Informatics",
-    "role": "Hacker",
+    "role": "Full-stack Developer",
     "skills": [
       "React",
       "Next.js",
@@ -49,12 +46,12 @@
       {
         "project_name": "EcoSphere",
         "description": "Campus carbon footprint tracker utilizing high-frequency telemetry API.",
-        "role": "Lead Developer"
+        "role": "Full-stack Developer"
       },
       {
         "project_name": "GoCache",
         "description": "Lightweight distributed in-memory cache system built in Golang.",
-        "role": "Backend Engineer"
+        "role": "Backend Developer"
       }
     ]
   },
@@ -62,10 +59,11 @@
     "user_id": "USR-003",
     "name": "Sarah",
     "avatar": "/avatars/avatar3.png",
+    "password": "sarah123",
     "semester": 4,
     "university": "Universitas Gadjah Mada",
     "major": "Business Management",
-    "role": "Hustler",
+    "role": "Product Manager (PM)",
     "skills": [
       "Product Management",
       "Business Model Canvas",
@@ -78,7 +76,7 @@
       {
         "project_name": "EduQuest",
         "description": "Pitch deck and business canvas strategy for gamified student flashcards.",
-        "role": "Product Manager"
+        "role": "Product Manager (PM)"
       }
     ]
   },
@@ -86,10 +84,11 @@
     "user_id": "USR-004",
     "name": "Kevin",
     "avatar": "/avatars/avatar4.png",
+    "password": "kevin123",
     "semester": 6,
     "university": "Binus University",
     "major": "Computer Science",
-    "role": "Hacker",
+    "role": "Mobile App Developer",
     "skills": [
       "Flutter",
       "Dart",
@@ -102,7 +101,7 @@
       {
         "project_name": "MediLink",
         "description": "Remote healthcare app with real-time consultation matching logic.",
-        "role": "Mobile Developer"
+        "role": "Mobile App Developer"
       }
     ]
   },
@@ -110,10 +109,11 @@
     "user_id": "USR-005",
     "name": "Rian",
     "avatar": "/avatars/avatar5.png",
+    "password": "rian123",
     "semester": 2,
     "university": "Universitas Airlangga",
     "major": "Information Systems",
-    "role": "Hipster",
+    "role": "UX Researcher",
     "skills": [
       "Figma",
       "Graphic Design",
@@ -125,7 +125,7 @@
       {
         "project_name": "InisiatorKampus",
         "description": "Aggregator of campus-wide student organizations with customizable styling blocks.",
-        "role": "UI/UX Designer"
+        "role": "UX Researcher"
       }
     ]
   },
@@ -133,6 +133,7 @@
     "user_id": "USR-000",
     "name": "Admin",
     "avatar": "/avatars/avatar6.png",
+    "password": "admin123",
     "semester": 8,
     "university": "PARTYUP! HQ",
     "major": "System Security",
