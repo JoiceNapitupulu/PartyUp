@@ -1,49 +1,92 @@
 import { NextResponse } from "next/server";
 
+// SYSTEM PROMPT RESMI PIKACHU RESEPSIONIS GUILD PARTYUP (BAHASA INDONESIA)
 const SYSTEM_PROMPT = `
-You are "Pikachu Receptionist", a helpful, friendly, cute, and energetic 8-bit pixel art guide helper for the website "PartyUp!".
-Your personality is loyal, enthusiastic, and uses gaming metaphors (like "Adventurer", "Guild", "Quest", "Loot", "Party", "Pika pika!").
+Kamu adalah "Pikachu Resepsionis", asisten panduan cerdas, ramah, imut, antusias, dan bertema RPG piksel 8-bit untuk platform web "PartyUp!".
+Kepribadianmu ceria, selalu menyapa pengguna sebagai "Petualang", dan sering menyisipkan seruan khas Pikachu seperti "Pika pika! ⚡", "Pikachu siap membantu!", serta metafora game RPG (seperti Quest, Party, Guild, EXP, Level, Boss).
 
-YOUR KNOWLEDGE BASE:
-1. About PartyUp!:
-   - It is a dynamic student teammate finder and micro-networking platform for IT students.
-   - Designed for the "INVENTION 2026 Web Design Competition" under the theme "Building Smarter Communities Through Digital Learning."
-   - Helps students collaborate on real projects (like GEMASTIK, INVENTION, or College Assignments).
+ATURAN UTAMA BAHASA:
+1. Selalu gunakan Bahasa Indonesia yang ramah, santun, dan natural.
+2. Pertahankan istilah teknologi & RPG resmi seperti Quest, Party, Level (LV.), EXP, Guild, Showcase, Full-stack, UI/UX, Backend, Frontend, DevOps, Scrum Master, Product Manager.
+3. Berikan jawaban yang ringkas, padat, terstruktur, dan langsung menjawab pertanyaan petualang.
 
-2. The 10 Software Engineering Roles:
-   - Management: Product Manager (PM), Project / Scrum Master.
-   - Design: UI/UX Designer, UX Researcher.
-   - Engineering: Frontend Developer, Backend Developer, Full-stack Developer, Mobile App Developer.
-   - Quality/Infrastructure: QA (Quality Assurance) Engineer, DevOps Engineer.
+BASIS PENGETAHUAN LENGKAP PARTYUP!:
+1. Tentang Platform:
+   - Platform pencarian rekan tim (Party Matchmaking) dan micro-networking mahasiswa IT & Desain se-Indonesia.
+   - Dibuat khusus untuk kompetisi "INVENTION 2026 Web Design Competition" dan persiapan "GEMASTIK 2026".
+   - Menghubungkan mahasiswa berbasis bukti portofolio nyata (Proof of Work), bukan sekadar biodata acak.
 
-3. Website Navigation:
-   - QUEST BOARD (/board): Dispatch new teammate requests or filter active quests.
-   - SHOWCASE (/showcase): Display past finished projects as "Historical Archives".
-   - TIMELINE (/following): Real-time community status updates.
-   - GUIDE (/guide): Official Adventurer's Codex booklet (FAQ).
-   - ADMIN CONTROL (/admin): Dashboard for Grandmaster Admin (USR-000) to moderate users (Ban/Unban).
+2. Direktori Halaman Website:
+   - PAPAN QUEST (/board): Tempat melihat lowongan tim terbuka atau menerbitkan misi baru (+ TERBITKAN QUEST).
+   - CATATAN SELESAI / SHOWCASE (/showcase): Galeri arsip proyek & studi kasus mahasiswa. User bisa klik "RECRUIT" untuk mengajak kolaborasi.
+   - LINIMASA GUILD (/timeline): Feed artikel tutorial, sprint koding harian, dan diskusi publik 3-kolom.
+   - PANDUAN PETUALANG (/guide): Buku panduan resmi 10 kelas RPG, video walkthrough, dan FAQ.
+   - KUIS PETUALANGAN (/quiz): GameBoy RPG interaktif bertarung melawan Bug (Air vs Api) untuk meningkatkan EXP & Level karakter.
+   - PANEL ADMIN (/admin): Panel khusus Guild Master (USR-000) untuk moderasi akun dan manajemen user.
+
+3. 10 Kelas RPG Rekayasa Perangkat Lunak:
+   - Manajemen: Product Manager (PM), Project / Scrum Master.
+   - Desain: UI/UX Designer, UX Researcher.
+   - Koding: Frontend Developer, Backend Developer, Full-stack Developer, Mobile App Developer.
+   - Kualitas & Infrastruktur: QA (Quality Assurance) Engineer, DevOps Engineer.
+
+4. Rumus Kalkulasi Level Karakter:
+   - Level (LV.) = (Total Skill x 2) + (Jenjang Semester x 2) + (Quest Selesai x 3).
 `;
 
 export async function POST(request) {
-    // Deklarasikan fallbackReply di luar try block agar bisa dibaca oleh catch block
-    let fallbackReply = "Pika pika! ⚡ Adventure awaits! Try asking about 'quest', 'class', 'admin', or 'gemastik'.";
+    // Fallback default jika AI offline / kuota habis
+    let fallbackReply = "Pika pika! ⚡ Salam Petualang! Ada yang bisa Pikachu bantu? Kamu bisa menanyakan seputar 'misi', 'kelas', 'gemastik', 'level', atau 'admin' ya!";
 
     try {
         const { messages } = await request.json();
         const lastUserMsg = (messages[messages.length - 1]?.content || "").toLowerCase();
 
-        if (lastUserMsg.includes("class") || lastUserMsg.includes("role") || lastUserMsg.includes("kelas") || lastUserMsg.includes("explain")) {
-            fallbackReply = "The 10 IT Guild Classes are: 1. Product Manager, 2. Scrum Master, 3. UI/UX Designer, 4. UX Researcher, 5. Frontend Dev, 6. Backend Dev, 7. Full-stack Dev, 8. Mobile App Dev, 9. QA Engineer, and 10. DevOps Engineer!";
-        } else if (lastUserMsg.includes("ai") || lastUserMsg.includes("proyek") || lastUserMsg.includes("project")) {
-            fallbackReply = "Looking for an AI or Software project? Check out active missions like 'EcoSphere' or 'MediLink' on the [QUEST BOARD] tab or dispatch your own quest!";
-        } else if (lastUserMsg.includes("quest") || lastUserMsg.includes("board") || lastUserMsg.includes("misi") || lastUserMsg.includes("party") || lastUserMsg.includes("join")) {
-            fallbackReply = "Check out the [QUEST BOARD] tab above to inspect dispatched guild missions, filter by competition, and join active parties!";
-        } else if (lastUserMsg.includes("gemastik") || lastUserMsg.includes("invention") || lastUserMsg.includes("2026")) {
-            fallbackReply = "GEMASTIK & INVENTION 2026 are premier nationwide IT competitions! Form your 3-member student parties on the Quest Board now.";
-        } else if (lastUserMsg.includes("admin") || lastUserMsg.includes("dashboard")) {
-            fallbackReply = "Log in as 'Admin' on the Guild Gatekeeper screen to unlock the Master System Admin Panel!";
+        // Deteksi Kata Kunci Cerdas (Smart Keyword Fallback) Bahasa Indonesia
+        if (
+            lastUserMsg.includes("kelas") ||
+            lastUserMsg.includes("role") ||
+            lastUserMsg.includes("peran") ||
+            lastUserMsg.includes("class")
+        ) {
+            fallbackReply = "Pika pika! ⚡ Di Guild PartyUp! ada 10 Peran Kelas RPG: 1. Product Manager (PM), 2. Scrum Master, 3. UI/UX Designer, 4. UX Researcher, 5. Frontend Dev, 6. Backend Dev, 7. Full-stack Dev, 8. Mobile App Dev, 9. QA Engineer, dan 10. DevOps Engineer! Cek detailnya di menu Panduan (/guide) ya!";
+        } else if (
+            lastUserMsg.includes("gabung") ||
+            lastUserMsg.includes("party") ||
+            lastUserMsg.includes("misi") ||
+            lastUserMsg.includes("quest") ||
+            lastUserMsg.includes("rekrut")
+        ) {
+            fallbackReply = "Pikachu siap bantu! ⚔️ Untuk gabung tim, buka menu Papan Quest (/board), pilih misi yang sesuai keahlianmu, lalu klik 'GABUNG TIM'. Kamu juga bisa menerbitkan Quest baru dengan klik tombol '+ TERBITKAN QUEST'!";
+        } else if (
+            lastUserMsg.includes("gemastik") ||
+            lastUserMsg.includes("invention") ||
+            lastUserMsg.includes("lomba") ||
+            lastUserMsg.includes("kompetisi")
+        ) {
+            fallbackReply = "Pika! 📜 GEMASTIK dan INVENTION 2026 adalah kompetisi IT bergengsi tingkat nasional! Di PartyUp!, kamu bisa membentuk Party beranggotakan 3 orang (Hustler, Hacker, Hipster) untuk memenangkan piala juara!";
+        } else if (
+            lastUserMsg.includes("level") ||
+            lastUserMsg.includes("rating") ||
+            lastUserMsg.includes("exp") ||
+            lastUserMsg.includes("kalkulasi")
+        ) {
+            fallbackReply = "Pika pika! ⭐ Rating Level (LV.) karakter dihitung otomatis dengan rumus adil: (Skill x 2) + (Semester x 2) + (Portofolio Selesai x 3). Kamu juga bisa menaikkan level dengan menyelesaikan stage di Kuis RPG (/quiz)!";
+        } else if (
+            lastUserMsg.includes("admin") ||
+            lastUserMsg.includes("panel") ||
+            lastUserMsg.includes("master")
+        ) {
+            fallbackReply = "Pika! 👑 Panel Admin (/admin) adalah ruang kendali khusus Guild Master (USR-000) untuk memoderasi petualang, mengecek log sistem, dan mengaktifkan akun!";
+        } else if (
+            lastUserMsg.includes("showcase") ||
+            lastUserMsg.includes("portofolio") ||
+            lastUserMsg.includes("karya")
+        ) {
+            fallbackReply = "Pikachu kasih tau ya! 📜 Buka menu Catatan Selesai (/showcase) untuk melihat arsip karya mahasiswa terverifikasi lengkap dengan link GitHub dan demo aplikasi live!";
         }
 
+        // Jika API Key Groq belum terpasang, langsung kirim balasan fallback cerdas berbahasa Indonesia
         if (!process.env.GROQ_API_KEY) {
             return NextResponse.json({ text: fallbackReply });
         }
@@ -60,8 +103,8 @@ export async function POST(request) {
             body: JSON.stringify({
                 model: "llama3-8b-8192",
                 messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
-                temperature: 0.1,
-                max_tokens: 180,
+                temperature: 0.2,
+                max_tokens: 220,
             }),
             signal: controller.signal,
         });
@@ -77,7 +120,7 @@ export async function POST(request) {
 
         return NextResponse.json({ text: reply });
     } catch (error) {
-        console.log("Groq API fallback active.");
+        console.log("Groq API fallback aktif.");
         return NextResponse.json({ text: fallbackReply });
     }
 }

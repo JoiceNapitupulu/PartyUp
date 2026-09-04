@@ -23,6 +23,7 @@ const roleNames = [
   "DevOps Engineer"
 ];
 
+// Helper Banner Default
 const getDefaultBanner = (category) => {
   const cat = category?.toLowerCase() || "";
   if (cat.includes("gemastik")) return "/bg.png";
@@ -42,8 +43,9 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [allUsers, setAllUsers] = useState(usersData);
 
+  // Inisialisasi Data & Cek Status Pendaftaran Persisten
   useEffect(() => {
-    const loadUser = () => {
+    const loadUserData = () => {
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem("currentUser");
         let activeUser = null;
@@ -57,7 +59,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
         }
         setAllUsers(getStoredUsers());
 
-        // Check if current user has already applied to this quest
+        // Cek apakah user saat ini sudah mendaftar ke quest ini
         if (activeUser && project) {
           try {
             const rawApps = localStorage.getItem("quest_applications");
@@ -74,12 +76,13 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
         }
       }
     };
-    loadUser();
-    window.addEventListener("auth-change", loadUser);
-    window.addEventListener("applications-change", loadUser);
+
+    loadUserData();
+    window.addEventListener("auth-change", loadUserData);
+    window.addEventListener("applications-change", loadUserData);
     return () => {
-      window.removeEventListener("auth-change", loadUser);
-      window.removeEventListener("applications-change", loadUser);
+      window.removeEventListener("auth-change", loadUserData);
+      window.removeEventListener("applications-change", loadUserData);
     };
   }, [project]);
 
@@ -88,22 +91,32 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
   // Cek apakah user yang login adalah KETUA / PEMBUAT quest ini
   const isOwner = currentUser && (project.author === currentUser.user_id || project.leader_id === currentUser.user_id);
 
+  // Handle Pendaftaran Tim
   const handleApply = (e) => {
     if (e) e.stopPropagation();
 
-        if (!currentUser) {
-      alert("[AKSES DITOLAK] KAMU HARUS BERGABUNG DENGAN GUILD (LOGIN) UNTUK IKUT PARTY!");
+    if (!currentUser) {
+      alert(
+        lang === "ID"
+          ? "⚠️ AKSES DITOLAK: Anda harus masuk ke akun karakter (Login) untuk bergabung ke Party!"
+          : "[RESTRICTED] YOU MUST JOIN THE GUILD (LOG IN) TO JOIN PARTIES!"
+      );
       router.push("/login");
       return;
     }
 
     if (isOwner) {
-      alert("⚠️ KAMU ADALAH KETUA DARI MISI INI!");
+      alert(
+        lang === "ID"
+          ? "⚠️ PERINGATAN: Anda adalah ketua dari Quest ini!"
+          : "⚠️ YOU ARE THE LEADER OF THIS QUEST!"
+      );
       return;
     }
 
     if (isApplied) return;
     setIsApplying(true);
+
     setTimeout(() => {
       setIsApplying(false);
       setIsApplied(true);
@@ -119,8 +132,8 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
             applicant_id: currentUser.user_id,
             applicant_name: currentUser.name,
             applicant_role: currentUser.role,
-            author_id: author?.user_id,
-            author_name: author?.name,
+            author_id: author?.user_id || project.author,
+            author_name: author?.name || "Guild Leader",
             applied_at: new Date().toISOString(),
             status: "Pending",
           };
@@ -169,6 +182,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
   const rolesRequired = lookingForList.filter((item) => roleNames.includes(item));
   const skillsRequired = lookingForList.filter((item) => !roleNames.includes(item));
 
+  // Penentuan Kriteria Kelayakan (Bilingual)
   const getEligibility = (category, prj) => {
     if (prj?.eligibility) return prj.eligibility;
     const title = prj?.title?.toLowerCase() || project?.title?.toLowerCase() || "";
@@ -192,31 +206,32 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
 
   return (
     <>
-      {/* KARTU UTAMA */}
+      {/* 1. KARTU UTAMA PAPAN QUEST                                */}
       <div
         onClick={() => setIsDetailOpen(true)}
         className={`bg-[#121b2d] border-4 border-retro-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:border-yellow-400 flex flex-col justify-between overflow-hidden group transition-all duration-300 cursor-pointer select-none ${project?.isVerified ? "ring-2 ring-amber-400/50" : ""
           } ${isClosed ? "opacity-70" : ""}`}
       >
         <div>
-          {/* Banner Atas */}
+          {/* A. Banner Gambar Atas */}
           <div className="relative h-36 w-full border-b-4 border-retro-black overflow-hidden bg-retro-black">
             <Image
               src={cardBanner}
-              alt={project?.title || "Quest"}
+              alt={project?.title || "Quest Banner"}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#121b2d] via-transparent to-black/40" />
 
+            {/* Badges di Atas Gambar */}
             <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between flex-wrap gap-1.5 z-10">
               <div className="flex items-center gap-1 flex-wrap">
                 <span className="font-pixel text-[8px] px-2 py-0.5 bg-navy-blue text-white border border-retro-black shadow-sm">
                   {project?.category}
                 </span>
-                                {project?.isVerified && (
+                {project?.isVerified && (
                   <span className="font-pixel text-[7px] bg-yellow-400 text-retro-black px-1.5 py-0.5 border border-retro-black font-bold animate-pulse">
-                    ★ TERVERIFIKASI
+                    {lang === "ID" ? "★ TERVERIFIKASI" : "★ VERIFIED"}
                   </span>
                 )}
               </div>
@@ -232,7 +247,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
             </div>
           </div>
 
-          {/* Konten Deskripsi */}
+          {/* B. Konten Deskripsi */}
           <div className="p-4 flex flex-col gap-3 text-left">
             <h3 className="font-pixel text-xs leading-relaxed text-white group-hover:text-yellow-300 transition-colors line-clamp-2">
               {project?.title}
@@ -267,7 +282,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
           </div>
         </div>
 
-        {/* Footer Kartu (DENGAN PROTEKSI KETUA TIM) */}
+        {/* C. Footer Kartu (Dengan Proteksi Ketua Tim) */}
         <div className="p-4 pt-0">
           <div className="border-t border-gray-700/60 pt-3 flex items-center justify-between gap-3">
             {showAuthor && author ? (
@@ -286,7 +301,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
               <div />
             )}
 
-            {/* PROTEKSI TOMBOL KETUA TIM */}
+            {/* Proteksi Tombol Mendaftar */}
             {isOwner ? (
               <span className="font-pixel text-[7.5px] bg-yellow-400/20 text-yellow-300 border border-yellow-400/50 px-2.5 py-1 rounded font-bold">
                 {lang === "ID" ? "★ KETUA TIM" : "★ YOUR QUEST"}
@@ -311,44 +326,45 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
         </div>
       </div>
 
-      {/* DETAIL MODAL EXPANDED */}
+      {/* 2. MODAL SPESIFIKASI DETAIL QUEST (LAYAR PENUH)           */}
       {isDetailOpen && (
         <div
-          className={`fixed inset-0 z-40 bg-[#0b1220] text-white overflow-y-auto pt-24 md:pt-28 transition-opacity duration-300 ease-out ${isDetailVisible ? "opacity-100" : "opacity-0"
+          className={`fixed inset-0 z-50 bg-[#0b1220] text-white overflow-y-auto pt-24 md:pt-28 transition-opacity duration-300 ease-out ${isDetailVisible ? "opacity-100" : "opacity-0"
             }`}
         >
           <div
             className={`transition-all duration-300 ease-out ${isDetailVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
               }`}
           >
-            {/* Top Bar Button */}
+            {/* Top Bar Navigation */}
             <div className="max-w-5xl mx-auto px-5 sm:px-8 pb-3 flex items-center justify-between">
-                            <button
-                type="button"
-                onClick={closeDetail}
-                className="font-pixel text-[9px] text-yellow-300 hover:text-yellow-400 bg-retro-black border-2 border-yellow-400 px-3 py-1.5 cursor-pointer shadow-sm"
-              >
-                [← KEMBALI KE PAPAN MISI]
-              </button>
               <button
                 type="button"
                 onClick={closeDetail}
-                className="font-pixel text-[9px] text-red-400 hover:text-red-300 bg-retro-black border-2 border-red-500 px-3 py-1.5 cursor-pointer shadow-sm"
+                className="font-pixel text-[9px] text-yellow-300 hover:text-yellow-400 bg-retro-black border-2 border-yellow-400 px-3.5 py-1.5 cursor-pointer shadow-sm transition-transform active:translate-y-[1px]"
               >
-                [X] TUTUP
+                {lang === "ID" ? "[← KEMBALI KE PAPAN QUEST]" : "[← BACK TO QUEST BOARD]"}
+              </button>
+
+              <button
+                type="button"
+                onClick={closeDetail}
+                className="font-pixel text-[9px] text-red-400 hover:text-red-300 bg-retro-black border-2 border-red-500 px-3 py-1.5 cursor-pointer shadow-sm transition-transform active:translate-y-[1px]"
+              >
+                {lang === "ID" ? "[X] TUTUP" : "[X] CLOSE"}
               </button>
             </div>
 
-            {/* Hero Detail */}
+            {/* Hero Detail Banner */}
             <div className="relative w-full h-[420px] sm:h-[480px] lg:h-[560px] border-b-4 border-retro-black overflow-hidden bg-retro-black">
               <Image
                 src={cardBanner}
-                alt={project?.title || "Quest Detail"}
+                alt={project?.title || "Quest Detail Banner"}
                 fill
                 priority
                 className="object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0b1220] via-[#0b1220]/70 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0b1220] via-[#0b1220]/75 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0b1220] via-transparent to-transparent" />
 
               <div className="relative z-10 h-full max-w-5xl mx-auto px-5 sm:px-8 flex flex-col justify-center gap-5">
@@ -356,11 +372,18 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                   <span className="font-pixel text-[9px] bg-navy-blue text-white px-2.5 py-1 border border-retro-black shadow">
                     {project?.category?.toUpperCase()}
                   </span>
-                                    <span
+                  {project?.isVerified && (
+                    <span className="font-pixel text-[9px] bg-yellow-400 text-retro-black px-2.5 py-1 border border-retro-black font-bold animate-pulse">
+                      {lang === "ID" ? "★ TERVERIFIKASI GUILD" : "★ GUILD VERIFIED"}
+                    </span>
+                  )}
+                  <span
                     className={`font-pixel text-[9px] px-2.5 py-1 border border-retro-black uppercase ${isClosed ? "bg-gray-600 text-white" : "bg-pixel-green text-retro-black font-bold animate-pulse"
                       }`}
                   >
-                    {project?.status === "Open" ? "● MISI DIBUKA" : "■ TERISI"}
+                    {project?.status === "Open"
+                      ? (lang === "ID" ? "● MISI DIBUKA" : "● OPEN QUEST")
+                      : (lang === "ID" ? "■ TERISI" : "■ FILLED")}
                   </span>
                 </div>
 
@@ -372,65 +395,123 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                   {project?.description}
                 </p>
 
-                                <div className="pt-1">
+                {/* Meta Row */}
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-sans text-xs sm:text-sm text-gray-300">
+                  <span className="flex items-center gap-1.5">
+                    ⏱️ {lang === "ID" ? "Durasi:" : "Duration:"} <span className="text-white font-semibold">{lang === "ID" ? "Sprint 2 - 4 Minggu" : "2 - 4 Weeks Sprint"}</span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    👥 {lang === "ID" ? "Ukuran Tim:" : "Party Size:"} <span className="text-white font-semibold">{lang === "ID" ? `Maks ${rolesRequired.length + 1} Anggota` : `${rolesRequired.length + 1} Members Max`}</span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    🎯 {lang === "ID" ? "Slot Terbuka:" : "Slots Open:"} <span className="text-white font-semibold">{rolesRequired.length} {lang === "ID" ? "Slot" : "Slots"}</span>
+                  </span>
+                </div>
+
+                {/* CTA Action Button */}
+                <div className="pt-1">
                   {isOwner ? (
                     <span className="font-pixel text-xs bg-yellow-400/20 text-yellow-300 border-2 border-yellow-400 px-6 py-2.5 rounded-lg inline-block font-bold">
-                      ★ KAMU ADALAH KETUA MISI INI
+                      {lang === "ID" ? "★ ANDA ADALAH KETUA DARI QUEST INI" : "★ YOU ARE LEADING THIS QUEST"}
                     </span>
                   ) : (
                     <PixelButton
                       variant={isApplied ? "secondary" : isClosed ? "disabled" : "green"}
                       disabled={isClosed || isApplying || isApplied}
                       onClick={(e) => handleApply(e)}
-                      className="py-3 px-8 text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                      className="py-3 px-8 text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
                     >
-                      {isApplying ? "MENGIRIM..." : isApplied ? "TERKIRIM ✓" : isClosed ? "TERISI" : "GABUNG TIM ▶"}
+                      {isApplying
+                        ? (lang === "ID" ? "MENGIRIM..." : "SENDING...")
+                        : isApplied
+                          ? (lang === "ID" ? "TERKIRIM ✓" : "APPLIED ✓")
+                          : isClosed
+                            ? (lang === "ID" ? "TERISI" : "FILLED")
+                            : (lang === "ID" ? "GABUNG TIM ▶" : "JOIN PARTY ▶")}
                     </PixelButton>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Content Detail */}
+            {/* Konten Spesifikasi Lengkap */}
             <div className="max-w-5xl mx-auto px-5 sm:px-8 py-10 flex flex-col gap-6 pb-24">
-                            <div className="bg-[#121b2d] p-6 border-2 border-retro-black text-left flex flex-col gap-2">
-                <span className="font-pixel text-[10px] text-yellow-400">// GAMBARAN MISI:</span>
+
+              {/* Overview */}
+              <div className="bg-[#121b2d] p-6 border-2 border-retro-black rounded-xl text-left flex flex-col gap-2 shadow-sm">
+                <span className="font-pixel text-[10px] text-yellow-400">
+                  {lang === "ID" ? "// GAMBARAN & CAKUPAN QUEST:" : "// QUEST OVERVIEW & SCOPE:"}
+                </span>
                 <p className="font-sans text-sm text-gray-200 leading-relaxed">{project?.description}</p>
               </div>
 
+              {/* Roles & Eligibility */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                <div className="bg-[#121b2d] p-6 border-2 border-retro-black flex flex-col gap-3">
-                  <span className="font-pixel text-[10px] text-yellow-400 block mb-1">// PERAN YANG DIBUTUHKAN:</span>
+                <div className="bg-[#121b2d] p-6 border-2 border-retro-black rounded-xl flex flex-col gap-3 shadow-sm">
+                  <span className="font-pixel text-[10px] text-yellow-400 block mb-1">
+                    {lang === "ID" ? "// PERAN YANG DIBUTUHKAN (SLOT):" : "// ROLES NEEDED (SLOTS):"}
+                  </span>
                   <div className="flex flex-col gap-2">
                     {rolesRequired.map((role, i) => (
-                      <div key={i} className="flex items-center justify-between bg-[#0b1220] p-3 border border-gray-700">
+                      <div key={i} className="flex items-center justify-between bg-[#0b1220] p-3 border border-gray-700 rounded-lg">
                         <span className="font-pixel text-[9px] text-pixel-green font-bold">+{role?.toUpperCase()}</span>
-                        <span className="font-pixel text-[8px] bg-yellow-400 text-retro-black px-2 py-0.5 font-bold">1 SLOT TERSEDIA</span>
+                        <span className="font-pixel text-[8px] bg-yellow-400 text-retro-black px-2 py-0.5 rounded font-bold">
+                          {lang === "ID" ? "1 SLOT TERBUKA" : "1 SLOT OPEN"}
+                        </span>
                       </div>
                     ))}
+                    {rolesRequired.length === 0 && (
+                      <span className="font-sans text-xs text-gray-400">
+                        {lang === "ID" ? "Semua slot tim sudah terisi!" : "Party slots are completely filled!"}
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                <div className="bg-[#121b2d] p-6 border-2 border-retro-black flex flex-col justify-between">
+                <div className="bg-[#121b2d] p-6 border-2 border-retro-black rounded-xl flex flex-col justify-between shadow-sm">
                   <div>
-                    <span className="font-pixel text-[10px] text-yellow-400 block mb-2">// KRITERIA KELAYAKAN:</span>
+                    <span className="font-pixel text-[10px] text-yellow-400 block mb-2">
+                      {lang === "ID" ? "// KRITERIA KELAYAKAN ANGGOTA:" : "// ELIGIBILITY CRITERIA:"}
+                    </span>
                     <p className="font-sans text-xs text-gray-300 leading-relaxed">{getEligibility(project?.category, project)}</p>
                   </div>
                 </div>
               </div>
 
-              {/* Tech Stack */}
-              <div className="text-left bg-[#121b2d] p-6 border-2 border-retro-black">
-                <span className="font-pixel text-[9px] text-gray-400 block mb-3">// TEKNOLOGI YANG DIBUTUHKAN:</span>
+              {/* Required Tech Stack */}
+              <div className="text-left bg-[#121b2d] p-6 border-2 border-retro-black rounded-xl shadow-sm">
+                <span className="font-pixel text-[9px] text-gray-400 block mb-3">
+                  {lang === "ID" ? "// INVENTORI TECH STACK WAJIB:" : "// REQUIRED TECH STACK INVENTORY:"}
+                </span>
                 <div className="flex flex-wrap gap-2.5">
                   {skillsRequired.map((tech, i) => (
-                    <span key={i} className="flex items-center gap-2 font-pixel text-[9px] bg-[#0b1220] text-white px-3.5 py-2 border border-gray-600">
+                    <span key={i} className="flex items-center gap-2 font-pixel text-[9px] bg-[#0b1220] text-white px-3.5 py-2 border border-gray-600 rounded-lg">
                       <PixelTechIcon tech={tech} size="w-4 h-4" />
                       {tech}
                     </span>
                   ))}
                 </div>
               </div>
+
+              {/* Author Dispatcher Card */}
+              <div className="bg-[#121b2d] p-6 border-2 border-retro-black rounded-xl flex items-center justify-between text-left gap-4 flex-wrap shadow-sm">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-[#0b1220] border-2 border-yellow-400 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                    <PixelAvatar role={author?.role || "Coder"} size="w-full h-full" />
+                  </div>
+                  <div>
+                    <span className="font-pixel text-[8px] text-gray-400 block">
+                      {lang === "ID" ? "KETUA / PEMBUAT QUEST:" : "QUEST DISPATCHER:"}
+                    </span>
+                    <p className="font-pixel text-xs text-white font-bold">{author?.name || "Unknown Adventurer"}</p>
+                    <p className="font-sans text-xs text-gray-400">{author?.university} • {author?.major} • LV.{calculateUserLevel(author)}</p>
+                  </div>
+                </div>
+                <span className="font-pixel text-[9px] bg-navy-blue text-white px-3 py-1.5 border border-retro-black rounded">
+                  {author?.role?.toUpperCase() || "MEMBER"}
+                </span>
+              </div>
+
             </div>
           </div>
         </div>
