@@ -111,14 +111,6 @@ export default function Footer() {
                 <span className="text-pixel-green opacity-0 group-hover:opacity-100 transition-opacity">▶</span>
                 <span>{t("quiz") || "QUIZ"}</span>
               </Link>
-
-              <Link
-                href="/admin"
-                className="group flex items-center gap-1.5 font-pixel text-[9px] text-yellow-300 hover:text-white transition-all hover:translate-x-1 font-bold"
-              >
-                <span>★</span>
-                <span>{t("adminControl") || "ADMIN PANEL"}</span>
-              </Link>
             </div>
           </div>
 

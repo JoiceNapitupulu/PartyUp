@@ -105,12 +105,8 @@ export default function Profile() {
         }
       }
 
-      if (isLoggedOut) {
-        window.location.href = "/login";
-        return;
-      } else {
-        setUser(activeUsersList[0]);
-      }
+      // Tidak ada sesi aktif → redirect ke halaman login
+      window.location.href = "/login";
     };
 
     loadUser();
@@ -127,19 +123,7 @@ export default function Profile() {
     };
   }, []);
 
-  // Dropdown handler untuk menukar profile secara instan
-  const handleProfileSwitch = (userId) => {
-    const selected = allUsers.find((u) => u.user_id === userId);
-    if (selected) {
-      if (selected.isBanned) {
-        alert("[RESTRICTED] This character account is currently BANNED!");
-        return;
-      }
-      localStorage.setItem("currentUser", JSON.stringify(selected));
-      setUser(selected);
-      window.dispatchEvent(new Event("auth-change"));
-    }
-  };
+
 
   useEffect(() => {
     const localProjects = localStorage.getItem("projectsList");
@@ -327,24 +311,14 @@ export default function Profile() {
             </p>
           </div>
 
-          {/* Profile Switcher Dropdown */}
-          <div className="flex items-center gap-2">
-            <span className="font-pixel text-[8px] text-yellow-400">// SWITCH PROFILE:</span>
-            <div className="relative">
-              <select
-                value={user.user_id}
-                onChange={(e) => handleProfileSwitch(e.target.value)}
-                className="font-sans text-xs p-2 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none appearance-none pr-8 cursor-pointer"
-              >
-                {allUsers.map((u) => (
-                  <option key={u.user_id} value={u.user_id} className="bg-[#1c2a4a] text-white">
-                    {u.name} ({u.role})
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-yellow-400">
-                ▼
-              </div>
+          {/* Status Badge: ID User yang sedang login */}
+          <div className="flex items-center gap-2.5 bg-[#121b2d] border-2 border-retro-black px-3.5 py-2 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+            <span className="w-2.5 h-2.5 rounded-full bg-pixel-green animate-pulse inline-block" />
+            <div className="flex flex-col text-left">
+              <span className="font-pixel text-[7.5px] text-pixel-green font-bold">STATUS: ONLINE</span>
+              <span className="font-sans text-[10px] text-gray-300">
+                ID: <strong className="text-white font-mono">{user.user_id}</strong>
+              </span>
             </div>
           </div>
         </div>
@@ -583,33 +557,30 @@ export default function Profile() {
                       <button
                         type="button"
                         onClick={() => setInvitationFilter("incoming")}
-                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${
-                          invitationFilter === "incoming"
+                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${invitationFilter === "incoming"
                             ? "bg-pixel-green text-retro-black border-retro-black font-bold"
                             : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
-                        }`}
+                          }`}
                       >
                         📥 INCOMING ({myIncomingInvites.length})
                       </button>
                       <button
                         type="button"
                         onClick={() => setInvitationFilter("outgoing")}
-                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${
-                          invitationFilter === "outgoing"
+                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${invitationFilter === "outgoing"
                             ? "bg-yellow-400 text-retro-black border-retro-black font-bold"
                             : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
-                        }`}
+                          }`}
                       >
                         📤 SENT ({myOutgoingInvites.length})
                       </button>
                       <button
                         type="button"
                         onClick={() => setInvitationFilter("applications")}
-                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${
-                          invitationFilter === "applications"
+                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${invitationFilter === "applications"
                             ? "bg-sky-400 text-retro-black border-retro-black font-bold"
                             : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
-                        }`}
+                          }`}
                       >
                         ⚔️ APPLICANTS ({incomingApplications.length})
                       </button>
@@ -671,11 +642,10 @@ export default function Profile() {
                                   </>
                                 ) : (
                                   <span
-                                    className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${
-                                      inv.status === "Accepted"
+                                    className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${inv.status === "Accepted"
                                         ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
                                         : "bg-red-500/20 text-red-400 border-red-500"
-                                    }`}
+                                      }`}
                                   >
                                     STATUS: {inv.status?.toUpperCase()}
                                   </span>
@@ -730,13 +700,12 @@ export default function Profile() {
 
                               <div className="flex items-center gap-2 shrink-0">
                                 <span
-                                  className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${
-                                    inv.status === "Accepted"
+                                  className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${inv.status === "Accepted"
                                       ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
                                       : inv.status === "Declined"
-                                      ? "bg-red-500/20 text-red-400 border-red-500"
-                                      : "bg-yellow-400/20 text-yellow-300 border-yellow-400 animate-pulse"
-                                  }`}
+                                        ? "bg-red-500/20 text-red-400 border-red-500"
+                                        : "bg-yellow-400/20 text-yellow-300 border-yellow-400 animate-pulse"
+                                    }`}
                                 >
                                   {inv.status === "Pending" ? "PENDING RESPONSE ⏳" : `STATUS: ${inv.status?.toUpperCase()}`}
                                 </span>
@@ -814,11 +783,10 @@ export default function Profile() {
                                 </>
                               ) : (
                                 <span
-                                  className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${
-                                    app.status === "Approved"
+                                  className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${app.status === "Approved"
                                       ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
                                       : "bg-red-500/20 text-red-400 border-red-500"
-                                  }`}
+                                    }`}
                                 >
                                   STATUS: {app.status?.toUpperCase()}
                                 </span>
