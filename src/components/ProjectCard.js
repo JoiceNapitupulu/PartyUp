@@ -7,7 +7,7 @@ import usersData from "../data/users.json";
 import PixelButton from "./PixelButton";
 import PixelTechIcon from "./PixelTechIcon";
 import PixelAvatar from "./PixelAvatar";
-import { calculateUserLevel, getStoredUsers } from "../utils/auth";
+import { calculateUserLevel, getStoredUsers, isAdmin } from "../utils/auth";
 import { useLanguage } from "../utils/lang";
 
 const roleNames = [
@@ -102,6 +102,17 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
           : "[RESTRICTED] YOU MUST JOIN THE GUILD (LOG IN) TO JOIN PARTIES!"
       );
       router.push("/login");
+      return;
+    }
+
+    // [BARU] Blokade khusus Admin: Admin bertugas mengawasi sistem, bukan
+    // mendaftar sebagai anggota tim capstone/kompetisi mahasiswa.
+    if (isAdmin(currentUser)) {
+      alert(
+        lang === "ID"
+          ? "⚠️ AKSES ADMIN: Anda bertugas mengawasi sistem Guild, bukan bergabung ke tim quest mahasiswa."
+          : "⚠️ ADMIN ACCESS: Admins oversee the guild system and cannot join student quest parties."
+      );
       return;
     }
 
@@ -268,8 +279,8 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                     <span
                       key={index}
                       className={`flex items-center gap-1 font-pixel text-[7px] px-2 py-0.5 border ${isRole
-                          ? "bg-[#1e2d42] text-pixel-green border-pixel-green/40 font-bold"
-                          : "bg-[#182236] text-gray-200 border-gray-600/40"
+                        ? "bg-[#1e2d42] text-pixel-green border-pixel-green/40 font-bold"
+                        : "bg-[#182236] text-gray-200 border-gray-600/40"
                         }`}
                     >
                       {!isRole && <PixelTechIcon tech={skill} size="w-3 h-3" />}
@@ -403,8 +414,16 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                   <span className="flex items-center gap-1.5">
                     👥 {lang === "ID" ? "Ukuran Tim:" : "Party Size:"} <span className="text-white font-semibold">{lang === "ID" ? `Maks ${rolesRequired.length + 1} Anggota` : `${rolesRequired.length + 1} Members Max`}</span>
                   </span>
+                  {/* [DIPERBAIKI] Slot Terbuka sekarang ikut status isClosed —
+                      sebelumnya tetap menampilkan rolesRequired.length meski
+                      quest sudah Filled, jadi terkesan masih ada slot kosong. */}
                   <span className="flex items-center gap-1.5">
-                    🎯 {lang === "ID" ? "Slot Terbuka:" : "Slots Open:"} <span className="text-white font-semibold">{rolesRequired.length} {lang === "ID" ? "Slot" : "Slots"}</span>
+                    🎯 {lang === "ID" ? "Slot Terbuka:" : "Slots Open:"}{" "}
+                    <span className="text-white font-semibold">
+                      {isClosed
+                        ? (lang === "ID" ? "0 Slot (Penuh)" : "0 Slots (Full)")
+                        : `${rolesRequired.length} ${lang === "ID" ? "Slot" : "Slots"}`}
+                    </span>
                   </span>
                 </div>
 
@@ -452,11 +471,22 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                     {lang === "ID" ? "// PERAN YANG DIBUTUHKAN (SLOT):" : "// ROLES NEEDED (SLOTS):"}
                   </span>
                   <div className="flex flex-col gap-2">
+                    {/* [DIPERBAIKI] Badge role sekarang kondisional terhadap
+                        isClosed — sebelumnya di-hardcode selalu kuning
+                        "1 SLOT TERBUKA" walau quest sudah Filled/tombol
+                        sudah abu-abu TERISI di bagian atas (state bentrok). */}
                     {rolesRequired.map((role, i) => (
                       <div key={i} className="flex items-center justify-between bg-[#0b1220] p-3 border border-gray-700 rounded-lg">
                         <span className="font-pixel text-[9px] text-pixel-green font-bold">+{role?.toUpperCase()}</span>
-                        <span className="font-pixel text-[8px] bg-yellow-400 text-retro-black px-2 py-0.5 rounded font-bold">
-                          {lang === "ID" ? "1 SLOT TERBUKA" : "1 SLOT OPEN"}
+                        <span
+                          className={`font-pixel text-[8px] px-2 py-0.5 rounded font-bold ${isClosed
+                            ? "bg-gray-700 text-gray-300 border border-gray-600"
+                            : "bg-yellow-400 text-retro-black"
+                            }`}
+                        >
+                          {isClosed
+                            ? (lang === "ID" ? "TERISI ✓" : "FILLED ✓")
+                            : (lang === "ID" ? "1 SLOT TERBUKA" : "1 SLOT OPEN")}
                         </span>
                       </div>
                     ))}

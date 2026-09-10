@@ -17,11 +17,21 @@ export const OFFICIAL_ROLES = [
   "DevOps Engineer"
 ];
 
+// [BARU] Helper terpusat untuk pengecekan role Admin.
+// Sebelumnya logic ini ditulis manual berulang-ulang di banyak file
+// (Header.js, board/page.js, profile/page.js) — sekarang cukup import
+// isAdmin() dari sini. Kalau nanti ada role baru (SuperAdmin/Moderator),
+// cukup ubah di satu tempat ini saja.
+export function isAdmin(user) {
+  if (!user) return false;
+  return user.role?.toLowerCase() === "admin" || user.user_id === "USR-000";
+}
+
 // Standard Dynamic Level Calculation Formula (Blueprint Section 3)
 // Level (LV.) = (Total Mastered Skills × 2) + (Semester × 2) + (Completed Quests × 3)
 export function calculateUserLevel(user) {
   if (!user) return 1;
-  if (user.role?.toLowerCase() === "admin" || user.user_id === "USR-000") {
+  if (isAdmin(user)) {
     return 99;
   }
   const skillsCount = Array.isArray(user.skills) ? user.skills.length : 0;
@@ -69,6 +79,21 @@ export function getCurrentUser() {
     if (stored) {
       const parsed = JSON.parse(stored);
       if (parsed && typeof parsed === "object") {
+        // [BARU] Cross-check kilat ke daftar user tersimpan terbaru.
+        // Kalau Admin sudah mem-banned akun ini (di tab/sesi lain), jangan
+        // biarkan sesi lama di browser korban tetap dianggap valid —
+        // paksa logout otomatis dan kembalikan null.
+        try {
+          const freshUsers = getStoredUsers();
+          const freshRecord = freshUsers.find((u) => u.user_id === parsed.user_id);
+          if (freshRecord?.isBanned) {
+            logoutUser();
+            return null;
+          }
+        } catch (banCheckErr) {
+          console.error("Failed to verify ban status for currentUser", banCheckErr);
+        }
+
         return parsed;
       }
     }
@@ -135,4 +160,3 @@ export function getStoredProjects() {
   }
   return projectsData;
 }
-
