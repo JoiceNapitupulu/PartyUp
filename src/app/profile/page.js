@@ -99,6 +99,23 @@ export default function Profile() {
           }
 
           setUser(synced);
+
+          if (synced.isBanned) {
+            localStorage.setItem("isLoggedOut", "true");
+            localStorage.removeItem("currentUser");
+            window.dispatchEvent(new Event("auth-change"));
+            alert("[SECURITY] AKUN TELAH DI-BAN OLEH GRANDMASTER!");
+            window.location.href = "/login";
+            return;
+          }
+
+          // (Proteksi Khusus Admin)
+          if (synced.role?.toLowerCase() === "admin" || synced.user_id === "USR-000") {
+            window.location.href = "/admin/settings";
+            return;
+          }
+
+          setUser(synced);
           return;
         } catch (e) {
           console.error(e);
@@ -304,10 +321,12 @@ export default function Profile() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b-4 border-gray-700 pb-6">
           <div>
             <h1 className="font-pixel text-xl text-yellow-300 mb-2">
-              [GUILD MEMBER SHEET]
+              {lang === "ID" ? "[ LEMBAR PROFIL ANGGOTA GUILD ]" : "[ GUILD MEMBER SHEET ]"}
             </h1>
             <p className="font-sans text-sm text-gray-300">
-              Inspect student stats, active quests, and completed historical achievements.
+              {lang === "ID"
+                ? "Pantau atribut statistik karakter, kelola undangan tim Party, dan tinjau arsip portofolio Anda."
+                : "Inspect student stats, manage party invites, and review completed historical achievements."}
             </p>
           </div>
 
@@ -557,32 +576,34 @@ export default function Profile() {
                       <button
                         type="button"
                         onClick={() => setInvitationFilter("incoming")}
-                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${invitationFilter === "incoming"
+                        className={`font-pixel text-[8px] px-3 py-1.5 border transition-all cursor-pointer rounded-lg shadow-sm ${invitationFilter === "incoming"
                             ? "bg-pixel-green text-retro-black border-retro-black font-bold"
                             : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
                           }`}
                       >
-                        📥 INCOMING ({myIncomingInvites.length})
+                        📥 {lang === "ID" ? "MASUK" : "INCOMING"} ({myIncomingInvites.length})
                       </button>
+
                       <button
                         type="button"
                         onClick={() => setInvitationFilter("outgoing")}
-                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${invitationFilter === "outgoing"
+                        className={`font-pixel text-[8px] px-3 py-1.5 border transition-all cursor-pointer rounded-lg shadow-sm ${invitationFilter === "outgoing"
                             ? "bg-yellow-400 text-retro-black border-retro-black font-bold"
                             : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
                           }`}
                       >
-                        📤 SENT ({myOutgoingInvites.length})
+                        📤 {lang === "ID" ? "TERKIRIM" : "SENT"} ({myOutgoingInvites.length})
                       </button>
+
                       <button
                         type="button"
                         onClick={() => setInvitationFilter("applications")}
-                        className={`font-pixel text-[8px] px-3 py-1 border transition-all cursor-pointer rounded ${invitationFilter === "applications"
+                        className={`font-pixel text-[8px] px-3 py-1.5 border transition-all cursor-pointer rounded-lg shadow-sm ${invitationFilter === "applications"
                             ? "bg-sky-400 text-retro-black border-retro-black font-bold"
                             : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
                           }`}
                       >
-                        ⚔️ APPLICANTS ({incomingApplications.length})
+                        ⚔️ {lang === "ID" ? "PELAMAR" : "APPLICANTS"} ({incomingApplications.length})
                       </button>
                     </div>
                   </div>
