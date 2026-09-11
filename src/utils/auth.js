@@ -65,7 +65,7 @@ export function triggerAuthChange() {
 // Safely retrieve the current active user from storage, defaulting to USR-001 (Joice)
 export function getCurrentUser() {
   if (typeof window === "undefined") {
-    return usersData[0];
+    return null;
   }
   try {
     const isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
@@ -100,7 +100,7 @@ export function getCurrentUser() {
   } catch (e) {
     console.error("Failed to read currentUser from localStorage", e);
   }
-  return usersData[0]; // Fallback to Joice
+  return null;
 }
 
 // Safely persist user credentials in localStorage and broadcast layout update event

@@ -95,6 +95,7 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
   const handleApply = (e) => {
     if (e) e.stopPropagation();
 
+    // 1. Cek Apakah Belum Login (Tamu)
     if (!currentUser) {
       alert(
         lang === "ID"
@@ -105,17 +106,16 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
       return;
     }
 
-    // [BARU] Blokade khusus Admin: Admin bertugas mengawasi sistem, bukan
-    // mendaftar sebagai anggota tim capstone/kompetisi mahasiswa.
     if (isAdmin(currentUser)) {
       alert(
         lang === "ID"
-          ? "⚠️ AKSES ADMIN: Anda bertugas mengawasi sistem Guild, bukan bergabung ke tim quest mahasiswa."
-          : "⚠️ ADMIN ACCESS: Admins oversee the guild system and cannot join student quest parties."
+          ? "⚠️ AKSES ADMIN: Akun Administrator bertugas memoderasi sistem dan tidak dapat mendaftar ke Party mahasiswa!"
+          : "⚠️ ADMIN ACCESS: Administrator cannot apply to student parties!"
       );
       return;
     }
 
+    // 3. Cek Apakah Pembuat Quest Sendiri
     if (isOwner) {
       alert(
         lang === "ID"
@@ -406,7 +406,9 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                   {project?.description}
                 </p>
 
-                {/* Meta Row */}
+                {/* Meta Row — PERBAIKAN: kalau quest sudah Filled, slot yang
+                    ditampilkan HARUS 0, bukan tetap menghitung panjang array
+                    peran (yang membuatnya tampak masih ada slot kosong). */}
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-sans text-xs sm:text-sm text-gray-300">
                   <span className="flex items-center gap-1.5">
                     ⏱️ {lang === "ID" ? "Durasi:" : "Duration:"} <span className="text-white font-semibold">{lang === "ID" ? "Sprint 2 - 4 Minggu" : "2 - 4 Weeks Sprint"}</span>
@@ -414,14 +416,11 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                   <span className="flex items-center gap-1.5">
                     👥 {lang === "ID" ? "Ukuran Tim:" : "Party Size:"} <span className="text-white font-semibold">{lang === "ID" ? `Maks ${rolesRequired.length + 1} Anggota` : `${rolesRequired.length + 1} Members Max`}</span>
                   </span>
-                  {/* [DIPERBAIKI] Slot Terbuka sekarang ikut status isClosed —
-                      sebelumnya tetap menampilkan rolesRequired.length meski
-                      quest sudah Filled, jadi terkesan masih ada slot kosong. */}
                   <span className="flex items-center gap-1.5">
                     🎯 {lang === "ID" ? "Slot Terbuka:" : "Slots Open:"}{" "}
                     <span className="text-white font-semibold">
                       {isClosed
-                        ? (lang === "ID" ? "0 Slot (Penuh)" : "0 Slots (Full)")
+                        ? (lang === "ID" ? "0 (Penuh)" : "0 (Full)")
                         : `${rolesRequired.length} ${lang === "ID" ? "Slot" : "Slots"}`}
                     </span>
                   </span>
@@ -471,13 +470,12 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
                     {lang === "ID" ? "// PERAN YANG DIBUTUHKAN (SLOT):" : "// ROLES NEEDED (SLOTS):"}
                   </span>
                   <div className="flex flex-col gap-2">
-                    {/* [DIPERBAIKI] Badge role sekarang kondisional terhadap
-                        isClosed — sebelumnya di-hardcode selalu kuning
-                        "1 SLOT TERBUKA" walau quest sudah Filled/tombol
-                        sudah abu-abu TERISI di bagian atas (state bentrok). */}
                     {rolesRequired.map((role, i) => (
                       <div key={i} className="flex items-center justify-between bg-[#0b1220] p-3 border border-gray-700 rounded-lg">
                         <span className="font-pixel text-[9px] text-pixel-green font-bold">+{role?.toUpperCase()}</span>
+                        {/* PERBAIKAN: badge ikut status Filled — kalau quest
+                            sudah penuh, semua baris peran jadi abu-abu
+                            "TERISI ✓", bukan tetap kuning "1 SLOT TERBUKA" */}
                         <span
                           className={`font-pixel text-[8px] px-2 py-0.5 rounded font-bold ${isClosed
                             ? "bg-gray-700 text-gray-300 border border-gray-600"

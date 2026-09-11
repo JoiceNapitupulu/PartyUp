@@ -8,6 +8,7 @@ import PixelButton from "../../components/PixelButton";
 import ProjectCard from "../../components/ProjectCard";
 import projectsData from "../../data/projects.json";
 import { useLanguage } from "../../utils/lang";
+import { isAdmin } from "../../utils/auth";
 
 const CATEGORIES = [
   "ALL",
@@ -167,9 +168,21 @@ export default function Board() {
           : "[RESTRICTED] YOU MUST LOG IN TO THE GUILD TO DISPATCH QUESTS!"
       );
       router.push("/login");
-    } else {
-      setIsModalOpen(true);
+      return;
     }
+
+    // arahkan admin ke panel audit quest
+    if (isAdmin(user)) {
+      alert(
+        lang === "ID"
+          ? "⚙️ MODE ADMIN: Anda adalah Administrator. Mengalihkan ke Panel Audit Quest..."
+          : "⚙️ ADMIN MODE: Redirecting to Quest Audit Panel..."
+      );
+      router.push("/admin/quests");
+      return;
+    }
+
+    setIsModalOpen(true);
   };
 
   return (
@@ -206,11 +219,13 @@ export default function Board() {
 
           <div className="pt-2">
             <PixelButton
-              variant="green"
+              variant={isAdmin(user) ? "navy" : "green"}
               onClick={handleDispatchClick}
               className="py-3 px-8 text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer active:translate-y-[1px]"
             >
-              {lang === "ID" ? "+ TERBITKAN QUEST BARU ➔" : "+ DISPATCH NEW QUEST ➔"}
+              {isAdmin(user)
+                ? (lang === "ID" ? "⚙️ BUKA AUDIT QUEST (ADMIN) ➔" : "⚙️ OPEN QUEST AUDIT (ADMIN) ➔")
+                : (lang === "ID" ? "+ TERBITKAN QUEST BARU ➔" : "+ DISPATCH NEW QUEST ➔")}
             </PixelButton>
           </div>
 
@@ -224,7 +239,7 @@ export default function Board() {
               <p className="font-pixel text-xs md:text-sm text-pixel-green">
                 {projects.filter((p) => p.status === "Open").length}
               </p>
-              <p className="font-pixel text-[7px] text-gray-300 uppercase">{lang === "ID" ? "Slot Terbuka" : "Open Slots"}</p>
+              <p className="font-pixel text-[7px] text-gray-300 uppercase">{lang === "ID" ? "Quest Terbuka" : "Open Quests"}</p>
             </div>
             <div className="bg-[#121b2d]/80 border-2 border-retro-black p-2.5 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-pixel text-xs md:text-sm text-cyan-300">100% PERSISTEN</p>
