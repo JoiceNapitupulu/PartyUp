@@ -102,7 +102,7 @@ export default function Board() {
   }, [projects, search, selectedClass, selectedCategory]);
 
   // Handle pembuatan Quest baru oleh Ketua Tim
-  const handleCreateQuest = async (e) => { 
+  const handleCreateQuest = async (e) => {
     e.preventDefault();
     if (!user) {
       alert(
@@ -141,21 +141,7 @@ export default function Board() {
       image: "/bg.png"
     };
 
-    // ✅ Sekarang await sudah diizinkan dan aman
-    const updated = await createNewQuest(newQuest);
-    setProjects(updated);
-    window.dispatchEvent(new Event("projects-change"));
-
-    // Reset Form & Tutup Modal
-    setIsModalOpen(false);
-    setNewTitle("");
-    setNewDescription("");
-    setNewSkills("");
-    setNewClass("Frontend Developer");
-  };
-
-
-    // ✅ Simpan ke Supabase Cloud & LocalStorage secara bersamaan
+    // Simpan ke Supabase Cloud & LocalStorage
     const updated = await createNewQuest(newQuest);
     setProjects(updated);
     window.dispatchEvent(new Event("projects-change"));
@@ -169,6 +155,7 @@ export default function Board() {
   };
 
   const handleDispatchClick = () => {
+  // ... fungsi handleDispatchClick berikutnya ...
     if (!user) {
       alert(
         lang === "ID"
