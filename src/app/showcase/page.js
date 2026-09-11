@@ -13,6 +13,7 @@ import usersData from "../../data/users.json";
 import projectsData from "../../data/projects.json";
 import { calculateUserLevel, getStoredUsers, getStoredProjects } from "../../utils/auth";
 import { useLanguage, translations } from "../../utils/lang";
+import { sendPartyInvitation } from "../../services/dataService";
 
 // Helper Banner Default
 const getDefaultBanner = (name) => {
@@ -182,7 +183,7 @@ export default function Showcase() {
   }, [allShowcases, search, selectedCategory]);
 
   // Handle pengiriman undangan rekrutmen tim (Persisten ke LocalStorage)
-  const handleSendInvite = (e) => {
+  const handleSendInvite = async (e) => {
     e.preventDefault();
     setInvitationStatus("sending");
 
@@ -192,31 +193,16 @@ export default function Showcase() {
       sender_name: currentUser?.name || "Guild Leader",
       receiver_id: selectedUser.user_id,
       receiver_name: selectedUser.name,
-      // Backward compatibility aliases
-      from_user_id: currentUser?.user_id || "USR-001",
-      from_user: currentUser?.name || "Guild Leader",
-      to_user_id: selectedUser.user_id,
-      to_user: selectedUser.name,
       project_title: selectedProject,
       proposed_role: recruitmentRole,
-      assigned_role: recruitmentRole,
       note: recruitmentNote.trim(),
-      created_at: new Date().toISOString(),
-      timestamp: new Date().toISOString(),
-      status: "Pending"
+      status: "Pending",
+      created_at: new Date().toISOString()
     };
 
-    if (typeof window !== "undefined") {
-      try {
-        const raw = localStorage.getItem("party_invitations");
-        const existingInvites = raw ? JSON.parse(raw) : [];
-        const updated = [...existingInvites, newInvitation];
-        localStorage.setItem("party_invitations", JSON.stringify(updated));
-        window.dispatchEvent(new Event("invitations-change"));
-      } catch (err) {
-        console.error("Failed to save invitation", err);
-      }
-    }
+    // ✅ Simpan ke Supabase Cloud & LocalStorage
+    await sendPartyInvitation(newInvitation);
+    window.dispatchEvent(new Event("invitations-change"));
 
     setTimeout(() => {
       setInvitationStatus("success");

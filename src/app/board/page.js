@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { fetchAllQuests, createNewQuest } from "../../services/dataService";
 import { useRouter } from "next/navigation";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
@@ -51,19 +52,11 @@ export default function Board() {
 
   // Sinkronisasi data lokal dari LocalStorage & Event Dispatcher
   useEffect(() => {
-    const loadBoardData = () => {
+    const loadBoardData = async () => {
       if (typeof window !== "undefined") {
-        const localProjects = localStorage.getItem("projectsList");
-        if (localProjects) {
-          try {
-            setProjects(JSON.parse(localProjects));
-          } catch (e) {
-            setProjects(projectsData);
-          }
-        } else {
-          setProjects(projectsData);
-          localStorage.setItem("projectsList", JSON.stringify(projectsData));
-        }
+        // Ambil data dari Supabase (dengan fallback otomatis ke LocalStorage)
+        const activeQuests = await fetchAllQuests();
+        setProjects(activeQuests);
 
         const storedUser = localStorage.getItem("currentUser");
         if (storedUser) {
@@ -109,7 +102,7 @@ export default function Board() {
   }, [projects, search, selectedClass, selectedCategory]);
 
   // Handle pembuatan Quest baru oleh Ketua Tim
-  const handleCreateQuest = (e) => {
+  const handleCreateQuest = async (e) => { 
     e.preventDefault();
     if (!user) {
       alert(
@@ -144,12 +137,27 @@ export default function Board() {
       leader_id: user.user_id || "USR-001",
       description: newDescription.trim(),
       created_at: new Date().toISOString(),
-      isVerified: true,
+      is_verified: true,
+      image: "/bg.png"
     };
 
-    const updatedProjects = [newQuest, ...projects];
-    setProjects(updatedProjects);
-    localStorage.setItem("projectsList", JSON.stringify(updatedProjects));
+    // ✅ Sekarang await sudah diizinkan dan aman
+    const updated = await createNewQuest(newQuest);
+    setProjects(updated);
+    window.dispatchEvent(new Event("projects-change"));
+
+    // Reset Form & Tutup Modal
+    setIsModalOpen(false);
+    setNewTitle("");
+    setNewDescription("");
+    setNewSkills("");
+    setNewClass("Frontend Developer");
+  };
+
+
+    // ✅ Simpan ke Supabase Cloud & LocalStorage secara bersamaan
+    const updated = await createNewQuest(newQuest);
+    setProjects(updated);
     window.dispatchEvent(new Event("projects-change"));
 
     // Reset Form & Tutup Modal
