@@ -9,6 +9,7 @@ import PixelTechIcon from "./PixelTechIcon";
 import PixelAvatar from "./PixelAvatar";
 import { calculateUserLevel, getStoredUsers, isAdmin } from "../utils/auth";
 import { useLanguage } from "../utils/lang";
+import { sendQuestApplication } from "../services/dataService";
 
 const roleNames = [
   "Product Manager (PM)",
@@ -128,32 +129,26 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
     if (isApplied) return;
     setIsApplying(true);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsApplying(false);
       setIsApplied(true);
 
-      if (typeof window !== "undefined") {
-        try {
-          const rawApps = localStorage.getItem("quest_applications");
-          const apps = rawApps ? JSON.parse(rawApps) : [];
-          const newApp = {
-            id: `APP-${Date.now()}`,
-            project_id: project.project_id,
-            project_title: project.title,
-            applicant_id: currentUser.user_id,
-            applicant_name: currentUser.name,
-            applicant_role: currentUser.role,
-            author_id: author?.user_id || project.author,
-            author_name: author?.name || "Guild Leader",
-            applied_at: new Date().toISOString(),
-            status: "Pending",
-          };
-          localStorage.setItem("quest_applications", JSON.stringify([...apps, newApp]));
-          window.dispatchEvent(new Event("applications-change"));
-        } catch (e) {
-          console.error(e);
-        }
-      }
+      const newApp = {
+        id: `APP-${Date.now()}`,
+        project_id: project.project_id,
+        project_title: project.title,
+        applicant_id: currentUser.user_id,
+        applicant_name: currentUser.name,
+        applicant_role: currentUser.role,
+        author_id: author?.user_id || project.author,
+        author_name: author?.name || "Guild Leader",
+        applied_at: new Date().toISOString(),
+        status: "Pending",
+      };
+
+      // ✅ Panggil fungsi Hybrid (Simpan ke Supabase Cloud & LocalStorage)
+      await sendQuestApplication(newApp);
+      window.dispatchEvent(new Event("applications-change"));
 
       if (onApply) {
         onApply(project, author);

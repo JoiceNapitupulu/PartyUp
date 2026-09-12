@@ -12,6 +12,12 @@ import usersData from "../../data/users.json";
 import projectsData from "../../data/projects.json";
 import { calculateUserLevel } from "../../utils/auth";
 import { useLanguage } from "../../utils/lang";
+import {
+  fetchAllInvitations,
+  fetchAllApplications,
+  updateInvitationStatus,
+  updateApplicationStatus
+} from "../../services/dataService";
 
 const INITIAL_PARTY_INVITATIONS = [
   {
@@ -156,19 +162,13 @@ export default function Profile() {
     }
   }, [user]);
 
-  // Handler Accept Recruitment Invite
-  const handleAcceptInvite = (inviteId) => {
+  // 1. Terima Undangan
+  const handleAcceptInvite = async (inviteId) => {
     if (!user) return;
-    const updated = invitations.map((inv) => {
-      if (inv.id === inviteId) {
-        return { ...inv, status: "Accepted" };
-      }
-      return inv;
-    });
+    const updated = await updateInvitationStatus(inviteId, "Accepted");
     setInvitations(updated);
-    localStorage.setItem("party_invitations", JSON.stringify(updated));
 
-    // Beri EXP / Level Up Reward untuk user
+    // Kenaikan Semester/Level Up Reward
     const updatedUser = {
       ...user,
       semester: (user.semester || 4) + 1,
@@ -182,19 +182,13 @@ export default function Profile() {
 
     window.dispatchEvent(new Event("auth-change"));
     window.dispatchEvent(new Event("invitations-change"));
-    alert("🎉 PARTY FORMED! You accepted the quest invitation. Level increased!");
+    alert("🎉 PARTY TERBENTUK! Kamu menerima undangan Quest. Level karakter bertambah!");
   };
 
-  // Handler Decline Recruitment Invite
-  const handleDeclineInvite = (inviteId) => {
-    const updated = invitations.map((inv) => {
-      if (inv.id === inviteId) {
-        return { ...inv, status: "Declined" };
-      }
-      return inv;
-    });
+  // 2. Tolak Undangan
+  const handleDeclineInvite = async (inviteId) => {
+    const updated = await updateInvitationStatus(inviteId, "Declined");
     setInvitations(updated);
-    localStorage.setItem("party_invitations", JSON.stringify(updated));
     window.dispatchEvent(new Event("invitations-change"));
   };
 
@@ -206,30 +200,18 @@ export default function Profile() {
     window.dispatchEvent(new Event("invitations-change"));
   };
 
-  // Handler Approve Quest Application
-  const handleApproveApplication = (appId) => {
-    const updated = applications.map((app) => {
-      if (app.id === appId) {
-        return { ...app, status: "Approved" };
-      }
-      return app;
-    });
+  // 3. Setujui Pelamar
+  const handleApproveApplication = async (appId) => {
+    const updated = await updateApplicationStatus(appId, "Approved");
     setApplications(updated);
-    localStorage.setItem("quest_applications", JSON.stringify(updated));
     window.dispatchEvent(new Event("applications-change"));
-    alert("✓ APPLICANT RECRUITED INTO YOUR PARTY!");
+    alert("✓ PELAMAR BERHASIL DIREKRUT KE DALAM PARTY!");
   };
 
-  // Handler Reject Quest Application
-  const handleRejectApplication = (appId) => {
-    const updated = applications.map((app) => {
-      if (app.id === appId) {
-        return { ...app, status: "Rejected" };
-      }
-      return app;
-    });
+  // 4. Tolak Pelamar
+  const handleRejectApplication = async (appId) => {
+    const updated = await updateApplicationStatus(appId, "Rejected");
     setApplications(updated);
-    localStorage.setItem("quest_applications", JSON.stringify(updated));
     window.dispatchEvent(new Event("applications-change"));
   };
 

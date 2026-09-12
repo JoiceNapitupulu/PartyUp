@@ -7,6 +7,7 @@ import { translations } from "../utils/lang";
 import { calculateUserLevel } from "../utils/auth";
 import PixelAvatar from "./PixelAvatar";
 import AnnouncementTicker from "./AnnouncementTicker";
+import { fetchAllInvitations } from "../services/dataService";
 
 export default function Header() {
   const pathname = usePathname();
@@ -30,42 +31,44 @@ export default function Header() {
       if (savedLang) setLanguage(savedLang);
     }
 
-    const loadUser = () => {
-      const isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
-      const stored = localStorage.getItem("currentUser");
-      let activeUser = null;
+    const loadUser = async () => {
+    // 1. Cek apakah ada sesi login aktif di browser
+    const isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
+    const stored = localStorage.getItem("currentUser");
+    let activeUser = null;
 
-      if (stored && !isLoggedOut) {
-        try {
-          activeUser = JSON.parse(stored);
-          setUser(activeUser);
-        } catch (e) {
-          console.error("Failed to parse local user", e);
-          setUser(null);
-        }
-      } else {
+    // HANYA pasang user JIKA user benar-benar login melalui form login
+    if (stored && !isLoggedOut) {
+      try {
+        activeUser = JSON.parse(stored);
+        setUser(activeUser);
+      } catch (e) {
+        console.error("Failed to parse local user", e);
         setUser(null);
-        activeUser = null;
       }
+    } else {
+      // ✅ JIKA PENGUNJUNG BARU / TAMU: WAJIB NULL (TAMPILKAN MASUK & DAFTAR)
+      setUser(null);
+      activeUser = null;
+    }
 
-      // Hitung notifikasi undangan pending yang ditujukan untuk user ini
-      if (activeUser && typeof window !== "undefined") {
-        try {
-          const rawInvites = localStorage.getItem("party_invitations");
-          const invites = rawInvites ? JSON.parse(rawInvites) : [];
-          const myPending = invites.filter((i) => {
-            const receiverId = i.receiver_id || i.to_user_id;
-            const status = (i.status || "").toLowerCase();
-            return receiverId === activeUser.user_id && (status === "pending" || !i.status);
-          });
-          setPendingInvitesCount(myPending.length);
-        } catch (e) {
-          console.error(e);
-        }
-      } else {
-        setPendingInvitesCount(0);
+    // Hitung notifikasi undangan
+    if (activeUser && typeof window !== "undefined") {
+      try {
+        const invites = await fetchAllInvitations();
+        const myPending = invites.filter((i) => {
+          const receiverId = i.receiver_id || i.to_user_id;
+          const status = (i.status || "").toLowerCase();
+          return receiverId === activeUser.user_id && (status === "pending" || !i.status);
+        });
+        setPendingInvitesCount(myPending.length);
+      } catch (e) {
+        console.error(e);
       }
-    };
+    } else {
+      setPendingInvitesCount(0);
+    }
+  };
 
     loadUser();
 
