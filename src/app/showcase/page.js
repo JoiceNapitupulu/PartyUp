@@ -14,6 +14,7 @@ import projectsData from "../../data/projects.json";
 import { calculateUserLevel, getStoredUsers, getStoredProjects } from "../../utils/auth";
 import { useLanguage, translations } from "../../utils/lang";
 import { sendPartyInvitation } from "../../services/dataService";
+import { fetchAllProfiles, fetchAllQuests, sendPartyInvitation } from "../../services/dataService";
 
 // Helper Banner Default
 const getDefaultBanner = (name) => {
@@ -73,28 +74,22 @@ export default function Showcase() {
 
   // Inisialisasi sinkronisasi data dari LocalStorage
   useEffect(() => {
-    const loadData = () => {
+    const loadShowcaseData = async () => {
       if (typeof window !== "undefined") {
-        const activeUsers = getStoredUsers();
+        // ✅ Ambil data kreator & quest terbaru dari Supabase
+        const activeUsers = await fetchAllProfiles();
         setUsers(activeUsers && activeUsers.length > 0 ? activeUsers : usersData);
 
-        const activeProjects = getStoredProjects();
+        const activeProjects = await fetchAllQuests();
         setProjects(activeProjects && activeProjects.length > 0 ? activeProjects : projectsData);
 
-        const storedUser = localStorage.getItem("currentUser");
-        if (storedUser) {
-          try {
-            setCurrentUser(JSON.parse(storedUser));
-          } catch (e) {
-            console.error(e);
-          }
+        if (activeProjects && activeProjects[0]) {
+          setSelectedProject(activeProjects[0].title);
         }
       }
     };
 
-    loadData();
-    window.addEventListener("auth-change", loadData);
-    return () => window.removeEventListener("auth-change", loadData);
+    loadShowcaseData();
   }, []);
 
   // Filter Quest Terbuka yang DIPIMPIN oleh user yang sedang login

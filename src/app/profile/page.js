@@ -60,21 +60,17 @@ export default function Profile() {
   const [applications, setApplications] = useState([]);
   const [invitationFilter, setInvitationFilter] = useState("incoming"); // incoming | outgoing | applications
 
-  const loadInvitationsAndApps = () => {
+  const loadInvitationsAndApps = async () => {
     if (typeof window !== "undefined") {
       try {
-        const rawInvites = localStorage.getItem("party_invitations");
-        let parsedInvites = rawInvites ? JSON.parse(rawInvites) : null;
-        if (!parsedInvites || parsedInvites.length === 0) {
-          parsedInvites = INITIAL_PARTY_INVITATIONS;
-          localStorage.setItem("party_invitations", JSON.stringify(INITIAL_PARTY_INVITATIONS));
-        }
-        setInvitations(parsedInvites);
+        // ✅ Ambil langsung dari Supabase Cloud (dengan fallback otomatis ke LocalStorage)
+        const invites = await fetchAllInvitations();
+        setInvitations(invites && invites.length > 0 ? invites : INITIAL_PARTY_INVITATIONS);
 
-        const rawApps = localStorage.getItem("quest_applications");
-        setApplications(rawApps ? JSON.parse(rawApps) : []);
+        const apps = await fetchAllApplications();
+        setApplications(apps || []);
       } catch (e) {
-        console.error(e);
+        console.error("Error loading cloud invites/apps:", e);
       }
     }
   };
