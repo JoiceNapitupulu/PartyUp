@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import Footer from "../../components/Footer";
-import { usersData, projectsData } from "../../utils/auth";
+import { fetchAllProfiles, fetchAllQuests, fetchAllInvitations } from "../../services/dataService";
+import usersData from "../../data/users.json";
+import projectsData from "../../data/projects.json";
 
 const PixelIcon = ({ rows, className = "w-4 h-4" }) => {
     const size = rows.length;
@@ -69,31 +72,42 @@ const ProgressRow = ({ icon, label, valueLabel, percent, barClass }) => (
 
 export default function AdminDashboard() {
     // Inisialisasi metrik secara Lazy untuk menghilangkan error set-state-in-effect
-    const [usersCount] = useState(() => {
-        if (typeof window !== "undefined") {
-            const localUsers = localStorage.getItem("usersList");
-            return localUsers ? JSON.parse(localUsers).length : usersData.length;
-        }
-        return usersData.length;
-    });
+    const [users, setUsers] = useState(usersData);
+    const [quests, setQuests] = useState(projectsData);
+    const [invitesCount, setInvitesCount] = useState(0);
 
-    const [bannedCount] = useState(() => {
-        if (typeof window !== "undefined") {
-            const localUsers = localStorage.getItem("usersList");
-            const list = localUsers ? JSON.parse(localUsers) : usersData;
-            return list.filter((u) => u.isBanned).length;
-        }
-        return 0;
-    });
+    // Ambil data real-time dari Supabase & LocalStorage
+    useEffect(() => {
+        const loadDashboardStats = async () => {
+            if (typeof window !== "undefined") {
+                try {
+                    const allUsers = await fetchAllProfiles();
+                    setUsers(allUsers);
 
-    const [projectsCount] = useState(() => {
-        if (typeof window !== "undefined") {
-            const localProjects = localStorage.getItem("projectsList");
-            return localProjects ? JSON.parse(localProjects).length : projectsData.length;
-        }
-        return projectsData.length;
-    });
+                    const allQuests = await fetchAllQuests();
+                    setQuests(allQuests);
 
+                    const allInvites = await fetchAllInvitations();
+                    setInvitesCount(allInvites.length);
+                } catch (e) {
+                    console.error("Failed to load dashboard stats", e);
+                }
+            }
+        };
+
+        loadDashboardStats();
+        window.addEventListener("auth-change", loadDashboardStats);
+        window.addEventListener("projects-change", loadDashboardStats);
+        return () => {
+            window.removeEventListener("auth-change", loadDashboardStats);
+            window.removeEventListener("projects-change", loadDashboardStats);
+        };
+    }, []);
+
+    const usersCount = users.length;
+    const bannedCount = users.filter((u) => u.is_banned || u.isBanned).length;
+    const projectsCount = quests.length;
+    const openQuestsCount = quests.filter((q) => q.status === "Open").length;
     const capacityPercent = Math.min(Math.round((projectsCount / 10) * 100), 100);
 
     return (

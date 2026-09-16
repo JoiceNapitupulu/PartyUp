@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import usersData from "../../data/users.json";
 import PixelAvatar from "../../components/PixelAvatar";
+import { getStoredUsers } from "../../utils/auth";
+import { fetchAllProfiles } from "../../services/dataService";
 
 const ROLE_THEME = {
   hacker: { accent: "#22c55e", ring: "border-emerald-400", label: "Hacker" },
@@ -95,7 +95,32 @@ export default function Login() {
   const fullSpeechText = "Log in to resume your party journey~";
   const [displayedSpeech, setDisplayedSpeech] = useState("");
 
-  const selectedAccount = usersData.find((u) => u.name === username);
+  // PERBAIKAN: daftar akun sekarang dinamis — bukan lagi file statis
+  // users.json. Local-first: langsung isi dari getStoredUsers() (localStorage
+  // dengan fallback ke data dummy) supaya dropdown tetap instan tanpa nunggu
+  // network, lalu di-refresh di background dari Supabase lewat
+  // fetchAllProfiles() begitu selesai — jadi user baru daftar / user yang
+  // baru di-ban Admin langsung kedeteksi tanpa perlu reload manual.
+  const [accounts, setAccounts] = useState(() => getStoredUsers());
+
+  useEffect(() => {
+    let isMounted = true;
+    (async () => {
+      try {
+        const cloudProfiles = await fetchAllProfiles();
+        if (isMounted && Array.isArray(cloudProfiles) && cloudProfiles.length > 0) {
+          setAccounts(cloudProfiles);
+        }
+      } catch (err) {
+        console.error("Failed to refresh accounts from cloud, using local data:", err);
+      }
+    })();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const selectedAccount = accounts.find((u) => u.name === username);
 
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef(null);
@@ -132,12 +157,20 @@ export default function Login() {
       return;
     }
 
-    const matchedUser = usersData.find(
+    const matchedUser = accounts.find(
       (u) => u.name.toLowerCase() === username.trim().toLowerCase()
     );
 
     if (!matchedUser) {
       setError("ADVENTURER NOT FOUND IN GUILD DATABASE!");
+      return;
+    }
+
+    // PERBAIKAN: tolak login kalau akun sudah di-ban Admin (mendukung
+    // penamaan field dari kedua sisi — localStorage pakai isBanned,
+    // Supabase pakai is_banned).
+    if (matchedUser.isBanned || matchedUser.is_banned) {
+      setError("[SECURITY] THIS ACCOUNT HAS BEEN BANNED BY THE GRANDMASTER!");
       return;
     }
 
@@ -268,18 +301,24 @@ export default function Login() {
               {isAccountMenuOpen && (
                 <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border-2 border-retro-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-30 overflow-hidden">
                   <div className="max-h-72 overflow-y-auto py-1">
-                    {usersData.map((acc) => {
+                    {accounts.map((acc) => {
                       const isSelected = username === acc.name;
                       const theme = getRoleTheme(acc.role);
+                      const isBanned = acc.isBanned || acc.is_banned;
                       return (
                         <button
                           type="button"
                           key={acc.user_id}
+                          disabled={isBanned}
                           onClick={() => {
                             setIsAccountMenuOpen(false);
                             handleSelectAdventurer(acc); // Auto-fill username & password!
                           }}
-                          className={`w-full flex items-center gap-2.5 px-3 py-2 text-left cursor-pointer transition-colors ${isSelected ? "bg-slate-100" : "hover:bg-slate-50"
+                          className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-colors ${isBanned
+                            ? "opacity-40 cursor-not-allowed"
+                            : isSelected
+                              ? "bg-slate-100 cursor-pointer"
+                              : "hover:bg-slate-50 cursor-pointer"
                             }`}
                         >
                           <span
@@ -290,7 +329,7 @@ export default function Login() {
                           </span>
                           <span className="flex flex-col">
                             <span className="font-pixel text-[9px] text-retro-black">
-                              {acc.name.toUpperCase()}
+                              {acc.name.toUpperCase()} {isBanned && <span className="text-red-500">[BANNED]</span>}
                             </span>
                             <span className="font-sans text-[9px] text-gray-400">
                               {theme.label} · {acc.major} · Sem {acc.semester}
