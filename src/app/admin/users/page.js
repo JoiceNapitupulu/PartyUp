@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import PixelAvatar from "@/components/PixelAvatar";
 import PixelButton from "@/components/PixelButton";
 import { usersData, triggerAuthChange, calculateUserLevel } from "@/utils/auth";
-import { fetchAllProfiles } from "@/services/dataService";
+import { fetchAllProfiles, updateUserProfile } from "@/services/dataService";
 import { useLanguage } from "@/utils/lang";
 
 const OFFICIAL_ROLES = [
@@ -63,15 +63,25 @@ export default function AdminUsers() {
         }
     };
 
-    // 1. Toggle Ban / Unban User
-    const handleToggleBan = (userId, userName) => {
+    // 1. Toggle Ban / Unban User (Sinkron Kolom is_banned)
+    const handleToggleBan = async (userId, userName) => {
+        const targetUser = users.find((u) => u.user_id === userId);
+        const currentBan = targetUser?.is_banned ?? targetUser?.isBanned ?? false;
+        const newBanStatus = !currentBan;
+
+        // Update state lokal seketika
         const updated = users.map((u) =>
-            u.user_id === userId ? { ...u, isBanned: !u.isBanned } : u
+            u.user_id === userId
+                ? { ...u, isBanned: newBanStatus, is_banned: newBanStatus }
+                : u
         );
-        saveUsers(updated);
-        const targetUser = updated.find((u) => u.user_id === userId);
-        const isBanned = targetUser?.isBanned;
-        addLog(`SECURITY: ${isBanned ? "BLOCKED/BANNED" : "UNBANNED"} ${userName.toUpperCase()} (${userId})`);
+        setUsers(updated);
+        localStorage.setItem("usersList", JSON.stringify(updated));
+
+        // Kirim update kolom 'is_banned' yang valid ke Supabase
+        await updateUserProfile(userId, { is_banned: newBanStatus });
+
+        addLog(`SECURITY: ${newBanStatus ? "BLOCKED/BANNED" : "UNBANNED"} ${userName.toUpperCase()} (${userId})`);
     };
 
     // 2. Ganti Role Kelas Mahasiswa

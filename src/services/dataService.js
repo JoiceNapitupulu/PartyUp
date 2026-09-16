@@ -7,8 +7,14 @@ export async function fetchAllProfiles() {
         try {
             const { data, error } = await supabase.from("profiles").select("*");
             if (!error && data && data.length > 0) {
-                localStorage.setItem("usersList", JSON.stringify(data));
-                return data;
+                // ✅ Normalisasi agar kedua nama properti (is_banned & isBanned) selalu ada
+                const normalized = data.map((u) => ({
+                    ...u,
+                    isBanned: u.is_banned ?? u.isBanned ?? false,
+                    is_banned: u.is_banned ?? u.isBanned ?? false,
+                }));
+                localStorage.setItem("usersList", JSON.stringify(normalized));
+                return normalized;
             }
         } catch (e) {
             console.warn("Supabase offline, using local users fallback.");
@@ -33,18 +39,18 @@ export async function fetchAllQuests() {
     return getStoredProjects();
 }
 
-export async function createNewQuest(newQuest) {
-    // 1. Simpan ke LocalStorage seketika (0ms)
-    const currentList = getStoredProjects();
-    const updated = [newQuest, ...currentList];
-    localStorage.setItem("projectsList", JSON.stringify(updated));
+export async function updateUserProfile(userId, updates) {
+    const currentUsers = getStoredUsers();
+    const updated = currentUsers.map((u) =>
+        u.user_id === userId ? { ...u, ...updates } : u
+    );
+    localStorage.setItem("usersList", JSON.stringify(updated));
 
-    // 2. Kirim ke Supabase Cloud
     if (supabase) {
         try {
-            await supabase.from("quests").insert([newQuest]);
+            await supabase.from("profiles").update(updates).eq("user_id", userId);
         } catch (e) {
-            console.error("Failed to sync new quest to Supabase", e);
+            console.error("Failed to update profile on Supabase", e);
         }
     }
     return updated;
