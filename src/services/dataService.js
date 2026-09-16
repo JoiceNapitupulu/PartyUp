@@ -1,12 +1,7 @@
 import { supabase } from "../utils/supabase";
 import { getStoredUsers, getStoredProjects } from "../utils/auth";
 
-// Re-export untuk kenyamanan modul yang membutuhkan akses utilitas penyimpanan lokal
-export { getStoredUsers, getStoredProjects };
-
 // 1. MODUL MAHASISWA & PROFIL (PROFILES)
-
-// Ambil semua profil (Cloud ➔ LocalStorage Fallback)
 export async function fetchAllProfiles() {
     if (supabase) {
         try {
@@ -22,43 +17,7 @@ export async function fetchAllProfiles() {
     return getStoredUsers();
 }
 
-// Pendaftaran Mahasiswa Baru (/register)
-export async function registerNewProfile(newProfile) {
-    const currentUsers = getStoredUsers();
-    const updated = [...currentUsers, newProfile];
-    localStorage.setItem("usersList", JSON.stringify(updated));
-
-    if (supabase) {
-        try {
-            await supabase.from("profiles").insert([newProfile]);
-        } catch (e) {
-            console.error("Failed to sync new profile to Supabase", e);
-        }
-    }
-    return updated;
-}
-
-// Update Profil oleh Admin / User (Ban, Ganti Role, Edit Bio)
-export async function updateUserProfile(userId, updates) {
-    const currentUsers = getStoredUsers();
-    const updated = currentUsers.map((u) =>
-        u.user_id === userId ? { ...u, ...updates } : u
-    );
-    localStorage.setItem("usersList", JSON.stringify(updated));
-
-    if (supabase) {
-        try {
-            await supabase.from("profiles").update(updates).eq("user_id", userId);
-        } catch (e) {
-            console.error("Failed to update profile on Supabase", e);
-        }
-    }
-    return updated;
-}
-
 // 2. MODUL PAPAN QUEST (QUESTS)
-
-// Ambil semua quest (Cloud ➔ LocalStorage Fallback)
 export async function fetchAllQuests() {
     if (supabase) {
         try {
@@ -74,12 +33,13 @@ export async function fetchAllQuests() {
     return getStoredProjects();
 }
 
-// Terbitkan Quest Baru (/board)
 export async function createNewQuest(newQuest) {
+    // 1. Simpan ke LocalStorage seketika (0ms)
     const currentList = getStoredProjects();
     const updated = [newQuest, ...currentList];
     localStorage.setItem("projectsList", JSON.stringify(updated));
 
+    // 2. Kirim ke Supabase Cloud
     if (supabase) {
         try {
             await supabase.from("quests").insert([newQuest]);
@@ -90,47 +50,7 @@ export async function createNewQuest(newQuest) {
     return updated;
 }
 
-// Verifikasi Quest oleh Admin (Toggle Badge ★ GUILD VERIFIED)
-export async function updateQuestVerification(projectId, isVerified) {
-    const currentList = getStoredProjects();
-    const updated = currentList.map((q) =>
-        (q.project_id === projectId || q.id === projectId) ? { ...q, is_verified: isVerified } : q
-    );
-    localStorage.setItem("projectsList", JSON.stringify(updated));
-
-    if (supabase) {
-        try {
-            await supabase
-                .from("quests")
-                .update({ is_verified: isVerified })
-                .eq("project_id", projectId);
-        } catch (e) {
-            console.error("Failed to update quest verification on Supabase", e);
-        }
-    }
-    return updated;
-}
-
-// Hapus Quest oleh Admin (/admin/quests)
-export async function deleteQuest(projectId) {
-    const currentList = getStoredProjects();
-    const updated = currentList.filter(
-        (q) => q.project_id !== projectId && q.id !== projectId
-    );
-    localStorage.setItem("projectsList", JSON.stringify(updated));
-
-    if (supabase) {
-        try {
-            await supabase.from("quests").delete().eq("project_id", projectId);
-        } catch (e) {
-            console.error("Failed to delete quest on Supabase", e);
-        }
-    }
-    return updated;
-}
-
 // 3. MODUL REKRUTMEN TIM (PARTY INVITATIONS)
-
 export async function fetchAllInvitations() {
     if (supabase) {
         try {

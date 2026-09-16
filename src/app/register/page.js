@@ -7,7 +7,6 @@ import Image from "next/image";
 import userData from "../../data/users.json";
 import PixelAvatar from "../../components/PixelAvatar";
 import { usersData } from "../../utils/auth";
-import { registerNewProfile } from "../../services/dataService";
 
 export default function Register() {
   const router = useRouter();
@@ -38,7 +37,7 @@ export default function Register() {
     return () => clearInterval(typingTimer);
   }, []);
 
-  const handleRegister = async (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
     if (!name.trim()) {
       alert("Please enter a character name!");
@@ -64,7 +63,7 @@ export default function Register() {
         portfolio: [],
       };
 
-      // 1. Simpan ke currentUser (Sesi Login Aktif) — instan, local-first
+      // 1. Simpan ke currentUser (Sesi Login Aktif)
       localStorage.setItem("isLoggedOut", "false");
       localStorage.setItem("currentUser", JSON.stringify(newUser));
 
@@ -76,12 +75,6 @@ export default function Register() {
       if (!activeUsersList.find(u => u.user_id === newUser.user_id)) {
         const updatedList = [...activeUsersList, newUser];
         localStorage.setItem("usersList", JSON.stringify(updatedList));
-      }
-
-      try {
-        await registerNewProfile(newUser);
-      } catch (cloudErr) {
-        console.error("Cloud profile sync failed, continuing with local session:", cloudErr);
       }
 
       window.dispatchEvent(new Event("auth-change")); // Update header secara instan
@@ -301,10 +294,11 @@ export default function Register() {
                         type="button"
                         key={role.name}
                         onClick={() => setSelectedRole(role.name)}
-                        className={`font-pixel text-[7px] leading-tight text-center px-1.5 py-2.5 border-2 rounded-lg cursor-pointer select-none transition-all ${isSelected
+                        className={`font-pixel text-[7px] leading-tight text-center px-1.5 py-2.5 border-2 rounded-lg cursor-pointer select-none transition-all ${
+                          isSelected
                             ? "bg-navy-blue border-retro-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] translate-x-[1px] translate-y-[1px]"
                             : "bg-slate-50 border-slate-300 text-retro-black hover:border-retro-black hover:bg-slate-100"
-                          }`}
+                        }`}
                       >
                         {role.name.toUpperCase()}
                       </button>
@@ -359,8 +353,8 @@ export default function Register() {
           <div className="text-center border-t border-slate-200 pt-3 relative z-20">
             <p className="font-sans text-xs text-gray-500">
               Already have a character?{" "}
-              <Link
-                href="/login"
+              <Link 
+                href="/login" 
                 className="font-pixel text-[9px] text-navy-blue font-bold hover:underline pl-1 cursor-pointer relative z-20 inline-block"
               >
                 Log in &gt;
