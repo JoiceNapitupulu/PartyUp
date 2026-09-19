@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { fetchAllQuests } from "../../services/dataService";
+import { fetchAllQuests, createNewQuest } from "../../services/dataService";
 import { useRouter } from "next/navigation";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";

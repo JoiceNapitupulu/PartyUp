@@ -63,12 +63,14 @@ export default function Profile() {
   const loadInvitationsAndApps = async () => {
     if (typeof window !== "undefined") {
       try {
-        // ✅ Ambil langsung dari Supabase Cloud (dengan fallback otomatis ke LocalStorage)
         const invites = await fetchAllInvitations();
-        setInvitations(invites && invites.length > 0 ? invites : INITIAL_PARTY_INVITATIONS);
+        const localInvites = JSON.parse(localStorage.getItem("party_invitations") || "[]");
+        // ✅ Prioritaskan data Supabase/LocalStorage, JANGAN fallback ke dummy awal
+        setInvitations(invites && invites.length > 0 ? invites : localInvites);
 
         const apps = await fetchAllApplications();
-        setApplications(apps || []);
+        const localApps = JSON.parse(localStorage.getItem("quest_applications") || "[]");
+        setApplications(apps && apps.length > 0 ? apps : localApps);
       } catch (e) {
         console.error("Error loading cloud invites/apps:", e);
       }
@@ -177,7 +179,6 @@ export default function Profile() {
     localStorage.setItem("usersList", JSON.stringify(updatedUsersList));
 
     window.dispatchEvent(new Event("auth-change"));
-    window.dispatchEvent(new Event("invitations-change"));
     alert("🎉 PARTY TERBENTUK! Kamu menerima undangan Quest. Level karakter bertambah!");
   };
 

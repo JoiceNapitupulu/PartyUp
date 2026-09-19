@@ -39,6 +39,21 @@ export async function fetchAllQuests() {
     return getStoredProjects();
 }
 
+export async function createNewQuest(newQuest) {
+    const currentList = getStoredProjects();
+    const updated = [newQuest, ...currentList];
+    localStorage.setItem("projectsList", JSON.stringify(updated));
+
+    if (supabase) {
+        try {
+            await supabase.from("quests").insert([newQuest]);
+        } catch (e) {
+            console.error("Failed to sync new quest to Supabase", e);
+        }
+    }
+    return updated;
+}
+
 export async function updateUserProfile(userId, updates) {
     const currentUsers = getStoredUsers();
     const updated = currentUsers.map((u) =>
@@ -94,14 +109,17 @@ export async function updateInvitationStatus(inviteId, newStatus) {
     );
     localStorage.setItem("party_invitations", JSON.stringify(updated));
 
+    // ✅ Gunakan UPSERT agar data otomatis dibuat jika belum ada di Supabase
     if (supabase) {
         try {
-            await supabase
-                .from("party_invitations")
-                .update({ status: newStatus })
-                .eq("id", inviteId);
+            const targetInv = updated.find((i) => i.id === inviteId);
+            if (targetInv) {
+                await supabase
+                    .from("party_invitations")
+                    .upsert([targetInv]);
+            }
         } catch (e) {
-            console.error("Failed to update invitation status on Supabase", e);
+            console.error("Failed to upsert invitation status on Supabase", e);
         }
     }
     return updated;
