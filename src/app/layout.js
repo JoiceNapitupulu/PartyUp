@@ -1,6 +1,7 @@
 import { Press_Start_2P, Inter } from "next/font/google";
 import "./globals.css";
 import Chatbot from "../components/Chatbot"; // Impor komponen chatbot melayang baru
+import RetroNotification from "../components/RetroNotification"; // Notifikasi Retro RPG Global
 
 const pressStart2P = Press_Start_2P({
   weight: "400",
@@ -25,6 +26,9 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${pressStart2P.variable} ${inter.variable}`} suppressHydrationWarning>
       <body className="font-sans bg-retro-bg text-retro-black min-h-screen flex flex-col selection:bg-pixel-green selection:text-retro-black">
         {children}
+
+        {/* Notifikasi Retro RPG Global */}
+        <RetroNotification />
 
         {/* Chatbot Melayang Global */}
         <Chatbot />

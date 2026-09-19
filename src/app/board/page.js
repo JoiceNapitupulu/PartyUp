@@ -10,6 +10,7 @@ import ProjectCard from "../../components/ProjectCard";
 import projectsData from "../../data/projects.json";
 import { useLanguage } from "../../utils/lang";
 import { isAdmin } from "../../utils/auth";
+import { notify } from "../../utils/notification";
 
 const CATEGORIES = [
   "ALL",
@@ -105,20 +106,22 @@ export default function Board() {
   const handleCreateQuest = async (e) => {
     e.preventDefault();
     if (!user) {
-      alert(
+      notify.warning(
         lang === "ID"
-          ? "⚠️ AKSES DITOLAK: Anda harus masuk ke akun karakter untuk menerbitkan Quest!"
-          : "⚠️ ACCESS DENIED: Please login to dispatch quests!"
+          ? "Anda harus masuk ke akun karakter untuk menerbitkan Quest!"
+          : "Please login to dispatch quests!",
+        "ACCESS RESTRICTED // GUILD NOTICE"
       );
       router.push("/login");
       return;
     }
 
     if (!newTitle.trim() || !newDescription.trim()) {
-      alert(
+      notify.warning(
         lang === "ID"
           ? "Mohon lengkapi judul dan deskripsi misi!"
-          : "Please fill out the quest title and description!"
+          : "Please fill out the quest title and description!",
+        "INCOMPLETE FORM // NOTICE"
       );
       return;
     }
@@ -146,6 +149,11 @@ export default function Board() {
     setProjects(updated);
     window.dispatchEvent(new Event("projects-change"));
 
+    notify.success(
+      `Quest "${newTitle.trim()}" berhasil diterbitkan ke Quest Board!`,
+      "QUEST DISPATCHED // SUCCESS"
+    );
+
     // Reset Form & Tutup Modal
     setIsModalOpen(false);
     setNewTitle("");
@@ -155,12 +163,12 @@ export default function Board() {
   };
 
   const handleDispatchClick = () => {
-  // ... fungsi handleDispatchClick berikutnya ...
     if (!user) {
-      alert(
+      notify.warning(
         lang === "ID"
-          ? "⚠️ AKSES DITOLAK: Silakan masuk ke akun karakter terlebih dahulu untuk menerbitkan Quest!"
-          : "[RESTRICTED] YOU MUST LOG IN TO THE GUILD TO DISPATCH QUESTS!"
+          ? "Silakan masuk ke akun karakter terlebih dahulu untuk menerbitkan Quest!"
+          : "YOU MUST LOG IN TO THE GUILD TO DISPATCH QUESTS!",
+        "ACCESS RESTRICTED // GUILD NOTICE"
       );
       router.push("/login");
       return;
@@ -168,10 +176,11 @@ export default function Board() {
 
     // arahkan admin ke panel audit quest
     if (isAdmin(user)) {
-      alert(
+      notify.info(
         lang === "ID"
-          ? "⚙️ MODE ADMIN: Anda adalah Administrator. Mengalihkan ke Panel Audit Quest..."
-          : "⚙️ ADMIN MODE: Redirecting to Quest Audit Panel..."
+          ? "Anda adalah Administrator. Mengalihkan ke Panel Audit Quest..."
+          : "Redirecting to Quest Audit Panel...",
+        "ADMIN MODE"
       );
       router.push("/admin/quests");
       return;

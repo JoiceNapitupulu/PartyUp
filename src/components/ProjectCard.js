@@ -10,6 +10,7 @@ import PixelAvatar from "./PixelAvatar";
 import { calculateUserLevel, getStoredUsers, isAdmin } from "../utils/auth";
 import { useLanguage } from "../utils/lang";
 import { sendQuestApplication } from "../services/dataService";
+import { notify } from "../utils/notification";
 
 const roleNames = [
   "Product Manager (PM)",
@@ -98,30 +99,33 @@ export default function ProjectCard({ project, showAuthor = true, onApply }) {
 
     // 1. Cek Apakah Belum Login (Tamu)
     if (!currentUser) {
-      alert(
+      notify.warning(
         lang === "ID"
-          ? "⚠️ AKSES DITOLAK: Anda harus masuk ke akun karakter (Login) untuk bergabung ke Party!"
-          : "[RESTRICTED] YOU MUST JOIN THE GUILD (LOG IN) TO JOIN PARTIES!"
+          ? "Anda harus masuk ke akun karakter (Login) untuk bergabung ke Party!"
+          : "YOU MUST JOIN THE GUILD (LOG IN) TO JOIN PARTIES!",
+        "ACCESS RESTRICTED // GUILD NOTICE"
       );
       router.push("/login");
       return;
     }
 
     if (isAdmin(currentUser)) {
-      alert(
+      notify.warning(
         lang === "ID"
-          ? "⚠️ AKSES ADMIN: Akun Administrator bertugas memoderasi sistem dan tidak dapat mendaftar ke Party mahasiswa!"
-          : "⚠️ ADMIN ACCESS: Administrator cannot apply to student parties!"
+          ? "Akun Administrator bertugas memoderasi sistem dan tidak dapat mendaftar ke Party mahasiswa!"
+          : "Administrator cannot apply to student parties!",
+        "ADMIN RESTRICTION"
       );
       return;
     }
 
     // 3. Cek Apakah Pembuat Quest Sendiri
     if (isOwner) {
-      alert(
+      notify.info(
         lang === "ID"
-          ? "⚠️ PERINGATAN: Anda adalah ketua dari Quest ini!"
-          : "⚠️ YOU ARE THE LEADER OF THIS QUEST!"
+          ? "Anda adalah ketua dari Quest ini!"
+          : "You are the leader of this quest!",
+        "QUEST LEADER NOTICE"
       );
       return;
     }

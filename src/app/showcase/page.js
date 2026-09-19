@@ -11,9 +11,10 @@ import PixelTechIcon from "../../components/PixelTechIcon";
 import PortfolioModal from "../../components/PortfolioModal";
 import usersData from "../../data/users.json";
 import projectsData from "../../data/projects.json";
-import { calculateUserLevel, getStoredUsers, getStoredProjects } from "../../utils/auth";
+import { calculateUserLevel, getStoredUsers, getStoredProjects, getCurrentUser } from "../../utils/auth";
 import { useLanguage, translations } from "../../utils/lang";
 import { fetchAllProfiles, fetchAllQuests, sendPartyInvitation } from "../../services/dataService";
+import { notify } from "../../utils/notification";
 
 // Helper Banner Default
 const getDefaultBanner = (name) => {
@@ -75,20 +76,30 @@ export default function Showcase() {
   useEffect(() => {
     const loadShowcaseData = async () => {
       if (typeof window !== "undefined") {
-        // ✅ Ambil data kreator & quest terbaru dari Supabase
-        const activeUsers = await fetchAllProfiles();
-        setUsers(activeUsers && activeUsers.length > 0 ? activeUsers : usersData);
+        // 1. ✅ Baca sesi login aktif secara langsung
+        const activeUser = getCurrentUser();
+        setCurrentUser(activeUser);
 
-        const activeProjects = await fetchAllQuests();
-        setProjects(activeProjects && activeProjects.length > 0 ? activeProjects : projectsData);
+        // 2. Ambil data kreator & quest dari Supabase / LocalStorage
+        try {
+          const activeUsers = await fetchAllProfiles();
+          setUsers(activeUsers && activeUsers.length > 0 ? activeUsers : usersData);
 
-        if (activeProjects && activeProjects[0]) {
-          setSelectedProject(activeProjects[0].title);
+          const activeProjects = await fetchAllQuests();
+          setProjects(activeProjects && activeProjects.length > 0 ? activeProjects : projectsData);
+
+          if (activeProjects && activeProjects[0]) {
+            setSelectedProject(activeProjects[0].title);
+          }
+        } catch (err) {
+          console.error("Error loading showcase cloud data:", err);
         }
       }
     };
 
     loadShowcaseData();
+    window.addEventListener("auth-change", loadShowcaseData);
+    return () => window.removeEventListener("auth-change", loadShowcaseData);
   }, []);
 
   // Filter Quest Terbuka yang DIPIMPIN oleh user yang sedang login
@@ -197,6 +208,10 @@ export default function Showcase() {
     // ✅ Simpan ke Supabase Cloud & LocalStorage
     await sendPartyInvitation(newInvitation);
     window.dispatchEvent(new Event("invitations-change"));
+    notify.success(
+      `Undangan party untuk "${selectedProject}" berhasil dikirim ke ${selectedUser.name}!`,
+      "INVITATION DISPATCHED"
+    );
 
     setTimeout(() => {
       setInvitationStatus("success");
@@ -422,7 +437,12 @@ export default function Showcase() {
                           onClick={(e) => {
                             e.stopPropagation();
                             if (!currentUser) {
-                              alert("⚠️ ACCESS DENIED: Please log in to recruit party members!");
+                              notify.warning(
+                                lang === "ID"
+                                  ? "Silakan login terlebih dahulu untuk merekrut anggota party!"
+                                  : "Please log in to recruit party members!",
+                                "ACCESS RESTRICTED // GUILD NOTICE"
+                              );
                               return;
                             }
                             setSelectedUser(item.user);

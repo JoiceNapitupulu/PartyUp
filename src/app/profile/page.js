@@ -18,6 +18,7 @@ import {
   updateInvitationStatus,
   updateApplicationStatus
 } from "../../services/dataService";
+import { notify } from "../../utils/notification";
 
 const INITIAL_PARTY_INVITATIONS = [
   {
@@ -179,7 +180,10 @@ export default function Profile() {
     localStorage.setItem("usersList", JSON.stringify(updatedUsersList));
 
     window.dispatchEvent(new Event("auth-change"));
-    alert("🎉 PARTY TERBENTUK! Kamu menerima undangan Quest. Level karakter bertambah!");
+    notify.success(
+      "PARTY TERBENTUK! Kamu menerima undangan Quest. Level karakter bertambah!",
+      "PARTY FORMED // LEVEL UP!"
+    );
   };
 
   // 2. Tolak Undangan
@@ -187,6 +191,7 @@ export default function Profile() {
     const updated = await updateInvitationStatus(inviteId, "Declined");
     setInvitations(updated);
     window.dispatchEvent(new Event("invitations-change"));
+    notify.info("Undangan Quest telah ditolak.", "INVITATION DECLINED");
   };
 
   // Handler Cancel Sent Invite
@@ -195,6 +200,7 @@ export default function Profile() {
     setInvitations(updated);
     localStorage.setItem("party_invitations", JSON.stringify(updated));
     window.dispatchEvent(new Event("invitations-change"));
+    notify.info("Undangan terkirim telah dibatalkan.", "INVITATION CANCELED");
   };
 
   // 3. Setujui Pelamar
@@ -202,7 +208,7 @@ export default function Profile() {
     const updated = await updateApplicationStatus(appId, "Approved");
     setApplications(updated);
     window.dispatchEvent(new Event("applications-change"));
-    alert("✓ PELAMAR BERHASIL DIREKRUT KE DALAM PARTY!");
+    notify.success("Pelamar berhasil direkrut ke dalam Party!", "APPLICANT ACCEPTED");
   };
 
   // 4. Tolak Pelamar
@@ -210,6 +216,7 @@ export default function Profile() {
     const updated = await updateApplicationStatus(appId, "Rejected");
     setApplications(updated);
     window.dispatchEvent(new Event("applications-change"));
+    notify.info("Lamaran Party telah ditolak.", "APPLICANT DECLINED");
   };
 
   // Normalisasi seluruh invitation untuk kompatibilitas nama field
@@ -556,8 +563,8 @@ export default function Profile() {
                         type="button"
                         onClick={() => setInvitationFilter("incoming")}
                         className={`font-pixel text-[8px] px-3 py-1.5 border transition-all cursor-pointer rounded-lg shadow-sm ${invitationFilter === "incoming"
-                            ? "bg-pixel-green text-retro-black border-retro-black font-bold"
-                            : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
+                          ? "bg-pixel-green text-retro-black border-retro-black font-bold"
+                          : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
                           }`}
                       >
                         📥 {lang === "ID" ? "MASUK" : "INCOMING"} ({myIncomingInvites.length})
@@ -567,8 +574,8 @@ export default function Profile() {
                         type="button"
                         onClick={() => setInvitationFilter("outgoing")}
                         className={`font-pixel text-[8px] px-3 py-1.5 border transition-all cursor-pointer rounded-lg shadow-sm ${invitationFilter === "outgoing"
-                            ? "bg-yellow-400 text-retro-black border-retro-black font-bold"
-                            : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
+                          ? "bg-yellow-400 text-retro-black border-retro-black font-bold"
+                          : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
                           }`}
                       >
                         📤 {lang === "ID" ? "TERKIRIM" : "SENT"} ({myOutgoingInvites.length})
@@ -578,8 +585,8 @@ export default function Profile() {
                         type="button"
                         onClick={() => setInvitationFilter("applications")}
                         className={`font-pixel text-[8px] px-3 py-1.5 border transition-all cursor-pointer rounded-lg shadow-sm ${invitationFilter === "applications"
-                            ? "bg-sky-400 text-retro-black border-retro-black font-bold"
-                            : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
+                          ? "bg-sky-400 text-retro-black border-retro-black font-bold"
+                          : "bg-[#18233a] text-gray-300 border-gray-600 hover:text-white"
                           }`}
                       >
                         ⚔️ {lang === "ID" ? "PELAMAR" : "APPLICANTS"} ({incomingApplications.length})
@@ -643,8 +650,8 @@ export default function Profile() {
                                 ) : (
                                   <span
                                     className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${inv.status === "Accepted"
-                                        ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
-                                        : "bg-red-500/20 text-red-400 border-red-500"
+                                      ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
+                                      : "bg-red-500/20 text-red-400 border-red-500"
                                       }`}
                                   >
                                     STATUS: {inv.status?.toUpperCase()}
@@ -701,10 +708,10 @@ export default function Profile() {
                               <div className="flex items-center gap-2 shrink-0">
                                 <span
                                   className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${inv.status === "Accepted"
-                                      ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
-                                      : inv.status === "Declined"
-                                        ? "bg-red-500/20 text-red-400 border-red-500"
-                                        : "bg-yellow-400/20 text-yellow-300 border-yellow-400 animate-pulse"
+                                    ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
+                                    : inv.status === "Declined"
+                                      ? "bg-red-500/20 text-red-400 border-red-500"
+                                      : "bg-yellow-400/20 text-yellow-300 border-yellow-400 animate-pulse"
                                     }`}
                                 >
                                   {inv.status === "Pending" ? "PENDING RESPONSE ⏳" : `STATUS: ${inv.status?.toUpperCase()}`}
@@ -784,8 +791,8 @@ export default function Profile() {
                               ) : (
                                 <span
                                   className={`font-pixel text-[7.5px] px-2.5 py-1 rounded border font-bold ${app.status === "Approved"
-                                      ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
-                                      : "bg-red-500/20 text-red-400 border-red-500"
+                                    ? "bg-pixel-green/20 text-pixel-green border-pixel-green"
+                                    : "bg-red-500/20 text-red-400 border-red-500"
                                     }`}
                                 >
                                   STATUS: {app.status?.toUpperCase()}
