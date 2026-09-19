@@ -13,7 +13,6 @@ import usersData from "../../data/users.json";
 import projectsData from "../../data/projects.json";
 import { calculateUserLevel, getStoredUsers, getStoredProjects } from "../../utils/auth";
 import { useLanguage, translations } from "../../utils/lang";
-import { sendPartyInvitation } from "../../services/dataService";
 import { fetchAllProfiles, fetchAllQuests, sendPartyInvitation } from "../../services/dataService";
 
 // Helper Banner Default
