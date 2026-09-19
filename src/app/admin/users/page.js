@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import Footer from "@/components/Footer";
 import PixelAvatar from "@/components/PixelAvatar";
 import PixelButton from "@/components/PixelButton";
 import { usersData, triggerAuthChange, calculateUserLevel } from "@/utils/auth";
@@ -123,20 +122,22 @@ export default function AdminUsers() {
     }, [users, search, selectedRole]);
 
     return (
-        <div className="flex-grow p-4 md:p-8 flex flex-col gap-6 text-white font-sans bg-[#0c1322] min-h-screen selection:bg-yellow-400 selection:text-black">
+        // PERBAIKAN: latar halaman & panel disamakan ke tema gelap hijau
+        // (senada sidebar & Dashboard), bukan navy-blue lagi.
+        <div className="flex-grow p-4 md:p-8 flex flex-col gap-6 text-white font-sans bg-[#0a120c] min-h-screen selection:bg-yellow-400 selection:text-black">
 
             {/* 1. TOP HEADER TITLE & TELEMETRY BADGE */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b-4 border-retro-black pb-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b-4 border-pixel-green/25 pb-4">
                 <div>
-                    <span className="font-pixel text-[8.5px] text-yellow-400 uppercase tracking-wider block mb-1">
+                    <span className="font-pixel text-[8.5px] text-pixel-green uppercase tracking-wider block mb-1">
             // GUILD COMMAND CONTROL
                     </span>
-                    <h1 className="font-pixel text-base md:text-xl text-yellow-300">
+                    <h1 className="font-pixel text-base md:text-xl text-white">
                         [ MANAGE GUILD ADVENTURERS ]
                     </h1>
                 </div>
 
-                <div className="flex items-center gap-2 bg-[#121b2d] border-2 border-retro-black px-3.5 py-1.5 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                <div className="flex items-center gap-2 bg-[#0f1b13] border-2 border-pixel-green/30 px-3.5 py-1.5 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,0.6)]">
                     <span className="w-2.5 h-2.5 rounded-full bg-pixel-green animate-pulse" />
                     <span className="font-pixel text-[8px] text-pixel-green">
                         TOTAL: {users.length} REGISTERED
@@ -145,7 +146,7 @@ export default function AdminUsers() {
             </div>
 
             {/* 2. FILTER & SEARCH TOOLBAR */}
-            <div className="bg-[#121b2d] border-4 border-retro-black p-4 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row gap-3 items-center justify-between">
+            <div className="bg-[#0f1b13] border-4 border-pixel-green/25 p-4 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,0.6)] flex flex-col md:flex-row gap-3 items-center justify-between">
 
                 {/* Search Bar */}
                 <div className="w-full md:w-1/2 relative">
@@ -154,7 +155,7 @@ export default function AdminUsers() {
                         placeholder="Cari nama, ID mahasiswa, universitas, atau role..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full font-sans text-xs p-2.5 pl-8 bg-[#18233a] text-white border-2 border-retro-black focus:outline-none focus:border-yellow-400 rounded-xl"
+                        className="w-full font-sans text-xs p-2.5 pl-8 bg-[#132a1c] text-white border-2 border-pixel-green/20 focus:outline-none focus:border-pixel-green rounded-xl"
                     />
                     <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs">🔍</span>
                     {search && (
@@ -172,7 +173,7 @@ export default function AdminUsers() {
                     <select
                         value={selectedRole}
                         onChange={(e) => setSelectedRole(e.target.value)}
-                        className="w-full font-sans text-xs p-2.5 bg-[#18233a] text-white border-2 border-retro-black focus:outline-none focus:border-yellow-400 appearance-none cursor-pointer rounded-xl"
+                        className="w-full font-sans text-xs p-2.5 bg-[#132a1c] text-white border-2 border-pixel-green/20 focus:outline-none focus:border-pixel-green appearance-none cursor-pointer rounded-xl"
                     >
                         <option value="ALL">Semua Kelas ({users.length})</option>
                         {OFFICIAL_ROLES.map((r) => (
@@ -181,7 +182,7 @@ export default function AdminUsers() {
                             </option>
                         ))}
                     </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-yellow-400 text-xs">
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-pixel-green text-xs">
                         ▼
                     </div>
                 </div>
@@ -189,12 +190,12 @@ export default function AdminUsers() {
             </div>
 
             {/* 3. USER MANAGEMENT GRID (CYBERPUNK CARDS) */}
-            <div className="bg-[#121b2d] border-4 border-retro-black p-6 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-4 text-left">
-                <div className="flex justify-between items-center border-b-2 border-gray-700/80 pb-2">
-                    <span className="font-pixel text-[8.5px] text-yellow-400 uppercase tracking-wider">
+            <div className="bg-[#0f1b13] border-4 border-pixel-green/25 p-6 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] flex flex-col gap-4 text-left">
+                <div className="flex justify-between items-center border-b-2 border-pixel-green/20 pb-2">
+                    <span className="font-pixel text-[8.5px] text-pixel-green uppercase tracking-wider">
             // ADVENTURER DIRECTORY ROSTER ({filteredUsers.length})
                     </span>
-                    <span className="font-pixel text-[7.5px] bg-[#18233a] text-gray-400 border border-retro-black px-2 py-0.5 rounded">
+                    <span className="font-pixel text-[7.5px] bg-[#132a1c] text-emerald-200/70 border border-pixel-green/20 px-2 py-0.5 rounded">
                         HYBRID SYNCED
                     </span>
                 </div>
@@ -207,15 +208,15 @@ export default function AdminUsers() {
                         return (
                             <div
                                 key={item.user_id}
-                                className={`p-4 border-2 border-retro-black rounded-xl flex flex-col justify-between gap-3.5 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${item.isBanned
-                                        ? "bg-red-950/30 border-red-500/60 opacity-75"
-                                        : "bg-[#18233a] hover:border-yellow-400"
+                                className={`p-4 border-2 border-retro-black rounded-xl flex flex-col justify-between gap-3.5 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,0.6)] ${item.isBanned
+                                    ? "bg-red-950/30 border-red-500/60 opacity-75"
+                                    : "bg-[#132a1c] hover:border-pixel-green"
                                     }`}
                             >
                                 {/* Upper Details */}
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="flex items-center gap-3 min-w-0">
-                                        <div className="w-11 h-11 bg-retro-black border-2 border-yellow-400 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                                        <div className="w-11 h-11 bg-retro-black border-2 border-pixel-green rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
                                             <PixelAvatar role={item.role} size="w-full h-full" />
                                         </div>
 
@@ -233,7 +234,7 @@ export default function AdminUsers() {
                                             <p className="font-sans text-[10px] text-gray-300 truncate mt-0.5">
                                                 {item.university || "Universitas Indonesia"}
                                             </p>
-                                            <p className="font-pixel text-[7.5px] text-yellow-300 mt-0.5">
+                                            <p className="font-pixel text-[7.5px] text-emerald-200 mt-0.5">
                                                 ID: {item.user_id} • Semester {item.semester || 4} • <span className="text-pixel-green font-bold">LV.{userLevel}</span>
                                             </p>
                                         </div>
@@ -244,26 +245,26 @@ export default function AdminUsers() {
                                         value={item.role}
                                         disabled={item.isBanned || isSelfAdmin}
                                         onChange={(e) => handleChangeRole(item.user_id, item.name, e.target.value)}
-                                        className="font-sans text-[10px] p-1.5 border-2 border-retro-black bg-[#121b2d] text-yellow-300 focus:outline-none rounded-lg cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                                        className="font-sans text-[10px] p-1.5 border-2 border-pixel-green/30 bg-[#0f1b13] text-emerald-200 focus:outline-none rounded-lg cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
                                     >
                                         {OFFICIAL_ROLES.map((r) => (
-                                            <option key={r} value={r} className="bg-[#121b2d] text-white">
+                                            <option key={r} value={r} className="bg-[#0f1b13] text-white">
                                                 {r}
                                             </option>
                                         ))}
-                                        <option value="Admin" disabled className="bg-[#121b2d]">
+                                        <option value="Admin" disabled className="bg-[#0f1b13]">
                                             Admin (System)
                                         </option>
                                     </select>
                                 </div>
 
                                 {/* Bottom Actions */}
-                                <div className="border-t border-gray-700/60 pt-2.5 flex items-center gap-2">
+                                <div className="border-t border-pixel-green/15 pt-2.5 flex items-center gap-2">
                                     <button
                                         type="button"
                                         onClick={() => handleImpersonate(item)}
                                         disabled={item.isBanned || isSelfAdmin}
-                                        className="flex-1 font-pixel text-[8px] py-2 bg-yellow-400 hover:bg-yellow-300 text-retro-black font-bold border-2 border-retro-black rounded-lg cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                                        className="flex-1 font-pixel text-[8px] py-2 bg-sky-400 hover:bg-sky-300 text-retro-black font-bold border-2 border-retro-black rounded-lg cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                                     >
                                         [LOGIN AS 👤]
                                     </button>
@@ -273,8 +274,8 @@ export default function AdminUsers() {
                                         onClick={() => handleToggleBan(item.user_id, item.name)}
                                         disabled={isSelfAdmin}
                                         className={`font-pixel text-[8px] py-2 px-4 border-2 border-retro-black font-bold rounded-lg cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] disabled:opacity-30 disabled:cursor-not-allowed transition-all ${item.isBanned
-                                                ? "bg-pixel-green hover:bg-green-400 text-retro-black"
-                                                : "bg-red-600 hover:bg-red-700 text-white"
+                                            ? "bg-pixel-green hover:bg-green-400 text-retro-black"
+                                            : "bg-red-600 hover:bg-red-700 text-white"
                                             }`}
                                     >
                                         {item.isBanned ? "UNBAN ✓" : "BAN ✗"}
@@ -288,9 +289,9 @@ export default function AdminUsers() {
             </div>
 
             {/* 4. RETRO SECURITY TERMINAL AUDIT LOGS */}
-            <div className="bg-black border-4 border-retro-black p-4 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] text-left">
-                <div className="flex justify-between items-center border-b border-gray-800 pb-2 mb-2">
-                    <span className="font-pixel text-[8px] text-yellow-400">// LIVE AUDIT LOGS &amp; EVENT TELEMETRY</span>
+            <div className="bg-black border-4 border-pixel-green/25 p-4 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,0.6)] text-left">
+                <div className="flex justify-between items-center border-b border-pixel-green/15 pb-2 mb-2">
+                    <span className="font-pixel text-[8px] text-pixel-green">// LIVE AUDIT LOGS &amp; EVENT TELEMETRY</span>
                     <span className="font-pixel text-[7px] text-pixel-green animate-pulse">● LOGGING ACTIVE</span>
                 </div>
                 <div className="font-mono text-[10px] text-pixel-green space-y-1 max-h-[90px] overflow-y-auto custom-scrollbar">
@@ -300,7 +301,6 @@ export default function AdminUsers() {
                 </div>
             </div>
 
-            <Footer />
         </div>
     );
 }

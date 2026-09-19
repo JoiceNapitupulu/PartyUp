@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Footer from "../../components/Footer";
 import { usersData, projectsData } from "../../utils/auth";
 
 const PixelIcon = ({ rows, className = "w-4 h-4" }) => {
@@ -32,33 +31,35 @@ const ICONS = {
 
 // Kartu ringkas: label kecil, ikon pixel di pojok, angka besar. Dibuat reusable
 // biar konsisten & gampang dirapikan tanpa mengubah data/logic di bawah.
+// PALET DIGANTI ke tema gelap hijau senada sidebar (bukan putih lagi).
 const StatCard = ({ label, value, icon, accentClass }) => (
-    <div className="bg-white rounded-xl border-4 border-retro-black p-4 flex flex-col gap-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+    <div className="bg-[#0f1b13] rounded-xl border-4 border-pixel-green/25 p-4 flex flex-col gap-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.6)]">
         <div className="flex items-start justify-between gap-2">
-            <span className="font-pixel text-[7px] text-retro-dark-gray leading-relaxed tracking-wide">
+            <span className="font-pixel text-[7px] text-emerald-200/70 leading-relaxed tracking-wide">
                 {label}
             </span>
             <span className={`w-7 h-7 shrink-0 rounded-lg flex items-center justify-center ${accentClass}`}>
                 <PixelIcon rows={icon} className="w-3.5 h-3.5" />
             </span>
         </div>
-        <span className="font-pixel text-lg text-retro-black">{value}</span>
+        <span className="font-pixel text-lg text-white">{value}</span>
     </div>
 );
 
 // Baris progress bar dipakai ulang untuk kapasitas & keamanan supaya seragam.
+// Track & label ikut dipadankan ke tema gelap hijau.
 const ProgressRow = ({ icon, label, valueLabel, percent, barClass }) => (
     <div>
-        <div className="flex items-center justify-between font-pixel text-[8px] text-retro-black mb-1.5">
+        <div className="flex items-center justify-between font-pixel text-[8px] text-white mb-1.5">
             <span className="flex items-center gap-2">
-                <span className="text-retro-dark-gray">
+                <span className="text-emerald-300">
                     <PixelIcon rows={icon} className="w-3 h-3" />
                 </span>
                 {label}
             </span>
-            <span>{valueLabel}</span>
+            <span className="text-emerald-200">{valueLabel}</span>
         </div>
-        <div className="h-4 rounded-md bg-retro-light-gray border-2 border-retro-black p-0.5">
+        <div className="h-4 rounded-md bg-[#16241a] border-2 border-pixel-green/25 p-0.5">
             <div
                 className={`h-full rounded-sm ${barClass} transition-all duration-500`}
                 style={{ width: `${percent}%` }}
@@ -97,16 +98,19 @@ export default function AdminDashboard() {
     const capacityPercent = Math.min(Math.round((projectsCount / 10) * 100), 100);
 
     return (
-        <div className="flex-grow p-6 md:p-8 flex flex-col gap-6">
+        // PERBAIKAN UTAMA: background halaman sekarang gelap hijau senada
+        // sidebar (bukan putih lagi), supaya seluruh dashboard admin terasa
+        // satu tema yang konsisten.
+        <div className="flex-grow min-h-screen bg-[#0a120c] p-6 md:p-8 flex flex-col gap-6">
             {/* HEADER */}
-            <div className="flex flex-wrap justify-between items-end gap-3 border-b-2 border-retro-black pb-4">
+            <div className="flex flex-wrap justify-between items-end gap-3 border-b-2 border-pixel-green/25 pb-4">
                 <div className="flex flex-col gap-1">
-                    <h1 className="font-pixel text-base text-retro-black">DATABASE DIAGNOSTICS & STATUS</h1>
-                    <p className="font-sans text-xs text-retro-dark-gray">
+                    <h1 className="font-pixel text-base text-white">DATABASE DIAGNOSTICS & STATUS</h1>
+                    <p className="font-sans text-xs text-emerald-200/60">
                         Ringkasan aktivitas guild dan kesehatan sistem PartyUp! secara real-time.
                     </p>
                 </div>
-                <span className="font-pixel text-[8px] text-white bg-retro-black px-2.5 py-1.5 rounded-md">
+                <span className="font-pixel text-[8px] text-pixel-green bg-[#0f1b13] border border-pixel-green/30 px-2.5 py-1.5 rounded-md">
                     SYS_TIME: 2026_EST
                 </span>
             </div>
@@ -117,29 +121,29 @@ export default function AdminDashboard() {
                     label="TOTAL ACADEMY ADVENTURERS"
                     value={`${usersCount} CHARS`}
                     icon={ICONS.users}
-                    accentClass="bg-navy-blue/10 text-navy-blue"
+                    accentClass="bg-sky-400/10 text-sky-300"
                 />
                 <StatCard
                     label="DISPATCHED COMMUNITY QUESTS"
                     value={`${projectsCount} QUESTS`}
                     icon={ICONS.quest}
-                    accentClass="bg-pixel-green/20 text-pixel-green-dark"
+                    accentClass="bg-pixel-green/15 text-pixel-green"
                 />
                 <StatCard
                     label="BANNED ACCOUNTS"
                     value={`${bannedCount} BLOCKED`}
                     icon={ICONS.ban}
-                    accentClass="bg-red-500/10 text-red-500"
+                    accentClass="bg-red-500/15 text-red-400"
                 />
             </div>
 
             {/* Metrics System */}
-            <div className="bg-white rounded-xl border-4 border-retro-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-5">
+            <div className="bg-[#0f1b13] rounded-xl border-4 border-pixel-green/25 p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.6)] flex flex-col gap-5">
                 <div className="flex items-center justify-between">
-                    <span className="font-pixel text-[9px] text-navy-blue tracking-wide">
+                    <span className="font-pixel text-[9px] text-pixel-green tracking-wide">
                         SYSTEM CAPACITY AND ENGINE READOUTS
                     </span>
-                    <span className="w-7 h-7 shrink-0 rounded-lg bg-navy-blue/10 text-navy-blue flex items-center justify-center">
+                    <span className="w-7 h-7 shrink-0 rounded-lg bg-pixel-green/10 text-pixel-green flex items-center justify-center">
                         <PixelIcon rows={ICONS.gauge} className="w-3.5 h-3.5" />
                     </span>
                 </div>
@@ -157,12 +161,10 @@ export default function AdminDashboard() {
                         label="DATABASE SECURITY STATUS"
                         valueLabel="100% SECURE"
                         percent={100}
-                        barClass="bg-navy-blue border border-black"
+                        barClass="bg-sky-400 border border-black"
                     />
                 </div>
             </div>
-
-            <Footer />
         </div>
     );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Footer from "@/components/Footer";
 import { projectsData } from "@/utils/auth";
 
 export default function AdminQuests() {
@@ -39,45 +38,84 @@ export default function AdminQuests() {
     };
 
     return (
-        <div className="flex-grow p-6 md:p-8 flex flex-col gap-6">
-            <div className="flex justify-between items-center border-b-2 border-retro-black pb-4">
-                <h1 className="font-pixel text-base text-retro-black">QUEST BOARD SANITIZATION &amp; VERIFICATION</h1>
-                <span className="font-pixel text-[8px] text-retro-dark-gray">SYS_QUESTS: ACTIVE</span>
+        // BACKGROUND UTAMA: Menggunakan bg-[#0a120c] sama persis dengan Dashboard
+        <div className="flex-grow min-h-screen bg-[#0a120c] p-6 md:p-8 flex flex-col gap-6 text-white">
+
+            {/* HEADER: Seragam dengan header Diagnostics & Status */}
+            <div className="flex flex-wrap justify-between items-end gap-3 border-b-2 border-pixel-green/25 pb-4">
+                <div className="flex flex-col gap-1">
+                    <h1 className="font-pixel text-base text-white">QUEST BOARD SANITIZATION &amp; AUDIT</h1>
+                    <p className="font-sans text-xs text-emerald-200/60">
+                        Audit integritas quest, status verifikasi guild, dan sanitasi database.
+                    </p>
+                </div>
+                <span className="font-pixel text-[8px] text-pixel-green bg-[#0f1b13] border border-pixel-green/30 px-2.5 py-1.5 rounded-md">
+                    SYS_QUESTS: ACTIVE ({projects.length})
+                </span>
             </div>
 
-            <div className="bg-white border-4 border-retro-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-4">
-                <span className="font-pixel text-[9px] text-navy-blue">
-                    // AUDIT &amp; VERIFY ACTIVE QUESTS
-                </span>
+            {/* CONTAINER UTAMA: Format Box bg-[#0f1b13] rounded-xl border-4 */}
+            <div className="bg-[#0f1b13] rounded-xl border-4 border-pixel-green/25 p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.6)] flex flex-col gap-5">
+                <div className="flex items-center justify-between border-b border-pixel-green/15 pb-3">
+                    <span className="font-pixel text-[9px] text-pixel-green tracking-wide">
+                        // AUDIT &amp; VERIFY ACTIVE QUESTS
+                    </span>
+                    <span className="font-pixel text-[8px] text-emerald-200/70">
+                        ROSTER COUNT: {projects.length} QUESTS
+                    </span>
+                </div>
+
+                {/* Grid Daftar Quest */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {projects.map((item) => (
-                        <div key={item.project_id} className={`p-4 border-2 border-retro-black bg-retro-light-gray flex flex-col justify-between gap-3 ${item.isVerified ? "ring-2 ring-yellow-400 bg-amber-50/60" : ""}`}>
+                        <div
+                            key={item.project_id}
+                            className={`p-4 rounded-xl border-2 flex flex-col justify-between gap-3 transition-all ${item.isVerified
+                                    ? "bg-[#16241a] border-pixel-green/80 shadow-[0_0_10px_rgba(0,255,102,0.15)]"
+                                    : "bg-[#0a120c] border-pixel-green/25 hover:border-pixel-green/50"
+                                }`}
+                        >
                             <div className="text-left">
-                                <div className="flex items-center justify-between gap-2 mb-1">
-                                    <p className="font-pixel text-[9px] text-retro-black truncate font-bold">{item.title}</p>
-                                    {item.isVerified && (
-                                        <span className="font-pixel text-[7px] bg-yellow-400 text-retro-black px-1.5 py-0.5 border border-retro-black font-bold shrink-0">
+                                <div className="flex items-start justify-between gap-2 mb-1.5">
+                                    <p className="font-pixel text-[9px] text-white font-bold leading-relaxed">
+                                        {item.title}
+                                    </p>
+                                    {item.isVerified ? (
+                                        <span className="font-pixel text-[7px] bg-pixel-green text-black px-2 py-0.5 rounded font-bold shrink-0">
                                             ★ VERIFIED
+                                        </span>
+                                    ) : (
+                                        <span className="font-pixel text-[7px] bg-[#16241a] text-emerald-200/60 border border-pixel-green/20 px-1.5 py-0.5 rounded shrink-0">
+                                            UNVERIFIED
                                         </span>
                                     )}
                                 </div>
-                                <p className="font-pixel text-[7px] text-retro-dark-gray">ID: {item.project_id} • Author: {item.author} • Category: {item.category}</p>
-                                <p className="font-sans text-[11px] text-retro-dark-gray leading-tight mt-1 opacity-80">{item.description}</p>
+
+                                <p className="font-pixel text-[7px] text-emerald-200/70">
+                                    ID: {item.project_id} • AUTHOR: {item.author}
+                                </p>
+                                <p className="font-pixel text-[7px] text-emerald-300/50 mt-0.5">
+                                    CAT: {item.category}
+                                </p>
+                                <p className="font-sans text-[11px] text-gray-300 leading-snug mt-2 opacity-85">
+                                    {item.description}
+                                </p>
                             </div>
-                            <div className="flex justify-end gap-2 border-t border-retro-black/10 pt-2">
+
+                            {/* Tombol Aksi Senada Palet Dashboard */}
+                            <div className="flex justify-end gap-2 border-t border-pixel-green/15 pt-3 mt-1">
                                 <button
                                     onClick={() => handleToggleVerify(item.project_id, item.title)}
-                                    className={`font-pixel text-[7px] py-1 px-3 border-2 border-retro-black select-none cursor-pointer active:translate-y-[1px] ${
-                                        item.isVerified
-                                            ? "bg-yellow-400 text-retro-black hover:bg-yellow-300 font-bold"
-                                            : "bg-navy-blue text-white hover:bg-navy-light"
-                                    }`}
+                                    className={`font-pixel text-[7px] py-1.5 px-3 rounded-lg border select-none cursor-pointer transition-colors active:translate-y-[1px] ${item.isVerified
+                                            ? "bg-pixel-green text-black border-pixel-green font-bold hover:bg-[#20e872]"
+                                            : "bg-pixel-green/15 text-pixel-green border-pixel-green/40 hover:bg-pixel-green hover:text-black"
+                                        }`}
                                 >
                                     {item.isVerified ? "[★ VERIFIED ✓]" : "[VERIFY QUEST]"}
                                 </button>
                                 <button
                                     onClick={() => handleDeleteQuest(item.project_id, item.title)}
-                                    className="font-pixel text-[7px] py-1 px-3 bg-red-500 text-white border-2 border-retro-black hover:bg-red-600 select-none cursor-pointer active:translate-y-[1px]"
+                                    className="font-pixel text-[7px] py-1.5 px-3 bg-red-500/15 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500 hover:text-white select-none cursor-pointer transition-colors active:translate-y-[1px]"
                                 >
                                     [DELETE]
                                 </button>
@@ -87,16 +125,20 @@ export default function AdminQuests() {
                 </div>
             </div>
 
-            {/* Terminal Logs */}
-            <div className="bg-black border-4 border-retro-black p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-                <div className="font-mono text-[10px] text-pixel-green space-y-1 max-h-[80px] overflow-y-auto">
+            {/* TERMINAL LOGS: Menggunakan gaya box senada */}
+            <div className="bg-[#0f1b13] rounded-xl border-4 border-pixel-green/25 p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.6)]">
+                <div className="flex items-center justify-between border-b border-pixel-green/20 pb-2 mb-2">
+                    <span className="font-pixel text-[8px] text-pixel-green">// REAL-TIME AUDIT LOGS</span>
+                    <span className="font-pixel text-[7px] text-emerald-200/50">SYS_CONSOLE</span>
+                </div>
+                <div className="font-mono text-[10px] text-pixel-green space-y-1 max-h-[85px] overflow-y-auto">
                     {logs.map((log, index) => (
-                        <div key={index}>{log}</div>
+                        <div key={index} className="leading-tight">{log}</div>
                     ))}
                 </div>
             </div>
 
-            <Footer />
+            {/* Catatan: Komponen <Footer /> sudah dihapus */}
         </div>
     );
 }
