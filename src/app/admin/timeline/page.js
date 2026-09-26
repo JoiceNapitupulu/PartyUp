@@ -46,63 +46,79 @@ export default function AdminTimeline() {
     };
 
     return (
-        <div className="flex-grow p-4 md:p-8 flex flex-col gap-6 text-white font-sans bg-[#0c1322] min-h-screen selection:bg-yellow-400 selection:text-black">
+        <div className="flex-grow p-4 md:p-8 flex flex-col gap-6 text-white font-sans bg-[#0a140f] min-h-screen selection:bg-pixel-green selection:text-[#0E2A22]">
 
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b-4 border-retro-black pb-4 text-left">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b-2 border-pixel-green/20 pb-4 text-left">
                 <div>
-                    <span className="font-pixel text-[8.5px] text-yellow-400 uppercase tracking-wider block mb-1">
-            // PUBLIC BROADCAST MODERATION
+                    <span className="font-pixel text-[8px] text-pixel-green/80 uppercase tracking-wider block mb-1.5">
+                        // PUBLIC BROADCAST MODERATION
                     </span>
-                    <h1 className="font-pixel text-base md:text-xl text-yellow-300">
-                        [ MODERASI LINIMASA &amp; POSTINGAN ]
+                    <h1 className="font-pixel text-base md:text-xl text-white">
+                        MODERASI LINIMASA &amp; POSTINGAN
                     </h1>
+                    <p className="font-sans text-xs text-gray-400 mt-1.5">
+                        {lang === "ID"
+                            ? "Tinjau dan hapus siaran komunitas yang melanggar aturan feed publik."
+                            : "Review and remove community broadcasts that violate public feed rules."}
+                    </p>
                 </div>
 
-                <div className="flex items-center gap-2 bg-[#121b2d] border-2 border-retro-black px-3.5 py-1.5 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-                    <span className="w-2.5 h-2.5 rounded-full bg-pixel-green animate-pulse" />
-                    <span className="font-pixel text-[8px] text-pixel-green">
+                <div className="inline-flex items-center gap-2 border border-pixel-green/40 bg-pixel-green/5 px-3.5 py-1.5 rounded-lg shrink-0">
+                    <span className="w-2 h-2 rounded-full bg-pixel-green animate-pulse" />
+                    <span className="font-pixel text-[8px] text-pixel-green whitespace-nowrap">
                         FEED ITEMS: {posts.length} PUBLISHED
                     </span>
                 </div>
             </div>
 
             {/* Roster Postingan Linimasa */}
-            <div className="bg-[#121b2d] border-4 border-retro-black p-6 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-4 text-left">
-                <span className="font-pixel text-[8.5px] text-yellow-400 uppercase border-b-2 border-gray-700/80 pb-2">
-          // SIARAN KOMUNITAS AKTIF ({posts.length})
-                </span>
+            <div className="bg-[#0f1f17] border border-pixel-green/25 p-6 rounded-2xl shadow-[0_0_40px_-15px_rgba(34,197,94,0.4)] flex flex-col gap-4 text-left">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-pixel-green/20 pb-3">
+                    <span className="font-pixel text-[8.5px] text-pixel-green uppercase">
+                        // SIARAN KOMUNITAS AKTIF
+                    </span>
+                    <span className="font-pixel text-[7.5px] text-gray-400 whitespace-nowrap">
+                        FEED COUNT: {posts.length} POST
+                    </span>
+                </div>
 
                 <div className="flex flex-col gap-3">
-                    {posts.map((post) => (
-                        <div
-                            key={post.id}
-                            className="bg-[#18233a] border-2 border-retro-black p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm"
-                        >
-                            <div className="flex flex-col gap-1 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="font-pixel text-[7.5px] bg-[#121b2d] text-yellow-300 border border-retro-black px-2 py-0.5 rounded">
-                                        {post.category || "TECH"}
-                                    </span>
-                                    <h3 className="font-pixel text-xs text-white font-bold truncate">{post.title || "Untitled Sprint"}</h3>
-                                    <span className="font-sans text-[10px] text-gray-400">• {post.timestamp}</span>
-                                </div>
-                                <p className="font-sans text-xs text-gray-300 line-clamp-2 leading-relaxed">{post.content}</p>
-                                <div className="flex items-center gap-3 font-pixel text-[7px] text-gray-400 mt-1">
-                                    <span>♥ {post.likes || 0} LIKES</span>
-                                    <span>💬 {(post.comments || []).length} REPLIES</span>
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={() => handleDeletePost(post.id, post.title)}
-                                className="font-pixel text-[8px] py-1.5 px-3 bg-red-600 hover:bg-red-700 text-white font-bold border-2 border-retro-black rounded-lg cursor-pointer shadow-sm shrink-0"
+                    {posts.length > 0 ? (
+                        posts.map((post) => (
+                            <div
+                                key={post.id}
+                                className="bg-[#0a140f] border border-pixel-green/20 hover:border-pixel-green/45 p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors"
                             >
-                                PURGE POST ✗
-                            </button>
+                                <div className="flex flex-col gap-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="font-pixel text-[7.5px] bg-pixel-green/10 text-pixel-green border border-pixel-green/40 px-2 py-0.5 rounded">
+                                            {post.category || "TECH"}
+                                        </span>
+                                        <h3 className="font-pixel text-xs text-white font-bold truncate">{post.title || "Untitled Sprint"}</h3>
+                                        <span className="font-sans text-[10px] text-gray-500">• {post.timestamp}</span>
+                                    </div>
+                                    <p className="font-sans text-xs text-gray-300 line-clamp-2 leading-relaxed">{post.content}</p>
+                                    <div className="flex items-center gap-3 font-pixel text-[7px] text-gray-500 mt-1">
+                                        <span>♥ {post.likes || 0} LIKES</span>
+                                        <span>💬 {(post.comments || []).length} REPLIES</span>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => handleDeletePost(post.id, post.title)}
+                                    className="font-pixel text-[8px] py-1.5 px-3 bg-red-600/90 hover:bg-red-600 text-white font-bold border border-red-500/60 rounded-lg cursor-pointer shrink-0 transition-colors"
+                                >
+                                    PURGE POST ✗
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="py-12 text-center font-pixel text-xs text-gray-500">
+                            BELUM ADA SIARAN LINIMASA YANG TERCATAT.
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
 
