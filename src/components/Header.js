@@ -121,10 +121,20 @@ export default function Header() {
     router.push("/");
   };
 
-  // Peran Admin dicek sekali, dipakai untuk navigasi DAN tujuan link logo/avatar
-  const isAdmin = !!(user && (user.role?.toLowerCase() === "admin" || user.user_id === "USR-000"));
+  // [BARU] Header publik hanya boleh menampilkan profil "logged in" untuk
+  // akun PETUALANG MAHASISWA biasa (Joice, Alex, dst). Akun Admin (USR-000 /
+  // role "admin") adalah akun sistem/pengawas, bukan karakter petualang —
+  // jadi kalau sesi yang tersimpan ternyata Admin, header publik tetap
+  // dianggap TAMU (tampilkan MASUK/DAFTAR). Ini yang bikin tombol
+  // "LIHAT TAMPILAN WEB ➔" di sidebar admin membuka tab baru yang benar-benar
+  // terlihat seperti pengunjung murni, bukan ikut ke-login sebagai Admin.
+  // Catatan: ini TIDAK menghidupkan lagi percabangan menu admin di header
+  // (itu tetap dihapus) — cuma menentukan tampil profil vs tombol login.
+  const isPublicAdventurer = !!(
+    user && !(user.role?.toLowerCase() === "admin" || user.user_id === "USR-000")
+  );
 
-  // Menu Mahasiswa / Publik — tidak berubah dari sebelumnya
+  // Menu Mahasiswa / Publik — sekarang SATU-SATUNYA sumber menu di header ini
   const studentNavItems = [
     { nameKey: "questBoard", path: "/board" },
     { nameKey: "showcase", path: "/showcase" },
@@ -133,16 +143,8 @@ export default function Header() {
     { nameKey: "quiz", path: "/quiz" },
   ];
 
-  // Menu Khusus Admin (Grandmaster Command) — TIDAK lagi digabung/ditumpuk
-  // dengan tab mahasiswa seperti sebelumnya, sekarang jadi set menu sendiri.
-  const adminNavItems = [
-    { label: language === "ID" ? "DASHBOARD UTAMA" : "ADMIN DASHBOARD", path: "/admin" },
-    { label: language === "ID" ? "KELOLA PETUALANG" : "MANAGE USERS", path: "/admin/users" },
-    { label: language === "ID" ? "AUDIT QUEST" : "AUDIT QUESTS", path: "/admin/quests" },
-    { label: language === "ID" ? "PENGATURAN SISTEM" : "SYSTEM SETTINGS", path: "/admin/settings" },
-  ];
-
-  const navItems = isAdmin ? adminNavItems : studentNavItems;
+  // [DIPERBAIKI] Tidak ada lagi percabangan isAdmin — navItems selalu menu publik
+  const navItems = studentNavItems;
 
   const SunIcon = () => (
     <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 text-yellow-500 animate-pulse" style={{ imageRendering: "pixelated" }} fill="currentColor">
@@ -181,9 +183,9 @@ export default function Header() {
       >
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-2 md:gap-4 pointer-events-auto relative z-[10000]">
 
-          {/* Brand Logo — Admin diarahkan ke /admin, mahasiswa/tamu tetap ke / */}
+          {/* Brand Logo — [DIPERBAIKI] selalu ke "/", tidak ada lagi cabang admin */}
           <Link
-            href={isAdmin ? "/admin" : "/"}
+            href="/"
             className="group flex items-center gap-2 shrink-0 pointer-events-auto cursor-pointer relative z-[10000] transition-transform hover:-translate-y-[1px]"
           >
             <span className="font-pixel text-base md:text-lg text-pixel-green group-hover:drop-shadow-[0_0_8px_rgba(0,255,0,0.6)] transition-all">
@@ -241,13 +243,14 @@ export default function Header() {
               {isLightMode ? <SunIcon /> : <MoonIcon />}
             </button>
 
-            {/* User Profile / Login Options */}
-            {user ? (
+            {/* User Profile / Login Options — [DIPERBAIKI] pakai isPublicAdventurer,
+                bukan `user` mentah, supaya sesi Admin tidak ikut ditampilkan di sini */}
+            {isPublicAdventurer ? (
               <div className="flex items-center gap-1.5 shrink-0 pointer-events-auto relative z-[10000]">
                 <div className="relative group">
-                  {/* Avatar Profil — Admin diarahkan ke /admin/settings, mahasiswa tetap ke /profile */}
+                  {/* Avatar Profil — [DIPERBAIKI] selalu ke "/profile", tidak ada lagi cabang admin */}
                   <Link
-                    href={isAdmin ? "/admin/settings" : "/profile"}
+                    href="/profile"
                     className={`flex items-center gap-2 p-1 border-2 rounded-full px-2.5 transition-all pointer-events-auto cursor-pointer relative z-[10000] hover:-translate-y-[1px] ${isLightMode
                       ? "border-slate-300 bg-black/5 hover:bg-black/10"
                       : "border-retro-black/30 bg-white/10 hover:bg-white/20"
