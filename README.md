@@ -31,7 +31,7 @@ Mahasiswa dikelompokkan ke dalam tiga "kelas karakter" utama di dunia IT:
     *   Halaman `/following` yang mensimulasikan pembaruan status, unggahan pencapaian, dan aktivitas terkini dari koneksi atau anggota tim terdekat dalam bentuk antarmuka kartu retro yang bersih.
 
 ---
-
+ 
 ## 🛠️ Teknologi yang Digunakan
 
 Proyek ini dibangun menggunakan teknologi web modern berkinerja tinggi dengan konfigurasi keluaran statis murni:
