@@ -173,7 +173,11 @@ export default function GameBoyAdventureQuiz() {
         setBossHp(100);
         setPickedIdx(null);
         setIsLocked(false);
-        setDialogueText(`Encountered ${stage.bossName}! Select your attack command...`);
+        setDialogueText(
+            lang === "ID"
+                ? `Bertemu ${stage.bossName}! Pilih perintah seranganmu...`
+                : `Encountered ${stage.bossName}! Select your attack command...`
+        );
         setGameState("PLAYING_STAGE");
     };
 
@@ -188,7 +192,11 @@ export default function GameBoyAdventureQuiz() {
         if (isCorrect) {
             sfx.playPowerUp();
             const damage = Math.ceil(100 / activeStage.questions.length);
-            setDialogueText(`💧 SPLASH HIT! ${hero.name} doused ${activeStage.bossName} for -${damage} DMG!`);
+            setDialogueText(
+                lang === "ID"
+                    ? `💧 KENA TELAK! ${hero.name} menyiram ${activeStage.bossName} sebesar -${damage} DMG!`
+                    : `💧 SPLASH HIT! ${hero.name} doused ${activeStage.bossName} for -${damage} DMG!`
+            );
 
             setTimeout(() => {
                 setIsPlayerAttacking(true);
@@ -206,7 +214,11 @@ export default function GameBoyAdventureQuiz() {
                             if (next <= 0) {
                                 setGameState("CLEAR");
                                 sfx.playLevelUp();
-                                setDialogueText(`🏆 STAGE CLEAR! You conquered ${activeStage.name}!`);
+                                setDialogueText(
+                                    lang === "ID"
+                                        ? `🏆 STAGE SELESAI! Kamu menaklukkan ${activeStage.name}!`
+                                        : `🏆 STAGE CLEAR! You conquered ${activeStage.name}!`
+                                );
 
                                 if (typeof window !== "undefined") {
                                     const updatedHero = {
@@ -229,7 +241,11 @@ export default function GameBoyAdventureQuiz() {
                                 setCurrentQIdx(0);
                                 setPickedIdx(null);
                                 setIsLocked(false);
-                                setDialogueText(`${activeStage.bossName} is still standing! Keep attacking!`);
+                                setDialogueText(
+                                    lang === "ID"
+                                        ? `${activeStage.bossName} masih berdiri! Terus menyerang!`
+                                        : `${activeStage.bossName} is still standing! Keep attacking!`
+                                );
                             }
                         }, 220);
 
@@ -240,7 +256,11 @@ export default function GameBoyAdventureQuiz() {
         } else {
             sfx.playPowerDown();
             const damage = 30;
-            setDialogueText(`🔥 SCORCHED! ${activeStage.bossName} burned ${hero.name} for -${damage} DMG!`);
+            setDialogueText(
+                lang === "ID"
+                    ? `🔥 TERBAKAR! ${activeStage.bossName} membakar ${hero.name} sebesar -${damage} DMG!`
+                    : `🔥 SCORCHED! ${activeStage.bossName} burned ${hero.name} for -${damage} DMG!`
+            );
 
             setTimeout(() => {
                 setIsBossAttacking(true);
@@ -258,7 +278,11 @@ export default function GameBoyAdventureQuiz() {
                             if (next <= 0) {
                                 setGameState("GAME_OVER");
                                 sfx.playDefeatedJingle();
-                                setDialogueText(`💀 GAME OVER! ${hero.name} fainted. Return to Town to recover.`);
+                                setDialogueText(
+                                    lang === "ID"
+                                        ? `💀 GAME OVER! ${hero.name} pingsan. Kembali ke Kota untuk pulih.`
+                                        : `💀 GAME OVER! ${hero.name} fainted. Return to Town to recover.`
+                                );
                             } else if (currentQIdx + 1 < activeStage.questions.length) {
                                 setCurrentQIdx((i) => i + 1);
                                 setPickedIdx(null);
@@ -341,13 +365,15 @@ export default function GameBoyAdventureQuiz() {
                 <main className="flex-1 max-w-6xl w-full mx-auto px-4 md:px-6 pt-24 md:pt-28 pb-16 flex flex-col items-center gap-6">
                     <div className="text-center flex flex-col items-center gap-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-400/10 border border-yellow-400 text-yellow-300 font-pixel text-[9px] rounded">
-                            ✦ 8-BIT GAMEBOY RPG ADVENTURE ✦
+                            {lang === "ID" ? "✦ PETUALANGAN RPG GAMEBOY 8-BIT ✦" : "✦ 8-BIT GAMEBOY RPG ADVENTURE ✦"}
                         </div>
                         <h1 className="font-pixel text-2xl md:text-4xl text-yellow-300 drop-shadow-[0_4px_0px_rgba(0,0,0,1)]">
-                            [ TODAY LAND: GUILD QUEST ]
+                            {lang === "ID" ? "[ NEGERI HARI INI: GUILD QUEST ]" : "[ TODAY LAND: GUILD QUEST ]"}
                         </h1>
                         <p className="font-sans text-xs md:text-sm text-gray-300">
-                            Navigate stages, defeat software bugs, and level up your character profile rating!
+                            {lang === "ID"
+                                ? "Jelajahi stage, kalahkan bug perangkat lunak, dan naikkan rating profil karaktermu!"
+                                : "Navigate stages, defeat software bugs, and level up your character profile rating!"}
                         </p>
 
                         <button
@@ -355,7 +381,9 @@ export default function GameBoyAdventureQuiz() {
                             onClick={() => sfx.setMuted((m) => !m)}
                             className="mt-1 font-pixel text-[8px] px-3 py-1.5 bg-retro-black/90 hover:bg-retro-black text-yellow-300 border-2 border-yellow-400 cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                         >
-                            {sfx.muted ? "🔇 SFX: OFF (CLICK TO ENABLE)" : "🔊 SFX: ON (CLICK TO MUTE)"}
+                            {sfx.muted
+                                ? (lang === "ID" ? "🔇 SFX: MATI (KLIK UNTUK AKTIF)" : "🔇 SFX: OFF (CLICK TO ENABLE)")
+                                : (lang === "ID" ? "🔊 SFX: HIDUP (KLIK UNTUK BISU)" : "🔊 SFX: ON (CLICK TO MUTE)")}
                         </button>
                     </div>
 
@@ -526,9 +554,14 @@ export default function GameBoyAdventureQuiz() {
                             {gameState === "CLEAR" && (
                                 <div className="relative z-10 h-full flex flex-col justify-center items-center text-center gap-3 bg-retro-black/85 p-4 rounded">
                                     <span className="text-5xl animate-bounce">🏆</span>
-                                    <h2 className="font-pixel text-base text-yellow-300">[ STAGE CLEAR! ]</h2>
+                                    <h2 className="font-pixel text-base text-yellow-300">
+                                        {lang === "ID" ? "[ STAGE SELESAI! ]" : "[ STAGE CLEAR! ]"}
+                                    </h2>
                                     <p className="font-sans text-xs text-gray-200">
-                                        {hero?.name} defeated the Boss! Level Up to <strong className="text-pixel-green">LV.{heroLevel}</strong>!
+                                        {lang === "ID"
+                                            ? `${hero?.name} mengalahkan Boss! Naik level ke `
+                                            : `${hero?.name} defeated the Boss! Level Up to `}
+                                        <strong className="text-pixel-green">LV.{heroLevel}</strong>!
                                     </p>
                                     <div className="flex gap-3 pt-2">
                                         <button
@@ -536,13 +569,40 @@ export default function GameBoyAdventureQuiz() {
                                             onClick={() => setGameState("WORLD_MAP")}
                                             className="font-pixel text-[9px] py-2 px-4 bg-yellow-400 text-retro-black font-bold border-2 border-retro-black cursor-pointer"
                                         >
-                                            PLAY NEXT STAGE ▶
+                                            {lang === "ID" ? "MAIN STAGE BERIKUTNYA ▶" : "PLAY NEXT STAGE ▶"}
                                         </button>
                                         <Link href="/profile">
                                             <PixelButton variant="green" className="text-[9px] py-2 px-4 border-2">
-                                                VIEW PROFILE ★
+                                                {lang === "ID" ? "LIHAT PROFIL ★" : "VIEW PROFILE ★"}
                                             </PixelButton>
                                         </Link>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAHAP 5: GAME OVER */}
+                            {gameState === "GAME_OVER" && (
+                                <div className="relative z-10 h-full flex flex-col justify-center items-center text-center gap-3 bg-retro-black/85 p-4 rounded">
+                                    <span className="text-5xl">💀</span>
+                                    <h2 className="font-pixel text-base text-red-400">[ GAME OVER! ]</h2>
+                                    <p className="font-sans text-xs text-gray-200">
+                                        {lang === "ID" ? `${hero?.name} pingsan. Coba lagi!` : `${hero?.name} fainted. Try again!`}
+                                    </p>
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setGameState("WORLD_MAP")}
+                                            className="font-pixel text-[9px] py-2 px-4 bg-[#1c2a4a] text-white font-bold border-2 border-retro-black cursor-pointer"
+                                        >
+                                            {lang === "ID" ? "KEMBALI KE PETA" : "BACK TO MAP"}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => startStage(activeStage)}
+                                            className="font-pixel text-[9px] py-2 px-4 bg-red-600 text-white font-bold border-2 border-retro-black cursor-pointer"
+                                        >
+                                            {lang === "ID" ? "ULANGI STAGE ⚔️" : "RETRY STAGE ⚔️"}
+                                        </button>
                                     </div>
                                 </div>
                             )}
@@ -582,7 +642,7 @@ export default function GameBoyAdventureQuiz() {
                                 <div className="flex flex-col gap-0.5 text-left flex-1">
                                     <span className="font-pixel text-[9px] text-yellow-300 font-bold">{hero ? hero.name.toUpperCase() : "ADVENTURER"}</span>
                                     <p className="font-pixel text-[8.5px] text-gray-200 leading-relaxed">
-                                        {dialogueText || "Select a stage above to start raiding bugs!"}
+                                        {dialogueText || (lang === "ID" ? "Pilih stage di atas untuk mulai memburu bug!" : "Select a stage above to start raiding bugs!")}
                                     </p>
                                 </div>
                             </div>
@@ -634,7 +694,7 @@ export default function GameBoyAdventureQuiz() {
                             {/* HUD FOOTER */}
                             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-700/60 pt-3 font-pixel text-[8px]">
                                 <div className={`flex items-center gap-2 ${isBossAttacking ? "animate-hp-flash" : ""}`}>
-                                    <span className="text-yellow-400">ENERGY</span>
+                                    <span className="text-yellow-400">{lang === "ID" ? "ENERGI" : "ENERGY"}</span>
                                     <div className="w-28 h-3 bg-[#18233a] border border-gray-600 rounded overflow-hidden">
                                         <div className="h-full bg-pixel-green transition-all duration-300" style={{ width: `${playerHp}%` }} />
                                     </div>
@@ -642,9 +702,9 @@ export default function GameBoyAdventureQuiz() {
                                 </div>
 
                                 <div className="flex items-center gap-4 text-gray-300">
-                                    <span>STATS: <strong className="text-pixel-green">LV.{heroLevel}</strong></span>
+                                    <span>{lang === "ID" ? "STATISTIK: " : "STATS: "}<strong className="text-pixel-green">LV.{heroLevel}</strong></span>
                                     {gameState === "PLAYING_STAGE" && (
-                                        <span>STAGE PROGRESS: <strong className="text-sky-300">{stageProgress}%</strong></span>
+                                        <span>{lang === "ID" ? "PROGRES STAGE: " : "STAGE PROGRESS: "}<strong className="text-sky-300">{stageProgress}%</strong></span>
                                     )}
                                 </div>
                             </div>

@@ -308,7 +308,11 @@ export default function Following() {
   const handleLike = (postId, e) => {
     if (e) e.stopPropagation();
     if (!user) {
-      alert("⚠️ ACCESS DENIED: Please login or create a student character to like broadcasts!");
+      alert(
+        lang === "ID"
+          ? "⚠️ AKSES DITOLAK: Silakan login atau buat karakter untuk menyukai broadcast!"
+          : "⚠️ ACCESS DENIED: Please login or create a student character to like broadcasts!"
+      );
       return;
     }
 
@@ -330,7 +334,11 @@ export default function Following() {
   // Comment Handler
   const handleSendReply = (postId) => {
     if (!user) {
-      alert("⚠️ ACCESS DENIED: Please login or register to participate in the discussion!");
+      alert(
+        lang === "ID"
+          ? "⚠️ AKSES DITOLAK: Silakan login atau daftar untuk berpartisipasi dalam diskusi!"
+          : "⚠️ ACCESS DENIED: Please login or register to participate in the discussion!"
+      );
       return;
     }
     if (!replyText.trim()) return;
@@ -362,18 +370,18 @@ export default function Following() {
   const handleDeletePost = (postId, e) => {
     if (e) e.stopPropagation();
     if (!user) {
-      alert("⚠️ ACCESS DENIED: You must log in to delete your broadcasts!");
+      alert(lang === "ID" ? "⚠️ AKSES DITOLAK: Anda harus login untuk menghapus broadcast!" : "⚠️ ACCESS DENIED: You must log in to delete your broadcasts!");
       return;
     }
     const targetPost = posts.find((p) => p.id === postId);
     if (targetPost && targetPost.author_id !== user.user_id && user.role !== "Admin") {
-      alert("⚠️ ACCESS DENIED: You can only delete your own broadcasts!");
+      alert(lang === "ID" ? "⚠️ AKSES DITOLAK: Anda hanya bisa menghapus broadcast milik sendiri!" : "⚠️ ACCESS DENIED: You can only delete your own broadcasts!");
       return;
     }
     setConfirmModal({
       isOpen: true,
-      title: "DELETE BROADCAST",
-      message: "Are you sure you want to permanently delete this broadcast post?",
+      title: lang === "ID" ? "HAPUS BROADCAST" : "DELETE BROADCAST",
+      message: lang === "ID" ? "Apakah Anda yakin ingin menghapus broadcast ini secara permanen?" : "Are you sure you want to permanently delete this broadcast post?",
       onConfirm: () => {
         const updated = posts.filter((post) => post.id !== postId);
         savePosts(updated);
@@ -386,13 +394,13 @@ export default function Following() {
   // Delete Comment Handler
   const handleDeleteComment = (postId, commentIndex) => {
     if (!user) {
-      alert("⚠️ ACCESS DENIED: You must log in to delete comments!");
+      alert(lang === "ID" ? "⚠️ AKSES DITOLAK: Anda harus login untuk menghapus komentar!" : "⚠️ ACCESS DENIED: You must log in to delete comments!");
       return;
     }
     setConfirmModal({
       isOpen: true,
-      title: "DELETE COMMENT",
-      message: "Are you sure you want to remove this reply from the discussion thread?",
+      title: lang === "ID" ? "HAPUS KOMENTAR" : "DELETE COMMENT",
+      message: lang === "ID" ? "Apakah Anda yakin ingin menghapus balasan ini dari thread diskusi?" : "Are you sure you want to remove this reply from the discussion thread?",
       onConfirm: () => {
         const updated = posts.map((post) => {
           if (post.id === postId) {
@@ -413,7 +421,7 @@ export default function Following() {
   const handleCreatePost = (e) => {
     e.preventDefault();
     if (!user) {
-      alert("⚠️ ACCESS DENIED: Please login to publish articles!");
+      alert(lang === "ID" ? "⚠️ AKSES DITOLAK: Silakan login untuk menerbitkan artikel!" : "⚠️ ACCESS DENIED: Please login to publish articles!");
       return;
     }
     if (!newPostContent.trim()) return;
@@ -520,30 +528,38 @@ export default function Following() {
           <div className="inline-flex items-center gap-2 bg-[#121b2d]/90 border-2 border-yellow-400 px-3.5 py-1 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] rounded-md">
             <span className="w-2 h-2 rounded-full bg-pixel-green animate-ping" />
             <span className="font-pixel text-[8.5px] md:text-[10px] text-yellow-300 tracking-widest uppercase">
-              ✦ GUILD TAVERN &amp; LIVE CODEX ✦
+              {lang === "ID" ? "✦ KEDAI GUILD & CODEX LANGSUNG ✦" : "✦ GUILD TAVERN & LIVE CODEX ✦"}
             </span>
           </div>
 
           <h1 className="font-pixel text-2xl md:text-5xl text-yellow-300 drop-shadow-[0_6px_0px_rgba(0,0,0,1)] leading-tight tracking-wide">
-            [ GUILD ACTIVITY TIMELINE ]
+            {lang === "ID" ? "[ LINIMASA AKTIVITAS GUILD ]" : "[ GUILD ACTIVITY TIMELINE ]"}
           </h1>
 
           <p className="font-sans text-xs md:text-sm text-gray-200 leading-relaxed max-w-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
-            Explore software engineering articles, sprint logs, and technical project tutorials. Click any article card to inspect full specifications and join the discussion.
+            {lang === "ID"
+              ? "Jelajahi artikel rekayasa perangkat lunak, log sprint, dan tutorial proyek teknis. Klik kartu artikel untuk melihat detail lengkap dan bergabung dalam diskusi."
+              : "Explore software engineering articles, sprint logs, and technical project tutorials. Click any article card to inspect full specifications and join the discussion."}
           </p>
 
           <div className="grid grid-cols-3 gap-3 pt-2 w-full max-w-md text-center">
             <div className="bg-[#121b2d]/80 border-2 border-retro-black p-2.5 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-pixel text-xs md:text-sm text-yellow-400">{posts.length}</p>
-              <p className="font-pixel text-[7px] text-gray-300 uppercase">Articles</p>
+              <p className="font-pixel text-[7px] text-gray-300 uppercase">
+                {lang === "ID" ? "Artikel" : "Articles"}
+              </p>
             </div>
             <div className="bg-[#121b2d]/80 border-2 border-retro-black p-2.5 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-pixel text-xs md:text-sm text-pixel-green">{usersList.length}</p>
-              <p className="font-pixel text-[7px] text-gray-300 uppercase">Authors</p>
+              <p className="font-pixel text-[7px] text-gray-300 uppercase">
+                {lang === "ID" ? "Penulis" : "Authors"}
+              </p>
             </div>
             <div className="bg-[#121b2d]/80 border-2 border-retro-black p-2.5 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-pixel text-xs md:text-sm text-cyan-300">REALTIME</p>
-              <p className="font-pixel text-[7px] text-gray-300 uppercase">Synced</p>
+              <p className="font-pixel text-[7px] text-gray-300 uppercase">
+                {lang === "ID" ? "Tersinkron" : "Synced"}
+              </p>
             </div>
           </div>
         </div>
@@ -569,7 +585,7 @@ export default function Following() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <input
               type="text"
-              placeholder="Article / Sprint Title..."
+              placeholder={lang === "ID" ? "Judul Artikel / Sprint..." : "Article / Sprint Title..."}
               value={newPostTitle}
               onChange={(e) => setNewPostTitle(e.target.value)}
               disabled={!mounted || !user}
@@ -590,24 +606,26 @@ export default function Following() {
               <option value="RESEARCH">UX RESEARCH</option>
               <option value="MANAGEMENT">PROJECT MANAGEMENT</option>
             </select>
-            </div>
-            
-            <textarea
-              rows={3}
-              value={newPostContent}
-              onChange={(e) => setNewPostContent(e.target.value)}
-              placeholder={
-                mounted && user
-                  ? `Write your sprint breakdown or tech tutorial, ${user.name}...`
-                  : "Please log in to publish articles or updates to the guild timeline..."
-              }
-              disabled={!mounted || !user}
-              className="font-sans text-xs p-3.5 bg-[#18233a] text-white border-2 border-retro-black focus:outline-none focus:border-yellow-400 rounded-xl resize-none"
-            />
+          </div>
+
+          <textarea
+            rows={3}
+            value={newPostContent}
+            onChange={(e) => setNewPostContent(e.target.value)}
+            placeholder={
+              mounted && user
+                ? (lang === "ID" ? `Tulis ringkasan sprint atau tutorial teknismu, ${user.name}...` : `Write your sprint breakdown or tech tutorial, ${user.name}...`)
+                : (lang === "ID" ? "Silakan login untuk menerbitkan artikel atau update ke linimasa guild..." : "Please log in to publish articles or updates to the guild timeline...")
+            }
+            disabled={!mounted || !user}
+            className="font-sans text-xs p-3.5 bg-[#18233a] text-white border-2 border-retro-black focus:outline-none focus:border-yellow-400 rounded-xl resize-none"
+          />
 
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-1 border-t border-gray-700/60">
             <p className="font-sans text-[11px] text-gray-400">
-              {user ? `Publishing as ${user.name} (${user.role})` : "Guest mode: Login required to publish."}
+              {user
+                ? (lang === "ID" ? `Menerbitkan sebagai ${user.name} (${user.role})` : `Publishing as ${user.name} (${user.role})`)
+                : (lang === "ID" ? "Mode tamu: login diperlukan untuk menerbitkan." : "Guest mode: Login required to publish.")}
             </p>
             <PixelButton
               variant="green"
@@ -615,7 +633,7 @@ export default function Following() {
               disabled={!user || !newPostContent.trim()}
               className="py-2 px-6 text-[9px] w-full sm:w-auto"
             >
-              PUBLISH ARTICLE ✦
+              {lang === "ID" ? "TERBITKAN ARTIKEL ✦" : "PUBLISH ARTICLE ✦"}
             </PixelButton>
           </div>
         </form>
@@ -638,8 +656,8 @@ export default function Following() {
                   type="button"
                   onClick={() => setSelectedTag(tag)}
                   className={`font-pixel text-[8px] md:text-[8.5px] px-3.5 py-1.5 rounded-lg border-2 transition-all shrink-0 cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px] ${isActive
-                      ? "bg-yellow-400 text-retro-black border-retro-black font-bold -translate-y-0.5"
-                      : "bg-[#142036] text-gray-300 border-retro-black hover:border-yellow-400 hover:text-white"
+                    ? "bg-yellow-400 text-retro-black border-retro-black font-bold -translate-y-0.5"
+                    : "bg-[#142036] text-gray-300 border-retro-black hover:border-yellow-400 hover:text-white"
                     }`}
                 >
                   {tag}
@@ -677,8 +695,8 @@ export default function Following() {
         isOpen={confirmModal.isOpen}
         title={confirmModal.title}
         message={confirmModal.message}
-        confirmText="DELETE"
-        cancelText="CANCEL"
+        confirmText={lang === "ID" ? "HAPUS" : "DELETE"}
+        cancelText={lang === "ID" ? "BATAL" : "CANCEL"}
         variant="danger"
         onConfirm={confirmModal.onConfirm}
         onCancel={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}

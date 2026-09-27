@@ -150,7 +150,9 @@ export default function Board() {
     window.dispatchEvent(new Event("projects-change"));
 
     notify.success(
-      `Quest "${newTitle.trim()}" berhasil diterbitkan ke Quest Board!`,
+      lang === "ID"
+        ? `Quest "${newTitle.trim()}" berhasil diterbitkan ke Quest Board!`
+        : `Quest "${newTitle.trim()}" has been dispatched to the Quest Board!`,
       "QUEST DISPATCHED // SUCCESS"
     );
 

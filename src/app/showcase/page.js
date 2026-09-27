@@ -209,7 +209,9 @@ export default function Showcase() {
     await sendPartyInvitation(newInvitation);
     window.dispatchEvent(new Event("invitations-change"));
     notify.success(
-      `Undangan party untuk "${selectedProject}" berhasil dikirim ke ${selectedUser.name}!`,
+      lang === "ID"
+        ? `Undangan party untuk "${selectedProject}" berhasil dikirim ke ${selectedUser.name}!`
+        : `Party invitation for "${selectedProject}" has been sent to ${selectedUser.name}!`,
       "INVITATION DISPATCHED"
     );
 
@@ -281,15 +283,23 @@ export default function Showcase() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-6 pt-3 text-center">
             <div className="bg-[#121b2d]/80 border-2 border-retro-black px-4 py-2 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-pixel text-xs md:text-sm text-yellow-400">{allShowcases.length}</p>
-              <p className="font-pixel text-[7px] text-gray-300 uppercase tracking-wider">Archived Works</p>
+              <p className="font-pixel text-[7px] text-gray-300 uppercase tracking-wider">
+                {lang === "ID" ? "Karya Terarsip" : "Archived Works"}
+              </p>
             </div>
             <div className="bg-[#121b2d]/80 border-2 border-retro-black px-4 py-2 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-pixel text-xs md:text-sm text-pixel-green">{users.length}</p>
-              <p className="font-pixel text-[7px] text-gray-300 uppercase tracking-wider">Active Creators</p>
+              <p className="font-pixel text-[7px] text-gray-300 uppercase tracking-wider">
+                {lang === "ID" ? "Kreator Aktif" : "Active Creators"}
+              </p>
             </div>
             <div className="col-span-2 sm:col-span-1 bg-[#121b2d]/80 border-2 border-retro-black px-4 py-2 rounded-xl backdrop-blur-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              <p className="font-pixel text-xs md:text-sm text-cyan-400">100% VERIFIED</p>
-              <p className="font-pixel text-[7px] text-gray-300 uppercase tracking-wider">Peer-Reviewed</p>
+              <p className="font-pixel text-xs md:text-sm text-cyan-400">
+                {lang === "ID" ? "100% TERVERIFIKASI" : "100% VERIFIED"}
+              </p>
+              <p className="font-pixel text-[7px] text-gray-300 uppercase tracking-wider">
+                {lang === "ID" ? "Ditinjau Sejawat" : "Peer-Reviewed"}
+              </p>
             </div>
           </div>
         </div>
@@ -304,7 +314,11 @@ export default function Showcase() {
               <span className="font-pixel text-[7px] bg-pixel-green/20 text-pixel-green px-2 py-0.5 border border-pixel-green/40">ONLINE</span>
             </div>
             <p className="font-sans text-xs md:text-sm text-gray-300 leading-relaxed">
-              Click any showcase card below to inspect full case studies, tech architectures, and live deployments. Click <strong className="text-yellow-300 font-bold">RECRUIT</strong> to invite creator directly to your open quests.
+              {lang === "ID" ? (
+                <>Klik kartu showcase untuk melihat studi kasus lengkap, arsitektur teknis, dan deployment langsung. Klik <strong className="text-yellow-300 font-bold">RECRUIT</strong> untuk mengundang kreator langsung ke quest terbukamu.</>
+              ) : (
+                <>Click any showcase card below to inspect full case studies, tech architectures, and live deployments. Click <strong className="text-yellow-300 font-bold">RECRUIT</strong> to invite creator directly to your open quests.</>
+              )}
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -458,19 +472,21 @@ export default function Showcase() {
               );
             })
           ) : (
-            <div className="col-span-full bg-[#131f37] border-4 border-retro-black rounded-2xl p-12 text-center flex flex-col items-center justify-center gap-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-              <span className="font-pixel text-2xl text-yellow-400">? ? ?</span>
-              <p className="font-pixel text-xs text-white">NO QUESTS FOUND MATCHING YOUR CRITERIA</p>
-              <PixelButton
-                variant="secondary"
-                onClick={() => {
-                  setSearch("");
-                  setSelectedCategory("ALL");
-                }}
-              >
-                RESET ALL FILTERS
-              </PixelButton>
-            </div>
+              <div className="col-span-full bg-[#131f37] border-4 border-retro-black rounded-2xl p-12 text-center flex flex-col items-center justify-center gap-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                <span className="font-pixel text-2xl text-yellow-400">? ? ?</span>
+                <p className="font-pixel text-xs text-white">
+                  {lang === "ID" ? "TIDAK ADA QUEST YANG COCOK DENGAN KRITERIA ANDA" : "NO QUESTS FOUND MATCHING YOUR CRITERIA"}
+                </p>
+                <PixelButton
+                  variant="secondary"
+                  onClick={() => {
+                    setSearch("");
+                    setSelectedCategory("ALL");
+                  }}
+                >
+                  {lang === "ID" ? "RESET SEMUA FILTER" : "RESET ALL FILTERS"}
+                </PixelButton>
+              </div>
           )}
         </section>
 
@@ -499,7 +515,7 @@ export default function Showcase() {
               <div className="border-b-2 border-gray-700 pb-3 text-left">
                 <span className="font-pixel text-[8px] text-yellow-400">// PARTY FORMATION PROTOCOL</span>
                 <h2 className="font-pixel text-xs text-white mt-0.5">
-                  [ RECRUIT PARTY MEMBER ]
+                  {lang === "ID" ? "[ REKRUT ANGGOTA PARTY ]" : "[ RECRUIT PARTY MEMBER ]"}
                 </h2>
               </div>
 
@@ -522,7 +538,9 @@ export default function Showcase() {
                   {userLedProjects.length > 0 ? (
                     <>
                       <div className="flex flex-col gap-1.5">
-                        <label className="font-pixel text-[8px] text-yellow-400">ASSIGN TO YOUR OPEN QUEST</label>
+                        <label className="font-pixel text-[8px] text-yellow-400">
+                          {lang === "ID" ? "TUGASKAN KE QUEST TERBUKAMU" : "ASSIGN TO YOUR OPEN QUEST"}
+                        </label>
                         <select
                           value={selectedProject}
                           onChange={(e) => setSelectedProject(e.target.value)}
@@ -538,7 +556,9 @@ export default function Showcase() {
                       </div>
 
                       <div className="flex flex-col gap-1.5">
-                        <label className="font-pixel text-[8px] text-yellow-400">PROPOSED PARTY ROLE</label>
+                        <label className="font-pixel text-[8px] text-yellow-400">
+                          {lang === "ID" ? "PERAN PARTY YANG DITAWARKAN" : "PROPOSED PARTY ROLE"}
+                        </label>
                         <select
                           value={recruitmentRole}
                           onChange={(e) => setRecruitmentRole(e.target.value)}
@@ -552,22 +572,28 @@ export default function Showcase() {
                       </div>
 
                       <div className="flex flex-col gap-1.5">
-                        <label className="font-pixel text-[8px] text-gray-300">QUEST INVITATION NOTE (OPTIONAL)</label>
+                        <label className="font-pixel text-[8px] text-gray-300">
+                          {lang === "ID" ? "CATATAN UNDANGAN QUEST (OPSIONAL)" : "QUEST INVITATION NOTE (OPTIONAL)"}
+                        </label>
                         <textarea
                           rows={2}
                           value={recruitmentNote}
                           onChange={(e) => setRecruitmentNote(e.target.value)}
-                          placeholder="e.g., We saw your awesome showcase and need your skills for our upcoming sprint!"
+                          placeholder={
+                            lang === "ID"
+                              ? "cth., Kami melihat showcase kerenmu dan butuh skillmu untuk sprint kami berikutnya!"
+                              : "e.g., We saw your awesome showcase and need your skills for our upcoming sprint!"
+                          }
                           className="font-sans text-xs p-2 bg-[#1c2a4a] text-white border-2 border-retro-black focus:outline-none resize-none rounded-lg"
                         />
                       </div>
 
                       <div className="flex justify-end gap-3 pt-2">
                         <PixelButton variant="secondary" type="button" onClick={closeInviteModal}>
-                          CANCEL
+                          {lang === "ID" ? "BATAL" : "CANCEL"}
                         </PixelButton>
                         <PixelButton variant="green" type="submit">
-                          SEND INVITATION ➔
+                          {lang === "ID" ? "KIRIM UNDANGAN ➔" : "SEND INVITATION ➔"}
                         </PixelButton>
                       </div>
                     </>
@@ -575,13 +601,17 @@ export default function Showcase() {
                     /* KONDISI: BELUM MEMILIKI QUEST SENDIRI */
                     <div className="bg-[#18233a] border-2 border-yellow-400/60 p-4 rounded-xl text-center flex flex-col items-center gap-3">
                       <span className="text-xl">⚠️</span>
-                      <p className="font-pixel text-[8.5px] text-yellow-300">NO ACTIVE QUESTS LED BY YOU</p>
+                      <p className="font-pixel text-[8.5px] text-yellow-300">
+                        {lang === "ID" ? "TIDAK ADA QUEST AKTIF YANG DIPIMPIN OLEH ANDA" : "NO ACTIVE QUESTS LED BY YOU"}
+                      </p>
                       <p className="font-sans text-xs text-gray-300 leading-relaxed">
-                        You must lead at least 1 open quest posted on the Quest Board to recruit party members.
+                        {lang === "ID"
+                          ? "Anda harus memimpin minimal 1 quest terbuka di Quest Board untuk merekrut anggota party."
+                          : "You must lead at least 1 open quest posted on the Quest Board to recruit party members."}
                       </p>
                       <Link href="/board" className="mt-1">
                         <PixelButton variant="green" className="py-2 px-5 text-[8px]">
-                          + DISPATCH QUEST ON BOARD ➔
+                          {lang === "ID" ? "+ TERBITKAN QUEST DI BOARD ➔" : "+ DISPATCH QUEST ON BOARD ➔"}
                         </PixelButton>
                       </Link>
                     </div>
@@ -593,7 +623,9 @@ export default function Showcase() {
               {invitationStatus === "sending" && (
                 <div className="py-10 text-center flex flex-col items-center justify-center gap-3">
                   <div className="w-10 h-10 border-4 border-dashed border-yellow-400 rounded-full animate-spin" />
-                  <p className="font-pixel text-[10px] text-yellow-400">TRANSMITTING QUEST DISPATCH...</p>
+                  <p className="font-pixel text-[10px] text-yellow-400">
+                    {lang === "ID" ? "MENGIRIM UNDANGAN QUEST..." : "TRANSMITTING QUEST DISPATCH..."}
+                  </p>
                 </div>
               )}
 
@@ -603,14 +635,19 @@ export default function Showcase() {
                     ✓
                   </div>
                   <div className="flex flex-col gap-1">
-                    <p className="font-pixel text-xs text-yellow-400">INVITATION TRANSMITTED!</p>
+                    <p className="font-pixel text-xs text-yellow-400">
+                      {lang === "ID" ? "UNDANGAN TERKIRIM!" : "INVITATION TRANSMITTED!"}
+                    </p>
                     <p className="font-sans text-xs text-gray-300 leading-relaxed px-2">
-                      Formal invitation for <strong className="text-white">{selectedProject}</strong> has been logged and transmitted to{" "}
-                      <strong className="text-white">{selectedUser.name}</strong> ({recruitmentRole}).
+                      {lang === "ID" ? (
+                        <>Undangan resmi untuk <strong className="text-white">{selectedProject}</strong> telah dicatat dan dikirim ke <strong className="text-white">{selectedUser.name}</strong> ({recruitmentRole}).</>
+                      ) : (
+                        <>Formal invitation for <strong className="text-white">{selectedProject}</strong> has been logged and transmitted to <strong className="text-white">{selectedUser.name}</strong> ({recruitmentRole}).</>
+                      )}
                     </p>
                   </div>
                   <PixelButton variant="navy" onClick={closeInviteModal} className="w-full mt-2">
-                    DONE / RETURN TO GALLERY
+                    {lang === "ID" ? "SELESAI / KEMBALI KE GALERI" : "DONE / RETURN TO GALLERY"}
                   </PixelButton>
                 </div>
               )}

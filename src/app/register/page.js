@@ -7,9 +7,11 @@ import Image from "next/image";
 import userData from "../../data/users.json";
 import PixelAvatar from "../../components/PixelAvatar";
 import { usersData } from "../../utils/auth";
+import { useLanguage } from "../../utils/lang";
 
 export default function Register() {
   const router = useRouter();
+  const { lang } = useLanguage();
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [university, setUniversity] = useState("Universitas Indonesia");
@@ -18,8 +20,9 @@ export default function Register() {
   const [skills, setSkills] = useState("");
   const [bio, setBio] = useState("");
 
-  // Teks ucapan mascot Pikachu (mengikuti gaya halaman Login)
-  const fullSpeechText = "Create your adventurer profile~";
+  // Teks ucapan mascot Pikachu (mengikuti gaya halaman Login), ganti otomatis sesuai bahasa
+  const fullSpeechText =
+    lang === "ID" ? "Buat profil adventurer-mu~" : "Create your adventurer profile~";
   const [displayedSpeech, setDisplayedSpeech] = useState("");
 
   useEffect(() => {
@@ -35,12 +38,12 @@ export default function Register() {
     }, 40); // Kecepatan ketik (40ms per huruf)
 
     return () => clearInterval(typingTimer);
-  }, []);
+  }, [fullSpeechText]);
 
   const handleRegister = (e) => {
     e.preventDefault();
     if (!name.trim()) {
-      alert("Please enter a character name!");
+      alert(lang === "ID" ? "Mohon isi nama karaktermu!" : "Please enter a character name!");
       return;
     }
 
@@ -59,7 +62,11 @@ export default function Register() {
         major,
         role: selectedRole, // Menyimpan pilihan kelas RPG
         skills: skillsArray,
-        bio: bio || `Ready for adventure. Seeking party members for next level coding.`,
+        bio:
+          bio ||
+          (lang === "ID"
+            ? "Siap berpetualang. Mencari rekan tim untuk coding level berikutnya."
+            : "Ready for adventure. Seeking party members for next level coding."),
         portfolio: [],
       };
 
@@ -85,55 +92,86 @@ export default function Register() {
     }
   };
 
+  // Setiap role sekarang punya deskripsi dwibahasa (id/en) supaya berubah otomatis saat toggle
   const roles = [
     {
       name: "Product Manager (PM)",
-      desc: "Menentukan arah produk, menganalisis kebutuhan pengguna, serta menyusun prioritas pengerjaan.",
+      desc: {
+        id: "Menentukan arah produk, menganalisis kebutuhan pengguna, serta menyusun prioritas pengerjaan.",
+        en: "Sets product direction, analyzes user needs, and prioritizes the development roadmap.",
+      },
       stats: { Code: 10, Design: 60, Business: 95 }
     },
     {
       name: "Project / Scrum Master",
-      desc: "Memastikan kelancaran proses kerja tim dengan metodologi Agile/Scrum dan mengatur jadwal sprint.",
+      desc: {
+        id: "Memastikan kelancaran proses kerja tim dengan metodologi Agile/Scrum dan mengatur jadwal sprint.",
+        en: "Keeps the team's workflow smooth with Agile/Scrum practices and manages the sprint schedule.",
+      },
       stats: { Code: 20, Design: 30, Business: 90 }
     },
     {
       name: "UI/UX Designer",
-      desc: "Merancang alur penggunaan aplikasi (user flow), membuat wireframe, hingga tampilan visual yang intuitif.",
+      desc: {
+        id: "Merancang alur penggunaan aplikasi (user flow), membuat wireframe, hingga tampilan visual yang intuitif.",
+        en: "Designs the app's user flow, builds wireframes, and crafts an intuitive visual interface.",
+      },
       stats: { Code: 45, Design: 95, Business: 40 }
     },
     {
       name: "UX Researcher",
-      desc: "Melakukan riset mendalam untuk memahami perilaku, kebutuhan, dan kendala pengguna.",
+      desc: {
+        id: "Melakukan riset mendalam untuk memahami perilaku, kebutuhan, dan kendala pengguna.",
+        en: "Conducts in-depth research to understand user behavior, needs, and pain points.",
+      },
       stats: { Code: 15, Design: 85, Business: 60 }
     },
     {
       name: "Frontend Developer",
-      desc: "Membangun bagian antarmuka aplikasi (tampilan layar, tombol, animasi) menggunakan React/Next.js.",
+      desc: {
+        id: "Membangun bagian antarmuka aplikasi (tampilan layar, tombol, animasi) menggunakan React/Next.js.",
+        en: "Builds the app's interface (screens, buttons, animations) using React/Next.js.",
+      },
       stats: { Code: 85, Design: 75, Business: 10 }
     },
     {
       name: "Backend Developer",
-      desc: "Mengurus dapur aplikasi: database, logika bisnis, keamanan server, dan pembuatan API.",
+      desc: {
+        id: "Mengurus dapur aplikasi: database, logika bisnis, keamanan server, dan pembuatan API.",
+        en: "Handles the app's engine room: databases, business logic, server security, and API development.",
+      },
       stats: { Code: 95, Design: 10, Business: 10 }
     },
     {
       name: "Full-stack Developer",
-      desc: "Menguasai frontend sekaligus backend untuk menangani pembuatan aplikasi secara menyeluruh.",
+      desc: {
+        id: "Menguasai frontend sekaligus backend untuk menangani pembuatan aplikasi secara menyeluruh.",
+        en: "Handles both frontend and backend to build the application end to end.",
+      },
       stats: { Code: 90, Design: 50, Business: 30 }
     },
     {
       name: "Mobile App Developer",
-      desc: "Fokus khusus membuat aplikasi mobile Android/iOS menggunakan Kotlin, Swift, atau Flutter.",
+      desc: {
+        id: "Fokus khusus membuat aplikasi mobile Android/iOS menggunakan Kotlin, Swift, atau Flutter.",
+        en: "Focuses on building Android/iOS mobile apps using Kotlin, Swift, or Flutter.",
+      },
       stats: { Code: 85, Design: 50, Business: 20 }
     },
     {
       name: "QA (Quality Assurance) Engineer",
-      desc: "Menguji aplikasi secara menyeluruh untuk menemukan bug dan kesalahan sebelum diluncurkan.",
+      desc: {
+        id: "Menguji aplikasi secara menyeluruh untuk menemukan bug dan kesalahan sebelum diluncurkan.",
+        en: "Tests the application thoroughly to catch bugs and issues before launch.",
+      },
       stats: { Code: 75, Design: 20, Business: 30 }
     },
     {
       name: "DevOps Engineer",
-      desc: "Mengatur infrastruktur server, keamanan sistem, dan otomatisasi deployment (CI/CD).",
+      desc: {
+        id: "Mengatur infrastruktur server, keamanan sistem, dan otomatisasi deployment (CI/CD).",
+        en: "Manages server infrastructure, system security, and deployment automation (CI/CD).",
+      },
       stats: { Code: 90, Design: 10, Business: 20 }
     }
   ];
@@ -155,7 +193,7 @@ export default function Register() {
         href="/"
         className="absolute top-6 left-6 z-20 font-pixel text-[9px] text-white hover:text-yellow-300 flex items-center gap-2 transition-colors border-2 border-retro-black px-3 py-1.5 bg-[#121b2d] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px]"
       >
-        [← ESCAPE TO TOWN]
+        {lang === "ID" ? "[← KEMBALI KE KOTA]" : "[← ESCAPE TO TOWN]"}
       </Link>
 
       <div className="max-w-4xl w-full flex flex-col items-center gap-3 relative z-10 my-8">
@@ -186,10 +224,12 @@ export default function Register() {
 
           <div className="border-b border-slate-200 pb-3">
             <h1 className="font-pixel text-sm text-retro-black mb-1">
-              [CHARACTER CREATION SCREEN]
+              {lang === "ID" ? "[LAYAR PEMBUATAN KARAKTER]" : "[CHARACTER CREATION SCREEN]"}
             </h1>
             <p className="font-sans text-xs text-gray-500">
-              Join the Guild. Customize your student credentials, choose your class, and prepare to party up.
+              {lang === "ID"
+                ? "Bergabung dengan Guild. Atur kredensial mahasiswamu, pilih kelasmu, dan bersiaplah untuk party up."
+                : "Join the Guild. Customize your student credentials, choose your class, and prepare to party up."}
             </p>
           </div>
 
@@ -199,11 +239,13 @@ export default function Register() {
             <div className="flex flex-col gap-3">
               {/* Name */}
               <div className="flex flex-col gap-1">
-                <label className="font-pixel text-[8px] text-gray-600">ADVENTURER NAME</label>
+                <label className="font-pixel text-[8px] text-gray-600">
+                  {lang === "ID" ? "NAMA ADVENTURER" : "ADVENTURER NAME"}
+                </label>
                 <input
                   type="text"
                   required
-                  placeholder="Enter character name..."
+                  placeholder={lang === "ID" ? "Masukkan nama karakter..." : "Enter character name..."}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="font-sans text-xs p-2.5 bg-slate-50 border-2 border-slate-300 rounded-lg focus:border-retro-black focus:outline-none"
@@ -212,10 +254,12 @@ export default function Register() {
 
               {/* Security Key / Password */}
               <div className="flex flex-col gap-1">
-                <label className="font-pixel text-[8px] text-gray-600">SECURITY KEY (PASSWORD)</label>
+                <label className="font-pixel text-[8px] text-gray-600">
+                  {lang === "ID" ? "KUNCI KEAMANAN (PASSWORD)" : "SECURITY KEY (PASSWORD)"}
+                </label>
                 <input
                   type="password"
-                  placeholder="e.g. hero123"
+                  placeholder={lang === "ID" ? "cth. hero123" : "e.g. hero123"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="font-sans text-xs p-2.5 bg-slate-50 border-2 border-slate-300 rounded-lg focus:border-retro-black focus:outline-none"
@@ -225,7 +269,9 @@ export default function Register() {
               {/* University & Prodi */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1">
-                  <label className="font-pixel text-[8px] text-gray-600">GUILD (UNIVERSITY)</label>
+                  <label className="font-pixel text-[8px] text-gray-600">
+                    {lang === "ID" ? "GUILD (UNIVERSITAS)" : "GUILD (UNIVERSITY)"}
+                  </label>
                   <select
                     value={university}
                     onChange={(e) => setUniversity(e.target.value)}
@@ -239,7 +285,9 @@ export default function Register() {
                   </select>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="font-pixel text-[8px] text-gray-600">PRODI (MAJOR)</label>
+                  <label className="font-pixel text-[8px] text-gray-600">
+                    {lang === "ID" ? "PRODI (JURUSAN)" : "MAJOR (PRODI)"}
+                  </label>
                   <select
                     value={major}
                     onChange={(e) => setMajor(e.target.value)}
@@ -256,11 +304,11 @@ export default function Register() {
               {/* Skills */}
               <div className="flex flex-col gap-1">
                 <label className="font-pixel text-[8px] text-gray-600">
-                  SKILL INVENTORY (COMMA SEPARATED)
+                  {lang === "ID" ? "INVENTORI SKILL (PISAHKAN DENGAN KOMA)" : "SKILL INVENTORY (COMMA SEPARATED)"}
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Next.js, Figma, Go, Python"
+                  placeholder={lang === "ID" ? "cth. Next.js, Figma, Go, Python" : "e.g. Next.js, Figma, Go, Python"}
                   value={skills}
                   onChange={(e) => setSkills(e.target.value)}
                   className="font-sans text-xs p-2.5 bg-slate-50 border-2 border-slate-300 rounded-lg focus:border-retro-black focus:outline-none"
@@ -269,10 +317,16 @@ export default function Register() {
 
               {/* Bio */}
               <div className="flex flex-col gap-1">
-                <label className="font-pixel text-[8px] text-gray-600">CHARACTER BIO</label>
+                <label className="font-pixel text-[8px] text-gray-600">
+                  {lang === "ID" ? "BIO KARAKTER" : "CHARACTER BIO"}
+                </label>
                 <textarea
                   rows={3}
-                  placeholder="Introduce yourself to potential party leaders..."
+                  placeholder={
+                    lang === "ID"
+                      ? "Perkenalkan dirimu ke calon ketua party..."
+                      : "Introduce yourself to potential party leaders..."
+                  }
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   className="font-sans text-xs p-2.5 bg-slate-50 border-2 border-slate-300 rounded-lg focus:border-retro-black focus:outline-none resize-none"
@@ -283,7 +337,9 @@ export default function Register() {
             {/* Kolom Kanan: Filter Class Modern (grid chip, tidak memanjang) + Stats + Submit */}
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1.5">
-                <label className="font-pixel text-[8px] text-gray-600">SELECT RPG CLASS</label>
+                <label className="font-pixel text-[8px] text-gray-600">
+                  {lang === "ID" ? "PILIH KELAS RPG" : "SELECT RPG CLASS"}
+                </label>
 
                 {/* Grid chip modern menggantikan list memanjang */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
@@ -294,11 +350,10 @@ export default function Register() {
                         type="button"
                         key={role.name}
                         onClick={() => setSelectedRole(role.name)}
-                        className={`font-pixel text-[7px] leading-tight text-center px-1.5 py-2.5 border-2 rounded-lg cursor-pointer select-none transition-all ${
-                          isSelected
+                        className={`font-pixel text-[7px] leading-tight text-center px-1.5 py-2.5 border-2 rounded-lg cursor-pointer select-none transition-all ${isSelected
                             ? "bg-navy-blue border-retro-black text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] translate-x-[1px] translate-y-[1px]"
                             : "bg-slate-50 border-slate-300 text-retro-black hover:border-retro-black hover:bg-slate-100"
-                        }`}
+                          }`}
                       >
                         {role.name.toUpperCase()}
                       </button>
@@ -306,10 +361,10 @@ export default function Register() {
                   })}
                 </div>
 
-                {/* Deskripsi singkat class terpilih, muncul dinamis di bawah grid */}
+                {/* Deskripsi singkat class terpilih, muncul dinamis di bawah grid, mengikuti bahasa aktif */}
                 {activeRole && (
                   <p className="font-sans text-[10.5px] text-gray-500 leading-relaxed bg-slate-50 border-2 border-slate-200 rounded-lg p-2.5 mt-1">
-                    {activeRole.desc}
+                    {activeRole.desc[lang === "ID" ? "id" : "en"]}
                   </p>
                 )}
               </div>
@@ -317,7 +372,7 @@ export default function Register() {
               {/* Stat Viewer Panel */}
               <div className="bg-retro-black text-white rounded-lg p-4 flex flex-col gap-2.5">
                 <h2 className="font-pixel text-[8px] text-pixel-green border-b border-pixel-green/30 pb-2 mb-0.5">
-                  CLASS BASE STATISTICS
+                  {lang === "ID" ? "STATISTIK DASAR KELAS" : "CLASS BASE STATISTICS"}
                 </h2>
 
                 <div className="flex flex-col gap-2">
@@ -344,7 +399,7 @@ export default function Register() {
                 type="submit"
                 className="w-full font-pixel text-xs py-3 bg-navy-blue hover:bg-navy-light text-white font-bold border-2 border-retro-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] cursor-pointer active:translate-y-[1px] transition-all mt-1"
               >
-                Spawn Character ▶
+                {lang === "ID" ? "Buat Karakter ▶" : "Spawn Character ▶"}
               </button>
             </div>
           </form> {/* <-- TAG FORM DITUTUP DI SINI */}
@@ -352,12 +407,12 @@ export default function Register() {
           {/* Sign In Link (DIPINDAHKAN KE LUAR FORM AGAR 100% BISA DIKLIK) */}
           <div className="text-center border-t border-slate-200 pt-3 relative z-20">
             <p className="font-sans text-xs text-gray-500">
-              Already have a character?{" "}
-              <Link 
-                href="/login" 
+              {lang === "ID" ? "Sudah punya karakter?" : "Already have a character?"}{" "}
+              <Link
+                href="/login"
                 className="font-pixel text-[9px] text-navy-blue font-bold hover:underline pl-1 cursor-pointer relative z-20 inline-block"
               >
-                Log in &gt;
+                {lang === "ID" ? "Masuk >" : "Log in >"}
               </Link>
             </p>
           </div>

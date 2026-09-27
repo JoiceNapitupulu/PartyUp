@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import usersData from "../../data/users.json";
 import PixelAvatar from "../../components/PixelAvatar";
+import { useLanguage } from "../../utils/lang";
 
 const ROLE_THEME = {
   hacker: { accent: "#22c55e", ring: "border-emerald-400", label: "Hacker" },
@@ -88,11 +89,14 @@ function AccountAvatar({ account, className = "" }) {
 
 export default function Login() {
   const router = useRouter();
+  const { lang } = useLanguage();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); // State untuk Toggle Ikon Mata
   const [error, setError] = useState("");
-  const fullSpeechText = "Log in to resume your party journey~";
+
+  const fullSpeechText =
+    lang === "ID" ? "Masuk untuk melanjutkan perjalanan party-mu~" : "Log in to resume your party journey~";
   const [displayedSpeech, setDisplayedSpeech] = useState("");
 
   const selectedAccount = usersData.find((u) => u.name === username);
@@ -110,6 +114,7 @@ export default function Login() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Efek ketik ulang otomatis setiap kali bahasa di-toggle
   useEffect(() => {
     let index = 0;
     setDisplayedSpeech("");
@@ -123,12 +128,12 @@ export default function Login() {
     }, 40);
 
     return () => clearInterval(typingTimer);
-  }, []);
+  }, [fullSpeechText]);
 
   const handleLogin = (e) => {
     if (e) e.preventDefault();
     if (!username.trim()) {
-      setError("SELECT YOUR ADVENTURER FIRST!");
+      setError(lang === "ID" ? "PILIH ADVENTURER-MU DULU!" : "SELECT YOUR ADVENTURER FIRST!");
       return;
     }
 
@@ -137,13 +142,21 @@ export default function Login() {
     );
 
     if (!matchedUser) {
-      setError("ADVENTURER NOT FOUND IN GUILD DATABASE!");
+      setError(
+        lang === "ID"
+          ? "ADVENTURER TIDAK DITEMUKAN DI DATABASE GUILD!"
+          : "ADVENTURER NOT FOUND IN GUILD DATABASE!"
+      );
       return;
     }
 
     const expectedPassword = matchedUser.password || "party2026";
     if (password !== expectedPassword) {
-      setError(`INCORRECT PASSWORD! Password for ${matchedUser.name} is '${expectedPassword}'`);
+      setError(
+        lang === "ID"
+          ? `PASSWORD SALAH! Password untuk ${matchedUser.name} adalah '${expectedPassword}'`
+          : `INCORRECT PASSWORD! Password for ${matchedUser.name} is '${expectedPassword}'`
+      );
       return;
     }
 
@@ -160,7 +173,7 @@ export default function Login() {
       }
     } catch (err) {
       console.error("Local storage error:", err);
-      setError("LOCAL STORAGE BLOCKED BY BROWSER!");
+      setError(lang === "ID" ? "LOCAL STORAGE DIBLOKIR OLEH BROWSER!" : "LOCAL STORAGE BLOCKED BY BROWSER!");
     }
   };
 
@@ -192,7 +205,7 @@ export default function Login() {
         href="/"
         className="absolute top-6 left-6 z-20 font-pixel text-[9px] text-white hover:text-yellow-300 flex items-center gap-2 transition-colors border-2 border-retro-black px-3 py-1.5 bg-[#121b2d] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-[1px]"
       >
-        [← ESCAPE TO TOWN]
+        {lang === "ID" ? "[← KEMBALI KE KOTA]" : "[← ESCAPE TO TOWN]"}
       </Link>
 
       <div className="max-w-md w-full flex flex-col items-center gap-3 relative z-10 my-8">
@@ -224,14 +237,16 @@ export default function Login() {
 
           {error && (
             <div className="bg-red-100 text-red-700 font-pixel text-[8px] p-2 border-2 border-red-600 text-center animate-shake">
-              [WARNING: {error}]
+              [{lang === "ID" ? "PERINGATAN" : "WARNING"}: {error}]
             </div>
           )}
 
           <div className="flex flex-col gap-4">
             {/* Adventurer Picker Dropdown */}
             <div className="flex flex-col gap-1 relative" ref={accountMenuRef}>
-              <label className="font-pixel text-[8px] text-gray-600">SELECT YOUR ADVENTURER</label>
+              <label className="font-pixel text-[8px] text-gray-600">
+                {lang === "ID" ? "PILIH ADVENTURER-MU" : "SELECT YOUR ADVENTURER"}
+              </label>
 
               <button
                 type="button"
@@ -258,7 +273,9 @@ export default function Login() {
                   ) : (
                     <>
                       <span className="w-8 h-8 rounded-full bg-slate-200 border-2 border-dashed border-slate-400 shrink-0" />
-                      <span className="text-gray-400">-- Choose a Guild Member --</span>
+                      <span className="text-gray-400">
+                        {lang === "ID" ? "-- Pilih Anggota Guild --" : "-- Choose a Guild Member --"}
+                      </span>
                     </>
                   )}
                 </span>
@@ -306,7 +323,9 @@ export default function Login() {
 
             {/* Password Input dengan Auto-Fill & Eye Icon Toggle */}
             <div className="flex flex-col gap-1">
-              <label className="font-pixel text-[8px] text-gray-600">SECURITY KEY / PASSWORD</label>
+              <label className="font-pixel text-[8px] text-gray-600">
+                {lang === "ID" ? "KUNCI KEAMANAN / PASSWORD" : "SECURITY KEY / PASSWORD"}
+              </label>
               <div className="relative flex items-center">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -327,7 +346,11 @@ export default function Login() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-2.5 p-1 text-gray-500 hover:text-retro-black cursor-pointer border-none bg-transparent transition-colors"
-                  title={showPassword ? "Hide Password" : "Show Password"}
+                  title={
+                    showPassword
+                      ? (lang === "ID" ? "Sembunyikan Password" : "Hide Password")
+                      : (lang === "ID" ? "Tampilkan Password" : "Show Password")
+                  }
                 >
                   {showPassword ? (
                     /* Mata Terbuka (Visible) */
@@ -351,29 +374,29 @@ export default function Login() {
               disabled={!selectedAccount || !password}
               className="w-full font-pixel text-xs py-3 bg-navy-blue hover:bg-navy-light text-white font-bold border-2 border-retro-black rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] cursor-pointer active:translate-y-[1px] transition-all mt-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-navy-blue"
             >
-              Log in ▶
+              {lang === "ID" ? "Masuk ▶" : "Log in ▶"}
             </button>
           </div>
 
           {/* Sign Up & Reset Password Links */}
           <div className="text-center border-t border-slate-200 pt-4 pb-1 flex flex-col relative z-20">
             <p className="font-sans text-xs text-gray-500">
-              Need an account?{" "}
+              {lang === "ID" ? "Belum punya akun?" : "Need an account?"}{" "}
               <Link
                 href="/register"
                 className="font-pixel text-[9px] text-navy-blue font-bold hover:underline pl-1 cursor-pointer inline-block relative z-20"
               >
-                Sign up &gt;
+                {lang === "ID" ? "Daftar >" : "Sign up >"}
               </Link>
             </p>
 
             <p className="font-sans text-xs text-gray-500 mt-2.5">
-              Lost security key?{" "}
+              {lang === "ID" ? "Lupa kunci keamanan?" : "Lost security key?"}{" "}
               <Link
                 href="/forgot-password"
                 className="font-pixel text-[9px] text-navy-blue font-bold hover:underline pl-1 cursor-pointer inline-block relative z-20"
               >
-                Reset Password &gt;
+                {lang === "ID" ? "Reset Password >" : "Reset Password >"}
               </Link>
             </p>
           </div>
